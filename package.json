@@ -1,25 +1,78 @@
 {
-  "name": "vs-browser",
+	"name": "vs-browser",
 	"displayName": "VS Browser",
 	"description": "Built-in browser for Visual Studio Code",
-	"version": "0.0.1",
+	"publisher": "Phu1237",
+	"author": {
+		"name": "Phu1237",
+		"url": "https://github.com/Phu1237"
+	},
+	"version": "1.0.1",
+	"license": "SEE LICENSE IN LICENSE.md",
+	"bugs": {
+		"url": "https://github.com/Phu1237/vscode-vs-browser/issues",
+		"email": "phu1237@gmail.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Phu1237/vscode-vs-browser"
+	},
 	"engines": {
 		"vscode": "^1.63.0"
 	},
 	"categories": [
 		"Other"
 	],
+	"icon": "images/icon.png",
+	"keywords": [
+		"vs",
+		"browser",
+		"visual",
+		"studio",
+		"code",
+		"vscode"
+	],
 	"activationEvents": [
-        "onCommand:vs-browser.helloWorld"
+		"onCommand:vs-browser.start",
+		"onWebviewPanel:vs-browser"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "vs-browser.helloWorld",
-				"title": "Hello World"
+				"command": "vs-browser.start",
+				"title": "VS Browser: Start Browser"
 			}
-		]
+		],
+		"configuration": {
+			"properties": {
+				"vs-browser.proxy": {
+					"type": "boolean",
+					"default": false,
+					"description": "Use proxy to prevent the some errors (Longer loading time and can not use with localhost)"
+				},
+				"vs-browser.showMessageDialog": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show message dialog (sometimes the dialog still displays even if nothing goes wrong)"
+				},
+				"vs-browser.url": {
+					"type": "string",
+					"default": "http://localhost",
+					"description": "Default URL open when start the browser"
+				},
+				"vs-browser.reload.enableAutoReload": {
+					"type": "boolean",
+					"default": true,
+					"description": "Auto reload the browser after a limited time"
+				},
+				"vs-browser.reload.time": {
+					"type": "number",
+					"default": 15000,
+					"description": "The limited time in milliseconds"
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",

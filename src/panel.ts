@@ -74,7 +74,7 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 			}
 
 			#navbar button:hover {
-				background-color: #dcdcdc;
+				background-color: #515151;
 			}
 
 			#navbar button.active {
@@ -282,6 +282,13 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 				}
 			}
 			function reloadIframe(src = iframe.src) {
+				vscode.postMessage({
+					command: 'show-message-box',
+					type: 'error',
+					text: 'VS Browser: Some errors occurred. Use another method if the web page is not loaded.'
+				})
+				console.log(document.referrer);
+				console.log(document.referrer.location);
 				btn_reload.classList.add('loading');
 				// iframe.style.display = 'block';
 				// error.style.display = 'none';

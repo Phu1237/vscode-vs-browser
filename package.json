@@ -53,7 +53,7 @@
 				},
 				"vs-browser.showMessageDialog": {
 					"type": "boolean",
-					"default": true,
+					"default": false,
 					"description": "Show message dialog (sometimes the dialog still displays even if nothing goes wrong)"
 				},
 				"vs-browser.url": {
@@ -63,7 +63,7 @@
 				},
 				"vs-browser.reload.enableAutoReload": {
 					"type": "boolean",
-					"default": true,
+					"default": false,
 					"description": "Auto reload the browser after a limited time"
 				},
 				"vs-browser.reload.time": {

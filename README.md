@@ -30,6 +30,11 @@ This extension contributes the following settings:
 
 ## Release Notes
 
+### [1.0.2] - 2022-01-11
+
+- Restore back to the previous page when reopen VS Code
+- Add title to button for easier use
+
 ### [1.0.1] - 2022-01-11
 
 - Add instructions

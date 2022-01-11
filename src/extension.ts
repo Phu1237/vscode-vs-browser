@@ -3,13 +3,16 @@
 import * as vscode from 'vscode';
 import { webView, emptyWebView } from './panel';
 
+// Create output channel
+const outputConsole = vscode.window.createOutputChannel('VS Browser');
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('VS Browser: Activated!');
+	outputConsole.appendLine('Activated!');
 
 	// Track currently webview panel
 	let currentPanel: vscode.WebviewPanel | undefined = undefined;
@@ -113,7 +116,8 @@ function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
 		'proxy': webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, '/src/assets', 'proxy.js')),
 		'image': webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, '/src/assets', 'img.jpg'))
 	};
-	console.log(assets);
+	console.log('VS Browser: Inject ' + assets);
+	outputConsole.appendLine('Go to ' + url);
 
 	return url ? webView(url, proxy, reload, reloadDuration, assets) : emptyWebView();
 }
@@ -138,14 +142,13 @@ class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
 			message => {
 				switch (message.command) {
 					case 'go-to-preferences':
-						console.log('Click on Go to Preferences button');
 						vscode.commands.executeCommand('workbench.action.openSettings', 'vs-browser');
 						return;
 					case 'show-message-box':
 						let type = message.type;
 						let text = message.text;
 						let detail = message.detail;
-						console.log(message.detail);
+						outputConsole.appendLine(message.detail);
 						showMessage(type, text, {
 							detail: detail
 						});

@@ -70,7 +70,6 @@ export function activate(context: vscode.ExtensionContext) {
 			);
 
 			// Display a message box to the user
-			// vscode.window.showInformationMessage('VS Browser: Running') + '...';
 			panel.onDidDispose(
 				() => {
 					// When the panel is closed, cancel any future updates to the webview content
@@ -110,10 +109,10 @@ function withHttp(url: string): string {
 	});
 }
 
-function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
+function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri, url: string = '') {
 	// Get current config
 	const configs = vscode.workspace.getConfiguration("vs-browser");
-	const url = withHttp(configs.get<string>("url") || 'http://localhost');
+	url = url !== '' ? withHttp(url) : withHttp(configs.get<string>("url") || '');
 	const proxy = configs.get<boolean>("proxy") || false;
 	const reload = configs.get<boolean>("reload.enableAutoReload") || false;
 	const reloadDuration = configs.get<number>("reload.time") || 10000;
@@ -137,13 +136,13 @@ class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
 	}
 	async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
 		// `state` is the state persisted using `setState` inside the webview
-		console.log(`Got state: ${state}`);
+		console.log(`Got URL state: ${state.url}`);
 
 		// Restore the content of our webview.
 		//
 		// Make sure we hold on to the `webviewPanel` passed in here and
 		// also restore any event listeners we need on it.
-		webviewPanel.webview.html = getWebViewContent(webviewPanel.webview, this.context.extensionUri);
+		webviewPanel.webview.html = getWebViewContent(webviewPanel.webview, this.context.extensionUri, state.url);
 		// Handle messages from the webview
 		webviewPanel.webview.onDidReceiveMessage(
 			message => {
@@ -167,7 +166,6 @@ class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
 		);
 
 		// Display a message box to the user
-		// vscode.window.showInformationMessage('VS Browser: Running') + '...';
 		webviewPanel.onDidDispose(
 			() => {
 				// When the panel is closed, cancel any future updates to the webview content

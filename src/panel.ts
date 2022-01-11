@@ -188,7 +188,7 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 
 	<body>
 		<div id="navbar">
-			<button id="btn-reload" onclick="reloadIframe()">
+			<button id="btn-reload" onclick="reloadIframe()" title="Reload">
 				<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
 					<path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" />
 					<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" />
@@ -197,13 +197,13 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 			<!-- addressbar -->
 			<input type="text" id="addressbar" placeholder="Url" value=${url} />
 			<!-- go to url -->
-			<button id="btn-go">
+			<button id="btn-go" title="Go to URL">
 				<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
 					<path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z" />
 					<path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
 				</svg>
 			</button>
-			<button id="btn-preferences">
+			<button id="btn-preferences" title="Preference Settings">
 				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
 					<path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z" />
 				</svg>
@@ -289,10 +289,14 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 			}
 
 			function reloadIframe(src = iframe.src) {
+				let url = withHttp(src);
 				btn_reload.classList.add('loading');
 				// iframe.style.display = 'block';
 				// error.style.display = 'none';
 				iframe.src = withHttp(src);
+				vscode.setState({
+					url: url
+				});
 			}
 		</script>
 	</body>

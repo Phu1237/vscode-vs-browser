@@ -59,7 +59,20 @@
 				"vs-browser.url": {
 					"type": "string",
 					"default": "http://localhost",
-					"description": "Default URL open when start the browser"
+					"description": "Default open URL when start the browser"
+				},
+				"vs-browser.columnToShowIn": {
+					"type": "string",
+					"default": "Two",
+					"enum": ["One", "Two", "Three", "Active", "Beside"],
+					"enumDescriptions": [
+						"Show in First column",
+						"Show in Second Column",
+						"Show in Third column",
+						"Show in Active Column",
+						"Show in Beside column of Active column"
+					],
+					"description": "Default column to show in"
 				},
 				"vs-browser.reload.enableAutoReload": {
 					"type": "boolean",

@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 	outputConsole.appendLine('Activated!');
 
 	// Track currently webview panel
-	let currentPanel: vscode.WebviewPanel | undefined = undefined;
+	// let currentPanel: vscode.WebviewPanel | undefined = undefined;
 
 	// And make sure we register a serializer for our webview type
 	vscode.window.registerWebviewPanelSerializer('vs-browser', new VSBrowserSerializer(context));
@@ -23,61 +23,73 @@ export function activate(context: vscode.ExtensionContext) {
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('vs-browser.start', () => {
-		// Redirect to exíted column or create new
-		const columnToShowIn = vscode.window.activeTextEditor
-			? vscode.window.activeTextEditor.viewColumn
-			: undefined;
-
-		// If we already have a panel, show it in the target column
-		if (currentPanel) {
-			currentPanel.reveal(columnToShowIn);
-		} else {
-			// Create and show a new webview
-			const panel = vscode.window.createWebviewPanel(
-				'vs-browser', // Identifies the type of the webview. Used internally
-				'VS Browser', // Title of the panel displayed to the user
-				vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
-				{
-					enableScripts: true,
-					// freeze when panel not focused
-					retainContextWhenHidden: true
-				});
-
-			// And set its HTML content
-			panel.webview.html = getWebViewContent(panel.webview, context.extensionUri);
-
-			// Handle messages from the webview
-			panel.webview.onDidReceiveMessage(
-				message => {
-					switch (message.command) {
-						case 'go-to-preferences':
-							console.log('Click on Go to Preferences button');
-							vscode.commands.executeCommand('workbench.action.openSettings', 'vs-browser');
-							return;
-						case 'show-message-box':
-							let type = message.type;
-							let text = message.text;
-							let detail = message.detail;
-							console.log(message.detail);
-							showMessage(type, text, {
-								detail: detail
-							});
-							return;
-					}
-				},
-				undefined,
-				context.subscriptions
-			);
-
-			// Display a message box to the user
-			panel.onDidDispose(
-				() => {
-					// When the panel is closed, cancel any future updates to the webview content
-				},
-				null,
-				context.subscriptions
-			);
+		// Ccreate new column
+		const configs = vscode.workspace.getConfiguration("vs-browser");
+		const column = configs.get<string>("columnToShowIn") || 'Two';
+		let columnToShowIn = vscode.ViewColumn.Two;
+		switch (column) {
+			case 'One':
+				columnToShowIn = vscode.ViewColumn.One;
+				break;
+			case 'Two':
+				columnToShowIn = vscode.ViewColumn.Two;
+				break;
+			case 'Three':
+				columnToShowIn = vscode.ViewColumn.Three;
+				break;
+			case 'Active':
+				columnToShowIn = vscode.ViewColumn.Active;
+				break;
+			case 'Beside':
+				columnToShowIn = vscode.ViewColumn.Beside;
+				break;
+			default:
 		}
+		// Create and show a new webview
+		const panel = vscode.window.createWebviewPanel(
+			'vs-browser', // Identifies the type of the webview. Used internally
+			'VS Browser', // Title of the panel displayed to the user
+			columnToShowIn, // Editor column to show the new webview panel in.
+			{
+				enableScripts: true,
+				// freeze when panel not focused
+				retainContextWhenHidden: true
+			});
+
+		// And set its HTML content
+		panel.webview.html = getWebViewContent(panel.webview, context.extensionUri);
+
+		// Handle messages from the webview
+		panel.webview.onDidReceiveMessage(
+			message => {
+				switch (message.command) {
+					case 'go-to-preferences':
+						console.log('Click on Go to Preferences button');
+						vscode.commands.executeCommand('workbench.action.openSettings', 'vs-browser');
+						return;
+					case 'show-message-box':
+						let type = message.type;
+						let text = message.text;
+						let detail = message.detail;
+						console.log(message.detail);
+						showMessage(type, text, {
+							detail: detail
+						});
+						return;
+				}
+			},
+			undefined,
+			context.subscriptions
+		);
+
+		// Display a message box to the user
+		panel.onDidDispose(
+			() => {
+				// When the panel is closed, cancel any future updates to the webview content
+			},
+			null,
+			context.subscriptions
+		);
 	});
 
 	context.subscriptions.push(disposable);

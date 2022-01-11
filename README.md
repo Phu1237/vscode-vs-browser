@@ -10,8 +10,8 @@ Built-in browser for Visual Studio Code
 
 ## Usage
 
-- Open command palette (Ctrl+Shift+P) & enter "VS Browser: Start Browser"
-- Update extension settings for a better experience
+- Open command palette (`Ctrl+Shift+P`) & enter "`VS Browser: Start Browser`"
+- All extension settings are `disable by default` so remember to update extension settings for a better experience
 
 ## Extension Settings
 
@@ -26,7 +26,7 @@ This extension contributes the following settings:
 ## Known Issues
 
 * Sometimes, the dialog still displays even if nothing goes wrong
-* Auto reload not reload to the current page (reload to the current address now)
+* Auto reload not reload to the current page (reload to the URL on address url input now)
 
 ## Release Notes
 
@@ -44,6 +44,6 @@ This extension contributes the following settings:
 
 ### [1.0.0] - 2022-01-10
 
-First release of VS Browser
+- First release of VS Browser
 
 **Enjoy!**

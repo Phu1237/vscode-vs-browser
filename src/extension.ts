@@ -87,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() { }
 
-function showMessage(type: string, message: string, options: Object) {
+function showMessage(type: string, message: string, options: Object = {}) {
 	const configs = vscode.workspace.getConfiguration("vs-browser");
 	let showMessageDialog = configs.get("showMessageDialog") || false;
 	if (showMessageDialog) {
@@ -104,19 +104,26 @@ function showMessage(type: string, message: string, options: Object) {
 	}
 }
 
+function withHttp(url: string): string {
+	return url.replace(/^(?:(.*:)?\/\/)?(.*)/i, (match, schemma, nonSchemmaUrl) => {
+		return schemma ? match : `http://${nonSchemmaUrl}`
+	});
+}
+
 function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
 	// Get current config
 	const configs = vscode.workspace.getConfiguration("vs-browser");
-	const url = configs.get<string>("url");
+	const url = withHttp(configs.get<string>("url") || 'http://localhost');
 	const proxy = configs.get<boolean>("proxy") || false;
 	const reload = configs.get<boolean>("reload.enableAutoReload") || false;
 	const reloadDuration = configs.get<number>("reload.time") || 10000;
+	// Add http to url if url don't include it
 	// And get the special URI to use with the webview
 	const assets: Object = {
 		'proxy': webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, '/src/assets', 'proxy.js')),
 		'image': webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, '/src/assets', 'img.jpg'))
 	};
-	console.log('VS Browser: Inject ' + assets);
+	console.log(assets);
 	outputConsole.appendLine('Go to ' + url);
 
 	return url ? webView(url, proxy, reload, reloadDuration, assets) : emptyWebView();

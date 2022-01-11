@@ -281,18 +281,18 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 					setTimeout(reloadIframe, ${reloadDuration});
 				}
 			}
+
+			function withHttp(url) {
+				return url.replace(/^(?:(.*:)?\\\/\\/)?(.*)/i, (match, schemma, nonSchemmaUrl) => {
+					return schemma ? match : 'http://'+nonSchemmaUrl;
+				});
+			}
+
 			function reloadIframe(src = iframe.src) {
-				vscode.postMessage({
-					command: 'show-message-box',
-					type: 'error',
-					text: 'VS Browser: Some errors occurred. Use another method if the web page is not loaded.'
-				})
-				console.log(document.referrer);
-				console.log(document.referrer.location);
 				btn_reload.classList.add('loading');
 				// iframe.style.display = 'block';
 				// error.style.display = 'none';
-				iframe.src = src;
+				iframe.src = withHttp(src);
 			}
 		</script>
 	</body>

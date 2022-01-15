@@ -46,7 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 			default:
 		}
 		// Create and show a new webview
-		const panel = vscode.window.createWebviewPanel(
+		let panel = vscode.window.createWebviewPanel(
 			'vs-browser', // Identifies the type of the webview. Used internally
 			'VS Browser', // Title of the panel displayed to the user
 			columnToShowIn, // Editor column to show the new webview panel in.
@@ -56,40 +56,8 @@ export function activate(context: vscode.ExtensionContext) {
 				retainContextWhenHidden: true
 			});
 
-		// And set its HTML content
-		panel.webview.html = getWebViewContent(panel.webview, context.extensionUri);
-
-		// Handle messages from the webview
-		panel.webview.onDidReceiveMessage(
-			message => {
-				switch (message.command) {
-					case 'go-to-preferences':
-						console.log('Click on Go to Preferences button');
-						vscode.commands.executeCommand('workbench.action.openSettings', 'vs-browser');
-						return;
-					case 'show-message-box':
-						let type = message.type;
-						let text = message.text;
-						let detail = message.detail;
-						console.log(message.detail);
-						showMessage(type, text, {
-							detail: detail
-						});
-						return;
-				}
-			},
-			undefined,
-			context.subscriptions
-		);
-
-		// Display a message box to the user
-		panel.onDidDispose(
-			() => {
-				// When the panel is closed, cancel any future updates to the webview content
-			},
-			null,
-			context.subscriptions
-		);
+		// Inject event and context to panel
+		panel = createWebviewPanel(panel, context);
 	});
 
 	context.subscriptions.push(disposable);
@@ -98,29 +66,103 @@ export function activate(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() { }
 
-function showMessage(type: string, message: string, options: Object = {}) {
-	const configs = vscode.workspace.getConfiguration("vs-browser");
-	let showMessageDialog = configs.get("showMessageDialog") || false;
-	if (showMessageDialog) {
-		switch (type) {
-			case 'error':
-				vscode.window.showErrorMessage(message, options);
-				break;
-			case 'warning':
-				vscode.window.showWarningMessage(message, options);
-				break;
-			default:
-				vscode.window.showInformationMessage(message, options);
-		}
+class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
+	private context: vscode.ExtensionContext;
+
+	constructor(context: vscode.ExtensionContext) {
+		this.context = context;
+	}
+	async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
+		// `state` is the state persisted using `setState` inside the webview
+		console.log(`Got URL state: ${state.url}`);
+
+		// Restore the content of our webview.
+		//
+		// Make sure we hold on to the `webviewPanel` passed in here and
+		// also restore any event listeners we need on it.
+		webviewPanel = createWebviewPanel(webviewPanel, this.context, state.url);
 	}
 }
 
-function withHttp(url: string): string {
-	return url.replace(/^(?:(.*:)?\/\/)?(.*)/i, (match, schemma, nonSchemmaUrl) => {
-		return schemma ? match : `http://${nonSchemmaUrl}`
-	});
+/**
+ * Inject event and context to panel
+ * @param panel Panel which is created
+ * @param context Extension context
+ * @param url Url that will be open when start
+ * @returns
+ */
+function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.ExtensionContext, url: string = '') {
+	panel.webview.html = getWebViewContent(panel.webview, context.extensionUri, url);
+	// Handle messages from the webview
+	panel.webview.onDidReceiveMessage(
+		message => {
+			console.log('Received message:', message);
+			switch (message.command) {
+				case 'go-to-preferences':
+					console.log('Click on Go to Preferences button');
+					vscode.commands.executeCommand('workbench.action.openSettings', 'vs-browser');
+					return;
+				case 'open-inspector':
+					console.log('Click on Open Inspector button');
+					vscode.commands.executeCommand('workbench.action.webview.openDeveloperTools');
+					return;
+				case 'show-message-box':
+					let type = message.type;
+					let text = message.text;
+					let detail = message.detail;
+					console.log(message.detail);
+					showMessage(type, text, {
+						detail: detail
+					});
+					return;
+			}
+		},
+		undefined,
+		context.subscriptions
+	);
+	// Handle panel state change event
+	panel.onDidChangeViewState(
+		e => {
+			let panel = e.webviewPanel;
+
+			switch (panel.viewColumn) {
+				case vscode.ViewColumn.One:
+					console.log('ViewColumn.One');
+					// updateWebviewForCat(panel, 'Coding Cat');
+					return;
+
+				case vscode.ViewColumn.Two:
+					console.log('ViewColumn.Two');
+					// updateWebviewForCat(panel, 'Compiling Cat');
+					return;
+
+				case vscode.ViewColumn.Three:
+					console.log('ViewColumn.Three');
+					// updateWebviewForCat(panel, 'Testing Cat');
+					return;
+			}
+		},
+		null,
+		context.subscriptions
+	);
+	// Handle when panel is closed
+	panel.onDidDispose(
+		() => {
+			// When the panel is closed, cancel any future updates to the webview content
+		},
+		null,
+		context.subscriptions
+	);
+	return panel;
 }
 
+/**
+ * Get webview context
+ * @param webview
+ * @param extensionUri
+ * @param url
+ * @returns
+ */
 function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri, url: string = '') {
 	// Get current config
 	const configs = vscode.workspace.getConfiguration("vs-browser");
@@ -140,50 +182,36 @@ function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri, ur
 	return url ? webView(url, proxy, reload, reloadDuration, assets) : emptyWebView();
 }
 
-class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
-	private context: vscode.ExtensionContext;
-
-	constructor(context: vscode.ExtensionContext) {
-		this.context = context;
+/**
+ * Show message box
+ * @param type Type of message
+ * @param message Context of message
+ * @param options https://code.visualstudio.com/api/references/vscode-api#MessageOptions
+ */
+function showMessage(type: string, message: string, options: Object = {}) {
+	const configs = vscode.workspace.getConfiguration("vs-browser");
+	let showMessageDialog = configs.get("showMessageDialog") || false;
+	if (showMessageDialog) {
+		switch (type) {
+			case 'error':
+				vscode.window.showErrorMessage(message, options);
+				break;
+			case 'warning':
+				vscode.window.showWarningMessage(message, options);
+				break;
+			default:
+				vscode.window.showInformationMessage(message, options);
+		}
 	}
-	async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
-		// `state` is the state persisted using `setState` inside the webview
-		console.log(`Got URL state: ${state.url}`);
+}
 
-		// Restore the content of our webview.
-		//
-		// Make sure we hold on to the `webviewPanel` passed in here and
-		// also restore any event listeners we need on it.
-		webviewPanel.webview.html = getWebViewContent(webviewPanel.webview, this.context.extensionUri, state.url);
-		// Handle messages from the webview
-		webviewPanel.webview.onDidReceiveMessage(
-			message => {
-				switch (message.command) {
-					case 'go-to-preferences':
-						vscode.commands.executeCommand('workbench.action.openSettings', 'vs-browser');
-						return;
-					case 'show-message-box':
-						let type = message.type;
-						let text = message.text;
-						let detail = message.detail;
-						outputConsole.appendLine(message.detail);
-						showMessage(type, text, {
-							detail: detail
-						});
-						return;
-				}
-			},
-			undefined,
-			this.context.subscriptions
-		);
-
-		// Display a message box to the user
-		webviewPanel.onDidDispose(
-			() => {
-				// When the panel is closed, cancel any future updates to the webview content
-			},
-			null,
-			this.context.subscriptions
-		);
-	}
+/**
+ * Add http to the URL if it doesn't have it
+ * @param url
+ * @returns
+ */
+function withHttp(url: string): string {
+	return url.replace(/^(?:(.*:)?\/\/)?(.*)/i, (match, schemma, nonSchemmaUrl) => {
+		return schemma ? match : `http://${nonSchemmaUrl}`
+	});
 }

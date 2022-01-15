@@ -30,6 +30,12 @@ This extension contributes the following settings:
 
 ## Release Notes
 
+### [1.0.4] - 2022-01-15
+
+- Enable find in browser
+- Add inspect
+- Refactor source code
+
 ### [1.0.3] - 2022-01-11
 
 - Add instructions

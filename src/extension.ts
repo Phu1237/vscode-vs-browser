@@ -53,7 +53,9 @@ export function activate(context: vscode.ExtensionContext) {
 			{
 				enableScripts: true,
 				// freeze when panel not focused
-				retainContextWhenHidden: true
+				retainContextWhenHidden: true,
+				// enable find widget
+				enableFindWidget: true,
 			});
 
 		// Inject event and context to panel

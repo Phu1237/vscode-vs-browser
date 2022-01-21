@@ -32,7 +32,7 @@ This extension contributes the following settings:
 
 ### [1.0.5] - 2022-01-21
 
-- Fix fix missing the page bottom
+- Fix missing the page bottom
 
 ### [1.0.4] - 2022-01-15
 

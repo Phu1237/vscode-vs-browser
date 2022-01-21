@@ -18,6 +18,12 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 				overflow: hidden;
 			}
 
+			body {
+				display: flex;
+				flex-direction: column;
+				height: 100vh;
+			}
+
 			body.vscode-light {
 				color: black;
 			}
@@ -35,13 +41,6 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 				background-color: #3b3b3b;
 			}
 
-			#navbar {
-				display: flex;
-				padding: 0.25rem 0.5rem;
-				border-bottom: none;
-				z-index: 100;
-			}
-
 			body.vscode-light #navbar #addressbar {
 				background-color: #fff;
 				color: black;
@@ -50,6 +49,14 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 			body.vscode-dark #navbar #addressbar {
 				background-color: #2b2b2b;
 				color: white;
+			}
+
+			#navbar {
+				display: flex;
+				flex: 0 1;
+				padding: 0.25rem 0.5rem;
+				border-bottom: none;
+				z-index: 100;
 			}
 
 			#navbar #addressbar {
@@ -103,19 +110,14 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 
 			.webview-container {
 				box-sizing: border-box;
-				flex: 1;
+				flex: 1 0;
 				padding: 0;
 			}
 
 			.webview-container #webview {
-				display: flex;
 				transition: all 0.25s;
-				display: block;
 				margin: 0;
 				padding: 0;
-				position: absolute;
-				min-width: 100%;
-				min-height: 100%;
 				visibility: visible;
 			}
 

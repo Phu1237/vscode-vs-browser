@@ -30,6 +30,10 @@ This extension contributes the following settings:
 
 ## Release Notes
 
+### [1.0.5] - 2022-01-21
+
+- Fix fix missing the page bottom
+
 ### [1.0.4] - 2022-01-15
 
 - Enable find in browser

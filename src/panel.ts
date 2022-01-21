@@ -54,7 +54,7 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 			#navbar {
 				display: flex;
 				flex: 0 1;
-				padding: 0.25rem 0.5rem;
+				padding: 0.25rem;
 				border-bottom: none;
 				z-index: 100;
 			}
@@ -80,7 +80,11 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 				text-align: center;
 			}
 
-			#navbar button:hover {
+			body.vscode-light #navbar button:hover {
+				background-color: #dcdcdc;
+			}
+
+			body.vscode-dark #navbar button:hover {
 				background-color: #515151;
 			}
 

@@ -30,6 +30,10 @@ This extension contributes the following settings:
 
 ## Release Notes
 
+### [1.0.6] - 2022-01-21
+
+- Improve UX
+
 ### [1.0.5] - 2022-01-21
 
 - Fix missing the page bottom

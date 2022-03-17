@@ -33,8 +33,7 @@
 		"vscode"
 	],
 	"activationEvents": [
-		"onCommand:vs-browser.start",
-		"onWebviewPanel:vs-browser"
+		"onStartupFinished"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

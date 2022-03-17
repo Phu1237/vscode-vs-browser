@@ -34,6 +34,7 @@ This extension contributes the following settings:
 ### [1.1.0] - 2022-03-17
 
 - Add reload on save
+- Add status bar item
 
 ### [1.0.6] - 2022-01-21
 

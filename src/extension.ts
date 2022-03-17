@@ -68,6 +68,9 @@ export function activate(context: vscode.ExtensionContext) {
 	let startStatusBarItem: vscode.StatusBarItem;
 	startStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 	startStatusBarItem.command = 'vs-browser.start';
+	startStatusBarItem.text = '$(globe) VS Browser';
+	startStatusBarItem.tooltip = 'Start VS Browser';
+	startStatusBarItem.show();
 	context.subscriptions.push(startStatusBarItem);
 }
 

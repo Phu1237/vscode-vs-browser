@@ -2,6 +2,8 @@
 
 Built-in browser for Visual Studio Code
 
+![Start extension](https://github.com/Phu1237/vscode-vs-browser/raw/master/images/start-extension.gif)
+
 ## Features
 
 - Browser while using Visual Studio Code
@@ -31,7 +33,7 @@ This extension contributes the following settings:
 
 ## Release Notes
 
-### [1.1.0] - 2022-03-17
+### [1.1.0] - 2022-03-18
 
 - Add reload on save
 - Add status bar item

@@ -64,7 +64,13 @@
 				"vs-browser.columnToShowIn": {
 					"type": "string",
 					"default": "Two",
-					"enum": ["One", "Two", "Three", "Active", "Beside"],
+					"enum": [
+						"One",
+						"Two",
+						"Three",
+						"Active",
+						"Beside"
+					],
 					"enumDescriptions": [
 						"Show in First column",
 						"Show in Second Column",
@@ -73,6 +79,11 @@
 						"Show in Beside column of Active column"
 					],
 					"description": "Default column to show in"
+				},
+				"vs-browser.reload.onSave": {
+					"type": "boolean",
+					"default": false,
+					"description": "Auto reload the browser when file is saved"
 				},
 				"vs-browser.reload.enableAutoReload": {
 					"type": "boolean",

@@ -61,8 +61,14 @@ export function activate(context: vscode.ExtensionContext) {
 		// Inject event and context to panel
 		panel = createWebviewPanel(panel, context);
 	});
-
 	context.subscriptions.push(disposable);
+
+
+	// create a new status bar item that we can now manage
+	let startStatusBarItem: vscode.StatusBarItem;
+	startStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	startStatusBarItem.command = 'vs-browser.start';
+	context.subscriptions.push(startStatusBarItem);
 }
 
 // this method is called when your extension is deactivated
@@ -155,6 +161,12 @@ function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.Extensio
 		null,
 		context.subscriptions
 	);
+
+	// Handle when save file
+	vscode.workspace.onDidSaveTextDocument(() => {
+		panel.webview.postMessage({ command: 'reload' });
+	});
+
 	return panel;
 }
 
@@ -214,6 +226,6 @@ function showMessage(type: string, message: string, options: Object = {}) {
  */
 function withHttp(url: string): string {
 	return url.replace(/^(?:(.*:)?\/\/)?(.*)/i, (match, schemma, nonSchemmaUrl) => {
-		return schemma ? match : `http://${nonSchemmaUrl}`
+		return schemma ? match : `http://${nonSchemmaUrl}`;
 	});
 }

@@ -55,6 +55,11 @@
 					"default": false,
 					"description": "Show message dialog (sometimes the dialog still displays even if nothing goes wrong)"
 				},
+				"vs-browser.showStatusBarItem": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show status bar item"
+				},
 				"vs-browser.url": {
 					"type": "string",
 					"default": "http://localhost",

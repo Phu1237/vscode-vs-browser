@@ -65,13 +65,26 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 	// create a new status bar item that we can now manage
+	const configs = vscode.workspace.getConfiguration("vs-browser");
+	let showStatusBarItem = configs.get<boolean>("showStatusBarItem") || false;
 	let startStatusBarItem: vscode.StatusBarItem;
 	startStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 	startStatusBarItem.command = 'vs-browser.start';
 	startStatusBarItem.text = '$(globe) VS Browser';
 	startStatusBarItem.tooltip = 'Start VS Browser';
-	startStatusBarItem.show();
 	context.subscriptions.push(startStatusBarItem);
+	if (showStatusBarItem) {
+		startStatusBarItem.show();
+	}
+	vscode.workspace.onDidChangeConfiguration(() => {
+		const configs = vscode.workspace.getConfiguration("vs-browser");
+		showStatusBarItem = configs.get<boolean>("showStatusBarItem") || false;
+		if (!showStatusBarItem) {
+			startStatusBarItem.hide();
+		} else {
+			startStatusBarItem.show();
+		}
+	});
 }
 
 // this method is called when your extension is deactivated

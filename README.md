@@ -33,26 +33,30 @@ This extension contributes the following settings:
 
 ## Release Notes
 
-### [1.1.0] - 2022-03-18
+### [1.1.1]
+
+- Add option to disable status bar item
+
+### [1.1.0]
 
 - Add reload on save
 - Add status bar item
 
-### [1.0.6] - 2022-01-21
+### [1.0.6]
 
 - Improve UX
 
-### [1.0.5] - 2022-01-21
+### [1.0.5]
 
 - Fix missing the page bottom
 
-### [1.0.4] - 2022-01-15
+### [1.0.4]
 
 - Enable find in browser
 - Add inspect
 - Refactor source code
 
-### [1.0.3] - 2022-01-11
+### [1.0.3]
 
 - Add instructions
 - Add column settings to show in
@@ -62,7 +66,7 @@ This extension contributes the following settings:
 - Fix button hover color
 - Fix error when URL don't have HTTP or HTTPS
 
-### [1.0.0] - 2022-01-10
+### [1.0.0]
 
 - First release of VS Browser
 

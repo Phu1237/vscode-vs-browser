@@ -41,6 +41,14 @@
 			{
 				"command": "vs-browser.start",
 				"title": "VS Browser: Start Browser"
+			},
+			{
+				"command": "vs-browser.startWithProxy",
+				"title": "VS Browser: Start Browser with Proxy"
+			},
+			{
+				"command": "vs-browser.startWithoutProxy",
+				"title": "VS Browser: Start Browser without Proxy"
 			}
 		],
 		"configuration": {

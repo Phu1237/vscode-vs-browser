@@ -221,7 +221,7 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 			</button>
 		</div>
 		<div class="webview-container">
-			<iframe is="proxy" id="webview" src=${url} frameborder="0"></iframe>
+			<iframe is="using-proxy" id="webview" src=${url} frameborder="0"></iframe>
 		</div>
 		<script>
 			const vscode = acquireVsCodeApi(); // VS Code API
@@ -310,7 +310,10 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 				btn_reload.classList.add('loading');
 				iframe.src = withHttp(src);
 				vscode.setState({
-					url: url
+					url,
+					proxy,
+					reload,
+					reloadDuration
 				});
 			}
 		</script>

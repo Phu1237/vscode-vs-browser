@@ -1,20 +1,21 @@
-customElements.define('proxy', class extends HTMLIFrameElement {
+customElements.define('using-proxy', class extends HTMLIFrameElement {
 	static get observedAttributes() {
-		return ['src']
+		return ['src'];
 	}
 	constructor() {
-		super()
+		super();
 	}
 	attributeChangedCallback() {
-		this.load(this.src)
+		this.load(this.src);
 	}
 	connectedCallback() {
 		this.sandbox = '' + this.sandbox || 'allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-top-navigation-by-user-activation' // all except allow-top-navigation
 	}
 	load(url, options) {
-		if (!url || !url.startsWith('http'))
-			throw new Error(`Proxy src ${url} does not start with http(s)://`)
-		console.log('Proxy loading:', url)
+		if (!url || !url.startsWith('http')) {
+			throw new Error(`Proxy src ${url} does not start with http(s)://`);
+		}
+		console.log('Proxy loading:', url);
 		this.srcdoc = `<html>
 <head>
 	<style>
@@ -75,13 +76,15 @@ customElements.define('proxy', class extends HTMLIFrameElement {
 			'https://api.codetabs.com/v1/proxy/?quest='
 		]
 		return fetch(proxies[i] + url, options).then(res => {
-			if (!res.ok)
+			if (!res.ok) {
 				throw new Error(`${res.status} ${res.statusText}`);
-			return res
+			}
+			return res;
 		}).catch(error => {
-			if (i === proxies.length - 1)
-				throw error
+			if (i === proxies.length - 1) {
+				throw error;
+			}
 			return this.fetchProxy(url, options, i + 1)
-		})
+		});
 	}
-}, { extends: 'iframe' })
+}, { extends: 'iframe' });

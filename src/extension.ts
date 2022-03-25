@@ -14,6 +14,21 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	outputConsole.appendLine('Activated!');
 
+	// Check if the extension is updated
+	let workspaceVersion = context.workspaceState.get<string>('version');
+	let extensionVersion = context.extension.packageJSON.version;
+	if (workspaceVersion !== extensionVersion) {
+		context.workspaceState.update('version', extensionVersion);
+		outputConsole.appendLine('> Extension is updated to ' + extensionVersion);
+		let panel = vscode.window.createWebviewPanel('vs-browser.changes', 'VS Browser - Updated changes', vscode.ViewColumn.Active);
+		panel.webview.html = `<html><body><h1>Changes (version ${extensionVersion})</h1><ul>
+			<li>Fix <b>Proxy</b> not working.</b></li>
+			<li>Add <b>Start with Proxy</b> command.</li>
+			<li>Add <b>Start without Proxy</b> command.</li>
+			<li>Add <b>Updated changes window</b> when extension updated.</li>
+		</ul></body></html>`;
+	}
+
 	// Track currently webview panel
 	// let currentPanel: vscode.WebviewPanel | undefined = undefined;
 
@@ -22,7 +37,9 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('vs-browser.start', () => {
+
+	// vs-browser.start
+	let start = vscode.commands.registerCommand('vs-browser.start', () => {
 		// Ccreate new column
 		const configs = vscode.workspace.getConfiguration("vs-browser");
 		const column = configs.get<string>("columnToShowIn") || 'Two';
@@ -61,8 +78,93 @@ export function activate(context: vscode.ExtensionContext) {
 		// Inject event and context to panel
 		panel = createWebviewPanel(panel, context);
 	});
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(start);
+	// vs-browser.startWithProxy
+	let startWithProxy = vscode.commands.registerCommand('vs-browser.startWithProxy', () => {
+		// Ccreate new column
+		const configs = vscode.workspace.getConfiguration("vs-browser");
+		const column = configs.get<string>("columnToShowIn") || 'Two';
+		let columnToShowIn = vscode.ViewColumn.Two;
+		switch (column) {
+			case 'One':
+				columnToShowIn = vscode.ViewColumn.One;
+				break;
+			case 'Two':
+				columnToShowIn = vscode.ViewColumn.Two;
+				break;
+			case 'Three':
+				columnToShowIn = vscode.ViewColumn.Three;
+				break;
+			case 'Active':
+				columnToShowIn = vscode.ViewColumn.Active;
+				break;
+			case 'Beside':
+				columnToShowIn = vscode.ViewColumn.Beside;
+				break;
+			default:
+		}
+		// Create and show a new webview
+		let panel = vscode.window.createWebviewPanel(
+			'vs-browser.proxy', // Identifies the type of the webview. Used internally
+			'VS Browser - Proxy', // Title of the panel displayed to the user
+			columnToShowIn, // Editor column to show the new webview panel in.
+			{
+				enableScripts: true,
+				// freeze when panel not focused
+				retainContextWhenHidden: true,
+				// enable find widget
+				enableFindWidget: true,
+			});
 
+		// Inject event and context to panel
+		panel = createWebviewPanel(panel, context, {
+			proxy: true
+		});
+	});
+	context.subscriptions.push(startWithProxy);
+	// vs-browser.startWithoutProxy
+	let startWithoutProxy = vscode.commands.registerCommand('vs-browser.startWithoutProxy', () => {
+		// Ccreate new column
+		const configs = vscode.workspace.getConfiguration("vs-browser");
+		const column = configs.get<string>("columnToShowIn") || 'Two';
+		let columnToShowIn = vscode.ViewColumn.Two;
+		switch (column) {
+			case 'One':
+				columnToShowIn = vscode.ViewColumn.One;
+				break;
+			case 'Two':
+				columnToShowIn = vscode.ViewColumn.Two;
+				break;
+			case 'Three':
+				columnToShowIn = vscode.ViewColumn.Three;
+				break;
+			case 'Active':
+				columnToShowIn = vscode.ViewColumn.Active;
+				break;
+			case 'Beside':
+				columnToShowIn = vscode.ViewColumn.Beside;
+				break;
+			default:
+		}
+		// Create and show a new webview
+		let panel = vscode.window.createWebviewPanel(
+			'vs-browser.noproxy', // Identifies the type of the webview. Used internally
+			'VS Browser - No Proxy', // Title of the panel displayed to the user
+			columnToShowIn, // Editor column to show the new webview panel in.
+			{
+				enableScripts: true,
+				// freeze when panel not focused
+				retainContextWhenHidden: true,
+				// enable find widget
+				enableFindWidget: true,
+			});
+
+		// Inject event and context to panel
+		panel = createWebviewPanel(panel, context, {
+			proxy: false
+		});
+	});
+	context.subscriptions.push(startWithoutProxy);
 
 	// create a new status bar item that we can now manage
 	const configs = vscode.workspace.getConfiguration("vs-browser");
@@ -76,6 +178,7 @@ export function activate(context: vscode.ExtensionContext) {
 	if (showStatusBarItem) {
 		startStatusBarItem.show();
 	}
+	// show/hide status bar item when config changed
 	vscode.workspace.onDidChangeConfiguration(() => {
 		const configs = vscode.workspace.getConfiguration("vs-browser");
 		showStatusBarItem = configs.get<boolean>("showStatusBarItem") || false;
@@ -98,13 +201,13 @@ class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
 	}
 	async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
 		// `state` is the state persisted using `setState` inside the webview
-		console.log(`Got URL state: ${state.url}`);
+		console.log('Got URL state: ' + JSON.stringify(state));
 
 		// Restore the content of our webview.
 		//
 		// Make sure we hold on to the `webviewPanel` passed in here and
 		// also restore any event listeners we need on it.
-		webviewPanel = createWebviewPanel(webviewPanel, this.context, state.url);
+		webviewPanel = createWebviewPanel(webviewPanel, this.context, state);
 	}
 }
 
@@ -115,8 +218,8 @@ class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
  * @param url Url that will be open when start
  * @returns
  */
-function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.ExtensionContext, url: string = '') {
-	panel.webview.html = getWebViewContent(panel.webview, context.extensionUri, url);
+function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.ExtensionContext, data: Config = {}) {
+	panel.webview.html = getWebViewContent(panel.webview, context.extensionUri, data);
 	// Handle messages from the webview
 	panel.webview.onDidReceiveMessage(
 		message => {
@@ -193,13 +296,19 @@ function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.Extensio
  * @param url
  * @returns
  */
-function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri, url: string = '') {
+type Config = {
+	url?: string;
+	proxy?: boolean;
+	reload?: boolean;
+	reloadDuration?: number;
+};
+function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri, data: Config) {
 	// Get current config
 	const configs = vscode.workspace.getConfiguration("vs-browser");
-	url = url !== '' ? withHttp(url) : withHttp(configs.get<string>("url") || '');
-	const proxy = configs.get<boolean>("proxy") || false;
-	const reload = configs.get<boolean>("reload.enableAutoReload") || false;
-	const reloadDuration = configs.get<number>("reload.time") || 10000;
+	const url: string = withHttp(data['url'] || configs.get<string>("url") || '');
+	const proxy = (data['proxy'] || configs.get<boolean>("proxy") || false);
+	const reload = data['reload'] || configs.get<boolean>("reload.enableAutoReload") || false;
+	const reloadDuration = data['reloadDuration'] || configs.get<number>("reload.time") || 10000;
 	// Add http to url if url don't include it
 	// And get the special URI to use with the webview
 	const assets: Object = {
@@ -207,7 +316,8 @@ function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri, ur
 		'image': webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, '/src/assets', 'img.jpg'))
 	};
 	console.log(assets);
-	outputConsole.appendLine('Go to ' + url);
+	outputConsole.appendLine('> Go to ' + url);
+	outputConsole.appendLine('Configs:' + JSON.stringify(data) + ' - ' + proxy);
 
 	return url ? webView(url, proxy, reload, reloadDuration, assets) : emptyWebView();
 }
@@ -229,7 +339,7 @@ function showMessage(type: string, message: string, options: Object = {}) {
 			case 'warning':
 				vscode.window.showWarningMessage(message, options);
 				break;
-			default:
+			case 'info':
 				vscode.window.showInformationMessage(message, options);
 		}
 	}

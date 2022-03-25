@@ -33,13 +33,20 @@ This extension contributes the following settings:
 
 ## Release Notes
 
+### [1.2.0]
+
+- Fix `proxy` not working
+- Add `Start with Proxy` command
+- Add `Start without Proxy` command
+- Add `Updated changes window` when extension updated
+
 ### [1.1.1]
 
 - Add option to disable status bar item
 
 ### [1.1.0]
 
-- Add reload on save
+- Add `reload on save` config
 - Add status bar item
 
 ### [1.0.6]
@@ -52,8 +59,8 @@ This extension contributes the following settings:
 
 ### [1.0.4]
 
-- Enable find in browser
-- Add inspect
+- Enable `find` in browser
+- Add `inspect`
 - Refactor source code
 
 ### [1.0.3]

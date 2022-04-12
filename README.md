@@ -33,6 +33,10 @@ This extension contributes the following settings:
 
 ## Release Notes
 
+### [1.2.1]
+
+- Fix `Updated changes window` always show after change workspace
+
 ### [1.2.0]
 
 - Fix `proxy` not working

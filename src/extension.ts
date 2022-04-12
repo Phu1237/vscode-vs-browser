@@ -15,17 +15,14 @@ export function activate(context: vscode.ExtensionContext) {
 	outputConsole.appendLine('Activated!');
 
 	// Check if the extension is updated
-	let workspaceVersion = context.workspaceState.get<string>('version');
+	let oldVersion = context.globalState.get<string>('version');
 	let extensionVersion = context.extension.packageJSON.version;
-	if (workspaceVersion !== extensionVersion) {
-		context.workspaceState.update('version', extensionVersion);
+	if (oldVersion !== extensionVersion) {
+		context.globalState.update('version', extensionVersion);
 		outputConsole.appendLine('> Extension is updated to ' + extensionVersion);
 		let panel = vscode.window.createWebviewPanel('vs-browser.changes', 'VS Browser - Updated changes', vscode.ViewColumn.Active);
 		panel.webview.html = `<html><body><h1>Changes (version ${extensionVersion})</h1><ul>
-			<li>Fix <b>Proxy</b> not working.</b></li>
-			<li>Add <b>Start with Proxy</b> command.</li>
-			<li>Add <b>Start without Proxy</b> command.</li>
-			<li>Add <b>Updated changes window</b> when extension updated.</li>
+			<li>Fix <b>Updated changes window</b> always show after change workspace.</li>
 		</ul></body></html>`;
 	}
 

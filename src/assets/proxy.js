@@ -9,7 +9,7 @@ customElements.define('using-proxy', class extends HTMLIFrameElement {
 		this.load(this.src);
 	}
 	connectedCallback() {
-		this.sandbox = '' + this.sandbox || 'allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-top-navigation-by-user-activation' // all except allow-top-navigation
+		this.sandbox = '' + this.sandbox || 'allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-top-navigation-by-user-activation'; // all except allow-top-navigation
 	}
 	load(url, options) {
 		if (!url || !url.startsWith('http')) {
@@ -43,7 +43,7 @@ customElements.define('using-proxy', class extends HTMLIFrameElement {
 <body>
 	<div class="loader"></div>
 </body>
-</html>`
+</html>`;
 		this.fetchProxy(url, options, 0).then(res => res.text()).then(data => {
 			if (data) {
 				this.srcdoc = data.replace(/<head([^>]*)>/i, `<head$1>
@@ -65,16 +65,17 @@ customElements.define('using-proxy', class extends HTMLIFrameElement {
 				frameElement.load(document.activeElement.form.action + '?' + new URLSearchParams(new FormData(document.activeElement.form)))
 		}
 	})
-	</script>`)
+	</script>`);
 			}
-		}).catch(e => console.error('Cannot load Proxy:', e))
+		}).catch(e => console.error('Cannot load Proxy:', e));
 	}
 	fetchProxy(url, options, i) {
 		const proxies = (options || {}).proxies || [
 			// 'https://morning-sea-28950.herokuapp.com/',
 			// 'https://yacdn.org/proxy/',
-			'https://api.codetabs.com/v1/proxy/?quest='
-		]
+			'http://localhost:3000/',
+			// 'https://api.codetabs.com/v1/proxy/?quest='
+		];
 		return fetch(proxies[i] + url, options).then(res => {
 			if (!res.ok) {
 				throw new Error(`${res.status} ${res.statusText}`);
@@ -84,7 +85,7 @@ customElements.define('using-proxy', class extends HTMLIFrameElement {
 			if (i === proxies.length - 1) {
 				throw error;
 			}
-			return this.fetchProxy(url, options, i + 1)
+			return this.fetchProxy(url, options, i + 1);
 		});
 	}
 }, { extends: 'iframe' });

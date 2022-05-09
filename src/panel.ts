@@ -309,12 +309,7 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
 				let url = withHttp(src);
 				btn_reload.classList.add('loading');
 				iframe.src = withHttp(src);
-				vscode.setState({
-					url,
-					proxy,
-					reload,
-					reloadDuration
-				});
+				console.log('reloadIframe: ' + url);
 			}
 		</script>
 	</body>

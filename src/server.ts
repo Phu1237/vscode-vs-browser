@@ -3,7 +3,6 @@ const connect = require('connect');
 const fs = require('fs');
 const path = require('path');
 const morgan = require("morgan");
-var modifyResponse = require('http-proxy-response-rewrite');
 
 let app = connect();
 var httpProxy = require('http-proxy');
@@ -16,7 +15,6 @@ var proxy = httpProxy.createProxyServer();
 
 proxy.on('proxyRes', function (proxyRes, req, res) {
 	if (proxyRes.statusCode === 301 || proxyRes.statusCode === 302) {
-		console.log(proxyRes.headers.location);
 		res.writeHead(301, {
 			'Location': 'http://'+HOST+':'+PORT+'/'+proxyRes.headers.location
 		});

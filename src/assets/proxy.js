@@ -1,22 +1,22 @@
 customElements.define('using-proxy', class extends HTMLIFrameElement {
-	static get observedAttributes() {
-		return ['src'];
-	}
-	constructor() {
-		super();
-	}
-	attributeChangedCallback() {
-		this.load(this.src);
-	}
-	connectedCallback() {
-		this.sandbox = '' + this.sandbox || 'allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-top-navigation-by-user-activation'; // all except allow-top-navigation
-	}
-	load(url, options) {
-		if (!url || !url.startsWith('http')) {
-			throw new Error(`Proxy src ${url} does not start with http(s)://`);
-		}
-		console.log('Proxy loading:', url);
-		this.srcdoc = `<html>
+  static get observedAttributes() {
+    return ['src'];
+  }
+  constructor() {
+    super();
+  }
+  attributeChangedCallback() {
+    this.load(this.src);
+  }
+  connectedCallback() {
+    this.sandbox = '' + this.sandbox || 'allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-top-navigation-by-user-activation'; // all except allow-top-navigation
+  }
+  load(url, options) {
+    if (!url || !url.startsWith('http')) {
+      throw new Error(`Proxy src ${url} does not start with http(s)://`);
+    }
+    console.log('Proxy loading:', url);
+    this.srcdoc = `<html>
 <head>
 	<style>
 	.loader {
@@ -44,9 +44,9 @@ customElements.define('using-proxy', class extends HTMLIFrameElement {
 	<div class="loader"></div>
 </body>
 </html>`;
-		this.fetchProxy(url, options, 0).then(res => res.text()).then(data => {
-			if (data) {
-				this.srcdoc = data.replace(/<head([^>]*)>/i, `<head$1>
+    this.fetchProxy(url, options, 0).then(res => res.text()).then(data => {
+      if (data) {
+        this.srcdoc = data.replace(/<head([^>]*)>/i, `<head$1>
 	<base href="${url}">
 	<script>
 	// Proxy navigation event handlers
@@ -66,26 +66,26 @@ customElements.define('using-proxy', class extends HTMLIFrameElement {
 		}
 	})
 	</script>`);
-			}
-		}).catch(e => console.error('Cannot load Proxy:', e));
-	}
-	fetchProxy(url, options, i) {
-		const proxies = (options || {}).proxies || [
-			// 'https://morning-sea-28950.herokuapp.com/',
-			// 'https://yacdn.org/proxy/',
-			'http://localhost:3000/',
-			// 'https://api.codetabs.com/v1/proxy/?quest='
-		];
-		return fetch(proxies[i] + url, options).then(res => {
-			if (!res.ok) {
-				throw new Error(`${res.status} ${res.statusText}`);
-			}
-			return res;
-		}).catch(error => {
-			if (i === proxies.length - 1) {
-				throw error;
-			}
-			return this.fetchProxy(url, options, i + 1);
-		});
-	}
+      }
+    }).catch(e => console.error('Cannot load Proxy:', e));
+  }
+  fetchProxy(url, options, i) {
+    const proxies = (options || {}).proxies || [
+      // 'https://morning-sea-28950.herokuapp.com/',
+      // 'https://yacdn.org/proxy/',
+      'http://localhost:3000/',
+      // 'https://api.codetabs.com/v1/proxy/?quest='
+    ];
+    return fetch(proxies[i] + url, options).then(res => {
+      if (!res.ok) {
+        throw new Error(`${res.status} ${res.statusText}`);
+      }
+      return res;
+    }).catch(error => {
+      if (i === proxies.length - 1) {
+        throw error;
+      }
+      return this.fetchProxy(url, options, i + 1);
+    });
+  }
 }, { extends: 'iframe' });

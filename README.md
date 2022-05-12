@@ -1,4 +1,4 @@
-# VS Browser README
+# VS Browser
 
 Built-in browser for Visual Studio Code
 
@@ -17,19 +17,17 @@ Built-in browser for Visual Studio Code
 
 ## Extension Settings
 
-This extension contributes the following settings:
+See the [Features Contributions] tab or in `Settings > Extensions > VS Browser` for more information
 
-- `vs-browser.proxy`: Use proxy to prevent some errors (Longer loading time and can not use with localhost)
-- `vs-browser.showMessageDialog`: Show message dialog
-- `vs-browser.url`: Default URL open when start the browser
-- `vs-browser.reload.onSave`: Auto reload the browser when file is saved
-- `vs-browser.reload.enableAutoReload`: Auto reload the browser after a limited time
-- `vs-browser.reload.time`: The limited time in milliseconds
+## Donation
 
-## Known Issues
+Thank you for using my product 🎉
 
-- Sometimes, the dialog still displays even if nothing goes wrong
-- Auto reload not reload to the current page (reload to the URL on URL input now)
+This product is free but if you like my work and you want to support me, buy me a coffee ☕
+
+- [Paypal](https://www.paypal.me/Phu1237)
+- [Buymeacoffee](https://www.buymeacoffee.com/Phu1237)
+- [Momo](https://me.momo.vn/Phu1237)
 
 ## Release Notes
 
@@ -81,14 +79,9 @@ This extension contributes the following settings:
 
 - First release of VS Browser
 
-## Donation
+## Known Issues
 
-Thank you for using my product 🎉
-
-This product is totally free but if you like my works and you want to support me, buy me a coffee ☕
-
-- [Paypal](https://www.paypal.me/Phu1237)
-- [Buymeacoffee](https://www.buymeacoffee.com/Phu1237)
-- [Momo](https://me.momo.vn/Phu1237)
+- Sometimes, the dialog still displays even if nothing goes wrong
+- Auto reload not reload to the current page (reload to the URL on URL input now)
 
 **Enjoy!**

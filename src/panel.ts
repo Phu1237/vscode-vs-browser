@@ -261,6 +261,15 @@ export const webView = (data: Config, assets: any) => {
           script.type = 'module';
           script.src = '${assets['proxy']}';
           document.querySelector('body').appendChild(script);
+
+          // Watch to update addressbar
+          const observer = new MutationObserver(function () {
+            addressbar.value = iframe.getAttribute('srcurl');
+          });
+          observer.observe(iframe, {
+            attributes: true,
+            attributeFilter: ['srcurl']
+          });
         }
       }
 

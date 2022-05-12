@@ -66,6 +66,7 @@ customElements.define('using-proxy', class extends HTMLIFrameElement {
 		}
 	})
 	</script>`);
+        this.setAttribute('srcurl', url);
       }
     }).catch(e => console.error('Cannot load Proxy:', e));
   }

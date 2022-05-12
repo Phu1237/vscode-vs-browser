@@ -17,18 +17,16 @@ const PORT = configs.get<string>("localProxyServer.port") || 9999;
 
 var proxy = httpProxy.createProxyServer();
 
-// proxy.on('proxyReq', (proxyReq, req) => {
-// 	if (req.body) {
-// 		const bodyData = JSON.stringify(req.body);
-// 		// incase if content-type is application/x-www-form-urlencoded -> we need to change to application/json
-// 		proxyReq.setHeader('Content-Type', 'application/json');
-// 		proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-// 		// stream the content
-// 		proxyReq.write(bodyData);
-// 		console.log('Has body', bodyData);
-// 	}
-// 	console.log('ProxyReq', req.method);
-// });
+proxy.on('proxyReq', (proxyReq: any, req: any) => {
+  if (req.body) {
+    const bodyData = JSON.stringify(req.body);
+    // incase if content-type is application/x-www-form-urlencoded -> we need to change to application/json
+    proxyReq.setHeader('Content-Type', 'application/json');
+    proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+    // stream the content
+    proxyReq.write(bodyData);
+  }
+});
 
 proxy.on('proxyRes', function (proxyRes: any, req: any, res: any) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -52,8 +50,16 @@ proxy.on('proxyRes', function (proxyRes: any, req: any, res: any) {
 
       // Capture html tag not a|img and add the rest of the string of the tag after src|href="(capture)> to the new string
       body = body.replaceAll(/<((?!a|img).*)(.*?) (src|href)=('|"|)((http(s|)).*?)>/g, '<$1$2 $3=$4http://' + HOST + ':' + PORT + '/$5>');
+      // a|img tag will be same as before for proxy work and image get directly
       body = body.replaceAll(/<(a|img) (.*?)(src|href)=('|"|)\/(.*?)>/g, '<$1 $2$3=$4' + url + '/$5>');
+      // Replace tag with src|href with relative path
       body = body.replaceAll(/<((?!a|img).*) (.*?)(src|href)=('|"|)\/(.*?)>/g, '<$1 $2$3=$4http://' + HOST + ':' + PORT + '/' + url + '/$5>');
+    } else if (res.hasHeader('Content-Type') && (res.getHeader('Content-Type').match(/([^;]+)*/g)[0] === 'text/css' || res.getHeader('Content-Type').match(/([^;]+)*/g)[0] === 'text/javascript')) {
+      let url = req.originalUrl;
+      let regex = /(http(|s))\:\/\/([^\/]+)*/g;
+      url = url.match(regex)[0];
+
+      body = body.replaceAll(/(http(s|):\/\/(?!'|"))/g, 'http://' + HOST + ':' + PORT + '/$1');
     }
     body = Buffer.from(body, 'utf8');
     res.write(body);
@@ -88,7 +94,8 @@ export function start() {
       hostRewrite: true,
       autoRewrite: true,
       toProxy: true,
-      selfHandleResponse: true
+      cookieDomainRewrite: '',
+      selfHandleResponse: true,
     };
     // Set the default response headers
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -99,6 +106,7 @@ export function start() {
     if (regex.test(url)) {
       url = url.match(regex)[0];
       options.target = url;
+      options.cookieDomainRewrite = url;
       req.url = req.url.split('/').splice(4).join('/');
 
       proxy.web(req, res, options);

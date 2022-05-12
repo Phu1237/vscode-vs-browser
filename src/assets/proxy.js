@@ -57,25 +57,33 @@ customElements.define('using-proxy', class extends HTMLIFrameElement {
 		}
 	})
 	document.addEventListener('submit', e => {
+    console.log('submit', e.target);
 		if (frameElement && document.activeElement && document.activeElement.form && document.activeElement.form.action) {
 			e.preventDefault()
-			if (document.activeElement.form.method === 'post')
+			if (document.activeElement.form.method === 'post') {
+        console.log('post');
 				frameElement.load(document.activeElement.form.action, {method: 'post', body: new FormData(document.activeElement.form)})
-			else
+      } else {
+        console.log('get');
 				frameElement.load(document.activeElement.form.action + '?' + new URLSearchParams(new FormData(document.activeElement.form)))
+      }
 		}
 	})
-	</script>`);
+	</script>
+  `);
         this.setAttribute('srcurl', url);
       }
     }).catch(e => console.error('Cannot load Proxy:', e));
   }
   fetchProxy(url, options, i) {
-    const proxies = (options || {}).proxies || [window.localProxy] || [
+    let proxies = (options || {}).proxies || [
       // 'https://morning-sea-28950.herokuapp.com/',
       // 'https://yacdn.org/proxy/',
+      window.localProxy,
       'https://api.codetabs.com/v1/proxy/?quest='
     ];
+    // clean up the array with undefined values
+    proxies = proxies.filter(p => !!p);
     return fetch(proxies[i] + url, options).then(res => {
       if (!res.ok) {
         throw new Error(`${res.status} ${res.statusText}`);

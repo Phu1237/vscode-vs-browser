@@ -1,4 +1,18 @@
-export const webView = (url: string, proxy: boolean, reload: boolean, reloadDuration: number, assets: any) => {
+import Config from "./types/Config";
+import * as vscode from 'vscode';
+
+export const webView = (data: Config, assets: any) => {
+  // Get current config
+  const configs = vscode.workspace.getConfiguration("vs-browser");
+  const proxy = data['proxy'] || configs.get<boolean>("proxy") || false;
+  const url: string = data['url'] || configs.get<string>("url") || '';
+  const autoCompleteUrl = data['autoCompleteUrl'] || configs.get<boolean>("autoCompleteUrl") || false;
+  const localProxyServerEnable = data['localProxyServerEnable'] || configs.get<boolean>("localProxyServer.enable") || false;
+  console.log(localProxyServerEnable);
+  const localProxyServerPort = data['localProxyServerPort'] || configs.get<number>("localProxyServer.port") || 9999;
+  const reloadEnableAutoReload = data['reloadEnableAutoReload'] || configs.get<boolean>("reload.enableAutoReload") || false;
+  const reloadTime = data['reloadTime'] || configs.get<number>("reload.time") || 10000;
+
   return `
   <!DOCTYPE html>
   <html>
@@ -190,8 +204,10 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
         }
       }
     </style>
+    `
+    + (localProxyServerEnable === true ? `<script>window.localProxy = 'http://localhost:${localProxyServerPort}/'</script>` : '') +
+    `
   </head>
-
   <body>
     <div id="navbar">
       <button id="btn-reload" onclick="reloadIframe()" title="Reload">
@@ -201,7 +217,7 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
         </svg>
       </button>
       <!-- addressbar -->
-      <input type="text" id="addressbar" placeholder="Url" value=${url} />
+      <input type="text" id="addressbar" placeholder="Url" />
       <!-- go to url -->
       <button id="btn-go" title="Go to URL">
         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
@@ -221,7 +237,7 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
       </button>
     </div>
     <div class="webview-container">
-      <iframe is="using-proxy" id="webview" src=${url} frameborder="0"></iframe>
+      <iframe is="using-proxy" id="webview" frameborder="0"></iframe>
     </div>
     <script>
       const vscode = acquireVsCodeApi(); // VS Code API
@@ -233,8 +249,11 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
       let btn_preferences = document.getElementById('btn-preferences');
       let addressbar = document.getElementById('addressbar');
 
+      addressbar.value = autoCompleteUrl('${url}');
+      iframe.src = autoCompleteUrl('${url}');
+
       window.onload = function () {
-        if (${reload}) {
+        if (${reloadEnableAutoReload}) {
           btn_reload.classList.add('active');
         }
         if (${proxy}) {
@@ -294,30 +313,25 @@ export const webView = (url: string, proxy: boolean, reload: boolean, reloadDura
               detail: err.message
             })
         }
-        if (${reload}) {
-          setTimeout(reloadIframe, ${reloadDuration});
+        if (${reloadEnableAutoReload}) {
+          setTimeout(reloadIframe, ${reloadTime});
         }
       }
 
-      function withHttp(url) {
+      function autoCompleteUrl(url) {
         return url.replace(/^(?:(.*:)?\\\/\\/)?(.*)/i, (match, schemma, nonSchemmaUrl) => {
-          return schemma ? match : 'http://'+nonSchemmaUrl;
+          return schemma ? match : '${autoCompleteUrl}'+nonSchemmaUrl;
         });
       }
 
       function reloadIframe(src = iframe.src) {
-        let url = withHttp(src);
         btn_reload.classList.add('loading');
-        iframe.src = withHttp(src);
-        console.log('reloadIframe: ' + url);
+        iframe.src = autoCompleteUrl(src);
+        console.log('reloadIframe: ' + autoCompleteUrl(src));
       }
     </script>
   </body>
 
   </html>
   `;
-};
-
-export const emptyWebView = () => {
-  return ``;
 };

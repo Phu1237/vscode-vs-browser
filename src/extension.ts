@@ -2,7 +2,9 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as server from './server';
-import { webView, emptyWebView } from './panel';
+import { webView } from './panel';
+
+import Config from './types/Config';
 
 // Create output channel
 const outputConsole = vscode.window.createOutputChannel('VS Browser');
@@ -10,8 +12,6 @@ const outputConsole = vscode.window.createOutputChannel('VS Browser');
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  server.start();
-
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   outputConsole.appendLine('Activated!');
@@ -26,6 +26,11 @@ export function activate(context: vscode.ExtensionContext) {
     panel.webview.html = `<html><body><h1>Changes (version ${extensionVersion})</h1><ul>
 			<li>Fix <b>Updated changes window</b> always show after change workspace.</li>
 		</ul></body></html>`;
+  }
+
+  // Start proxy server
+  if (vscode.workspace.getConfiguration("vs-browser.localProxyServer.enable")) {
+    server.start();
   }
 
   // Track currently webview panel
@@ -78,6 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
     panel = createWebviewPanel(panel, context);
   });
   context.subscriptions.push(start);
+
   // vs-browser.startWithProxy
   let startWithProxy = vscode.commands.registerCommand('vs-browser.startWithProxy', () => {
     // Ccreate new column
@@ -121,6 +127,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
   });
   context.subscriptions.push(startWithProxy);
+
   // vs-browser.startWithoutProxy
   let startWithoutProxy = vscode.commands.registerCommand('vs-browser.startWithoutProxy', () => {
     // Ccreate new column
@@ -295,30 +302,15 @@ function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.Extensio
  * @param url
  * @returns
  */
-type Config = {
-  url?: string;
-  proxy?: boolean;
-  reload?: boolean;
-  reloadDuration?: number;
-};
 function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri, data: Config) {
-  // Get current config
-  const configs = vscode.workspace.getConfiguration("vs-browser");
-  const url: string = withHttp(data['url'] || configs.get<string>("url") || '');
-  const proxy = (data['proxy'] || configs.get<boolean>("proxy") || false);
-  const reload = data['reload'] || configs.get<boolean>("reload.enableAutoReload") || false;
-  const reloadDuration = data['reloadDuration'] || configs.get<number>("reload.time") || 10000;
-  // Add http to url if url don't include it
   // And get the special URI to use with the webview
   const assets: Object = {
     'proxy': webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, '/src/assets', 'proxy.js')),
     'image': webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, '/src/assets', 'img.jpg'))
   };
-  console.log(assets);
-  outputConsole.appendLine('> Go to ' + url);
-  outputConsole.appendLine('Configs:' + JSON.stringify(data) + ' - ' + proxy);
+  outputConsole.appendLine('Configs:' + JSON.stringify(data));
 
-  return url ? webView(url, proxy, reload, reloadDuration, assets) : emptyWebView();
+  return webView(data, assets);
 }
 
 /**
@@ -329,7 +321,7 @@ function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri, da
  */
 function showMessage(type: string, message: string, options: Object = {}) {
   const configs = vscode.workspace.getConfiguration("vs-browser");
-  let showMessageDialog = configs.get("showMessageDialog") || false;
+  let showMessageDialog = configs.get<boolean>("showMessageDialog") || false;
   if (showMessageDialog) {
     switch (type) {
       case 'error':
@@ -342,15 +334,4 @@ function showMessage(type: string, message: string, options: Object = {}) {
         vscode.window.showInformationMessage(message, options);
     }
   }
-}
-
-/**
- * Add http to the URL if it doesn't have it
- * @param url
- * @returns
- */
-function withHttp(url: string): string {
-  return url.replace(/^(?:(.*:)?\/\/)?(.*)/i, (match, schemma, nonSchemmaUrl) => {
-    return schemma ? match : `http://${nonSchemmaUrl}`;
-  });
 }

@@ -70,11 +70,10 @@ customElements.define('using-proxy', class extends HTMLIFrameElement {
     }).catch(e => console.error('Cannot load Proxy:', e));
   }
   fetchProxy(url, options, i) {
-    const proxies = (options || {}).proxies || [
+    const proxies = (options || {}).proxies || [window.localProxy] || [
       // 'https://morning-sea-28950.herokuapp.com/',
       // 'https://yacdn.org/proxy/',
-      'http://localhost:3000/',
-      // 'https://api.codetabs.com/v1/proxy/?quest='
+      'https://api.codetabs.com/v1/proxy/?quest='
     ];
     return fetch(proxies[i] + url, options).then(res => {
       if (!res.ok) {

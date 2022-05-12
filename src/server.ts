@@ -1,3 +1,5 @@
+import * as vscode from 'vscode';
+
 const http = require('http');
 const connect = require('connect');
 const fs = require('fs');
@@ -9,8 +11,9 @@ let app = connect();
 var httpProxy = require('http-proxy');
 
 // Configuration
-const PORT = 3000;
+const configs = vscode.workspace.getConfiguration("vs-browser");
 const HOST = "localhost";
+const PORT = configs.get<string>("localProxyServer.port") || 9999;
 
 var proxy = httpProxy.createProxyServer();
 
@@ -27,7 +30,7 @@ var proxy = httpProxy.createProxyServer();
 // 	console.log('ProxyReq', req.method);
 // });
 
-proxy.on('proxyRes', function (proxyRes, req, res) {
+proxy.on('proxyRes', function (proxyRes: any, req: any, res: any) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('X-Frame-Options', false);
   if (proxyRes.headers['content-type']) {
@@ -65,16 +68,18 @@ proxy.on('proxyRes', function (proxyRes, req, res) {
 });
 
 export function start() {
+  console.log('Local proxy server started on port ' + PORT);
+
   // Create the express app
   app.use(morgan('dev'));
 
-  app.use(function (req, res) {
+  app.use(function (req: any, res: any) {
     let options = {
       target: null,
       ssl: {
-        key: fs.readFile(path.resolve(__dirname, "ssl/key.pem"), function read(err, data) {
+        key: fs.readFile(path.resolve(__dirname, "ssl/key.pem"), function read(err: any, data: any) {
         }),
-        cert: fs.readFile(path.resolve(__dirname, "ssl/cert.pem"), function read(err, data) {
+        cert: fs.readFile(path.resolve(__dirname, "ssl/cert.pem"), function read(err: any, data: any) {
         })
       },
       xfwd: true,

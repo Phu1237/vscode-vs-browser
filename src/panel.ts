@@ -4,14 +4,13 @@ import * as vscode from 'vscode';
 export const webView = (data: Config, assets: any) => {
   // Get current config
   const configs = vscode.workspace.getConfiguration("vs-browser");
-  const proxy = data['proxy'] || configs.get<boolean>("proxy") || false;
-  const url: string = data['url'] || configs.get<string>("url") || '';
-  const autoCompleteUrl = data['autoCompleteUrl'] || configs.get<boolean>("autoCompleteUrl") || false;
-  const localProxyServerEnable = data['localProxyServerEnable'] || configs.get<boolean>("localProxyServer.enable") || false;
-  console.log(localProxyServerEnable);
-  const localProxyServerPort = data['localProxyServerPort'] || configs.get<number>("localProxyServer.port") || 9999;
-  const reloadEnableAutoReload = data['reloadEnableAutoReload'] || configs.get<boolean>("reload.enableAutoReload") || false;
-  const reloadTime = data['reloadTime'] || configs.get<number>("reload.time") || 10000;
+  const proxy: boolean = data['proxy'] !== undefined ? data['proxy'] : configs.get<boolean>("proxy") || false;
+  const url: string = data['url'] !== undefined ? data['url'] : configs.get<string>("url") || '';
+  const autoCompleteUrl: string = data['autoCompleteUrl'] !== undefined ? data['autoCompleteUrl'] : configs.get<string>("autoCompleteUrl") || 'http://';
+  const localProxyServerEnable: boolean = data['localProxyServerEnable'] !== undefined ? data['localProxyServerEnable'] : configs.get<boolean>("localProxyServer.enable") || false;
+  const localProxyServerPort: number = data['localProxyServerPort'] !== undefined ? data['localProxyServerPort'] : configs.get<number>("localProxyServer.port") || 9999;
+  const reloadEnableAutoReload: boolean = data['reloadEnableAutoReload'] !== undefined ? data['reloadEnableAutoReload'] : configs.get<boolean>("reload.enableAutoReload") || false;
+  const reloadTime: number = data['reloadTime'] !== undefined ? data['reloadTime'] : configs.get<number>("reload.time") || 10000;
 
   return `
   <!DOCTYPE html>

@@ -3,6 +3,7 @@ const connect = require('connect');
 const fs = require('fs');
 const path = require('path');
 const morgan = require("morgan");
+const zlib = require('zlib');
 
 let app = connect();
 var httpProxy = require('http-proxy');
@@ -33,21 +34,25 @@ proxy.on('proxyRes', function (proxyRes, req, res) {
     res.setHeader('Content-Type', proxyRes.headers['content-type']);
   }
 
-  var body: any = [];
-  proxyRes.on('data', function (chunk: any) {
-    body.push(chunk);
-  });
+  proxyRes = decompress(proxyRes, proxyRes.headers['content-encoding']);
 
+  var buffer = Buffer.from('', 'utf8');
+  proxyRes.on('data', (chunk: any) => (buffer = Buffer.concat([buffer, chunk])));
+
+  let body: any = null;
   proxyRes.on('end', function () {
-    body = Buffer.concat(body).toString('utf-8');
+    body = buffer.toString('utf8');
     if (res.hasHeader('Content-Type') && res.getHeader('Content-Type').match(/([^;]+)*/g)[0] === 'text/html') {
       let url = req.originalUrl;
       let regex = /(http(|s))\:\/\/([^\/]+)*/g;
       url = url.match(regex)[0];
 
-      body = body.replaceAll(/<([^a|img]+)(.*?) (src|href)=('|"|)((http(|s))\:\/\/([^\/"]+)*)/g, '<$1$2 $3=$4http://' + HOST + ':' + PORT + '/' + url);
-      body = body.replaceAll(/(src|href)=('|"|)\//g, '$1=$2http://' + HOST + ':' + PORT + '/' + url + '/');
+      // Capture html tag not a|img and add the rest of the string of the tag after src|href="(capture)> to the new string
+      body = body.replaceAll(/<((?!a|img).*)(.*?) (src|href)=('|"|)((http(s|)).*?)>/g, '<$1$2 $3=$4http://' + HOST + ':' + PORT + '/$5>');
+      body = body.replaceAll(/<(a|img) (.*?)(src|href)=('|"|)\/(.*?)>/g, '<$1 $2$3=$4' + url + '/$5>');
+      body = body.replaceAll(/<((?!a|img).*) (.*?)(src|href)=('|"|)\/(.*?)>/g, '<$1 $2$3=$4http://' + HOST + ':' + PORT + '/' + url + '/$5>');
     }
+    body = Buffer.from(body, 'utf8');
     res.write(body);
     res.end();
   });
@@ -100,4 +105,30 @@ export function start() {
   });
 
   http.createServer(app).listen(PORT);
+}
+
+function decompress(proxyRes: any, contentEncoding: string) {
+  let _proxyRes = proxyRes;
+  let decompress;
+
+  switch (contentEncoding) {
+    case 'gzip':
+      decompress = zlib.createGunzip();
+      break;
+    case 'br':
+      decompress = zlib.createBrotliDecompress();
+      break;
+    case 'deflate':
+      decompress = zlib.createInflate();
+      break;
+    default:
+      break;
+  }
+
+  if (decompress) {
+    _proxyRes.pipe(decompress);
+    _proxyRes = decompress;
+  }
+
+  return _proxyRes;
 }

@@ -256,19 +256,29 @@ export const webView = (data: Config, assets: any) => {
           btn_reload.classList.add('active');
         }
         if (${proxy}) {
-          let script = document.createElement('script');
-          script.type = 'module';
-          script.src = '${assets['proxy']}';
-          document.querySelector('body').appendChild(script);
-
           // Watch to update addressbar
           const observer = new MutationObserver(function () {
             addressbar.value = iframe.getAttribute('srcurl');
+            vscode.setState({
+              proxy: ${proxy},
+              url: iframe.getAttribute('srcurl'),
+              autoCompleteUrl: '${autoCompleteUrl}',
+              localProxyServerEnable: ${localProxyServerEnable},
+              localProxyServerPort: ${localProxyServerPort},
+              reloadEnableAutoReload: ${reloadEnableAutoReload},
+              reloadTime: ${reloadTime},
+            });
           });
           observer.observe(iframe, {
             attributes: true,
             attributeFilter: ['srcurl']
           });
+
+          // Append proxy script to the page content
+          let script = document.createElement('script');
+          script.type = 'module';
+          script.src = '${assets['proxy']}';
+          document.querySelector('body').appendChild(script);
         }
       }
 
@@ -332,7 +342,7 @@ export const webView = (data: Config, assets: any) => {
         });
       }
 
-      function reloadIframe(src = iframe.src) {
+      function reloadIframe(src = addressbar.value) {
         btn_reload.classList.add('loading');
         iframe.src = autoCompleteUrl(src);
         console.log('reloadIframe: ' + autoCompleteUrl(src));

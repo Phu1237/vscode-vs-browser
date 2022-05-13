@@ -78,7 +78,7 @@
                     ],
                     "description": "Auto-complete URL when your URL is not an absolute URL"
                 },
-                "vs-browser.localProxyServer.enable": {
+                "vs-browser.localProxyServer.enabled": {
                     "type": "boolean",
                     "default": false,
                     "description": "Enable local proxy server"
@@ -93,15 +93,15 @@
                     "default": false,
                     "description": "Auto reload the browser when file is saved"
                 },
-                "vs-browser.reload.enableAutoReload": {
+                "vs-browser.reload.autoReloadenabled": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Auto reload the browser after a limited time"
+                    "description": "Auto reload the browser after a setted time"
                 },
-                "vs-browser.reload.time": {
+                "vs-browser.reload.autoReloadDurationTime": {
                     "type": "number",
                     "default": 15000,
-                    "description": "The limited time in milliseconds"
+                    "description": "The duration time to reload in milliseconds"
                 },
                 "vs-browser.columnToShowIn": {
                     "type": "string",

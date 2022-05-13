@@ -9,6 +9,9 @@ import Config from './types/Config';
 // Create output channel
 const outputConsole = vscode.window.createOutputChannel('VS Browser');
 
+let startStatusBarItem: vscode.StatusBarItem;
+startStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -23,14 +26,13 @@ export function activate(context: vscode.ExtensionContext) {
     context.globalState.update('version', extensionVersion);
     outputConsole.appendLine('> Extension is updated to ' + extensionVersion);
     let panel = vscode.window.createWebviewPanel('vs-browser.changes', 'VS Browser - Updated changes', vscode.ViewColumn.Active);
-    panel.webview.html = `<html><body><h1>Changes (version ${extensionVersion})</h1><ul>
-			<li>Fix <b>Updated changes window</b> always show after change workspace.</li>
-		</ul></body></html>`;
-  }
-
-  // Start proxy server
-  if (vscode.workspace.getConfiguration("vs-browser.localProxyServer.enable")) {
-    server.start();
+    panel.webview.html = `
+    <html><body>
+      <h1>Changes (version ${extensionVersion})</h1>
+      <ul>
+        <li>Fix <b>Updated changes window</b> always show after change workspace.</li>
+      </ul>
+    </body></html>`;
   }
 
   // Track currently webview panel
@@ -38,15 +40,38 @@ export function activate(context: vscode.ExtensionContext) {
 
   // And make sure we register a serializer for our webview type
   vscode.window.registerWebviewPanelSerializer('vs-browser', new VSBrowserSerializer(context));
+  vscode.window.registerWebviewPanelSerializer('vs-browser.proxy', new VSBrowserSerializer(context));
+  vscode.window.registerWebviewPanelSerializer('vs-browser.withoutproxy', new VSBrowserSerializer(context));
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
 
+  // create a new status bar item that we can now manage
+  const configs = vscode.workspace.getConfiguration('vs-browser');
+  let showStatusBarItem = configs.get<boolean>('showStatusBarItem') || false;
+  startStatusBarItem.command = 'vs-browser.start';
+  startStatusBarItem.text = '$(globe) VS Browser';
+  startStatusBarItem.tooltip = 'Start VS Browser';
+  context.subscriptions.push(startStatusBarItem);
+  if (showStatusBarItem) {
+    startStatusBarItem.show();
+  }
+  // show/hide status bar item when config changed
+  vscode.workspace.onDidChangeConfiguration(() => {
+    const configs = vscode.workspace.getConfiguration('vs-browser');
+    showStatusBarItem = configs.get<boolean>('showStatusBarItem') || false;
+    if (!showStatusBarItem) {
+      startStatusBarItem.hide();
+    } else {
+      startStatusBarItem.show();
+    }
+  });
+
   // vs-browser.start
   let start = vscode.commands.registerCommand('vs-browser.start', () => {
     // Ccreate new column
-    const configs = vscode.workspace.getConfiguration("vs-browser");
-    const column = configs.get<string>("columnToShowIn") || 'Two';
+    const configs = vscode.workspace.getConfiguration('vs-browser');
+    const column = configs.get<string>('columnToShowIn') || 'Two';
     let columnToShowIn = vscode.ViewColumn.Two;
     switch (column) {
       case 'One':
@@ -87,8 +112,8 @@ export function activate(context: vscode.ExtensionContext) {
   // vs-browser.startWithProxy
   let startWithProxy = vscode.commands.registerCommand('vs-browser.startWithProxy', () => {
     // Ccreate new column
-    const configs = vscode.workspace.getConfiguration("vs-browser");
-    const column = configs.get<string>("columnToShowIn") || 'Two';
+    const configs = vscode.workspace.getConfiguration('vs-browser');
+    const column = configs.get<string>('columnToShowIn') || 'Two';
     let columnToShowIn = vscode.ViewColumn.Two;
     switch (column) {
       case 'One':
@@ -131,8 +156,8 @@ export function activate(context: vscode.ExtensionContext) {
   // vs-browser.startWithoutProxy
   let startWithoutProxy = vscode.commands.registerCommand('vs-browser.startWithoutProxy', () => {
     // Ccreate new column
-    const configs = vscode.workspace.getConfiguration("vs-browser");
-    const column = configs.get<string>("columnToShowIn") || 'Two';
+    const configs = vscode.workspace.getConfiguration('vs-browser');
+    const column = configs.get<string>('columnToShowIn') || 'Two';
     let columnToShowIn = vscode.ViewColumn.Two;
     switch (column) {
       case 'One':
@@ -154,8 +179,8 @@ export function activate(context: vscode.ExtensionContext) {
     }
     // Create and show a new webview
     let panel = vscode.window.createWebviewPanel(
-      'vs-browser.noproxy', // Identifies the type of the webview. Used internally
-      'VS Browser - No Proxy', // Title of the panel displayed to the user
+      'vs-browser.withoutproxy', // Identifies the type of the webview. Used internally
+      'VS Browser - Without Proxy', // Title of the panel displayed to the user
       columnToShowIn, // Editor column to show the new webview panel in.
       {
         enableScripts: true,
@@ -171,29 +196,6 @@ export function activate(context: vscode.ExtensionContext) {
     });
   });
   context.subscriptions.push(startWithoutProxy);
-
-  // create a new status bar item that we can now manage
-  const configs = vscode.workspace.getConfiguration("vs-browser");
-  let showStatusBarItem = configs.get<boolean>("showStatusBarItem") || false;
-  let startStatusBarItem: vscode.StatusBarItem;
-  startStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-  startStatusBarItem.command = 'vs-browser.start';
-  startStatusBarItem.text = '$(globe) VS Browser';
-  startStatusBarItem.tooltip = 'Start VS Browser';
-  context.subscriptions.push(startStatusBarItem);
-  if (showStatusBarItem) {
-    startStatusBarItem.show();
-  }
-  // show/hide status bar item when config changed
-  vscode.workspace.onDidChangeConfiguration(() => {
-    const configs = vscode.workspace.getConfiguration("vs-browser");
-    showStatusBarItem = configs.get<boolean>("showStatusBarItem") || false;
-    if (!showStatusBarItem) {
-      startStatusBarItem.hide();
-    } else {
-      startStatusBarItem.show();
-    }
-  });
 }
 
 // this method is called when your extension is deactivated
@@ -207,7 +209,7 @@ class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
   }
   async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
     // `state` is the state persisted using `setState` inside the webview
-    console.log('Got URL state: ' + JSON.stringify(state));
+    console.log('Got state: ' + JSON.stringify(state));
 
     // Restore the content of our webview.
     //
@@ -225,6 +227,16 @@ class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
  * @returns
  */
 function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.ExtensionContext, data: Config = {}) {
+  // Start proxy server
+  if (vscode.workspace.getConfiguration('vs-browser.localProxyServer.enable')) {
+    server.start(function () {
+      const configs = vscode.workspace.getConfiguration('vs-browser');
+      const port = configs.get<number>('localProxyServer.port') || 9999;
+      startStatusBarItem.text = '$(globe) VS Browser: ' + port;
+      startStatusBarItem.color = '#00ff00';
+    });
+  }
+
   panel.webview.html = getWebViewContent(panel.webview, context.extensionUri, data);
   // Handle messages from the webview
   panel.webview.onDidReceiveMessage(
@@ -282,6 +294,11 @@ function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.Extensio
   panel.onDidDispose(
     () => {
       // When the panel is closed, cancel any future updates to the webview content
+      if (vscode.workspace.getConfiguration('vs-browser.localProxyServer.enable')) {
+        server.stop(function () {
+          startStatusBarItem.text = '$(globe) VS Browser';
+        });
+      }
     },
     null,
     context.subscriptions
@@ -299,7 +316,7 @@ function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.Extensio
  * Get webview context
  * @param webview
  * @param extensionUri
- * @param url
+ * @param data
  * @returns
  */
 function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri, data: Config) {
@@ -320,8 +337,8 @@ function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri, da
  * @param options https://code.visualstudio.com/api/references/vscode-api#MessageOptions
  */
 function showMessage(type: string, message: string, options: Object = {}) {
-  const configs = vscode.workspace.getConfiguration("vs-browser");
-  let showMessageDialog = configs.get<boolean>("showMessageDialog") || false;
+  const configs = vscode.workspace.getConfiguration('vs-browser');
+  let showMessageDialog = configs.get<boolean>('showMessageDialog') || false;
   if (showMessageDialog) {
     switch (type) {
       case 'error':

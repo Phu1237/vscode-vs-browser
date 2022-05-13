@@ -1,4 +1,6 @@
 type Data = {
+  viewType: string;
+  title: string;
   proxy?: boolean;
   url?: string;
   autoCompleteUrl?: string;
@@ -10,6 +12,7 @@ type Data = {
   showMessageDialog?: boolean;
   showStatusBarItem?: boolean;
   version?: string;
+  startServer?: boolean;
 };
 
 export default Data;

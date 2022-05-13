@@ -29,21 +29,19 @@ export function activate(context: vscode.ExtensionContext) {
     outputConsole.appendLine('> Extension is updated to ' + extensionVersion);
     let panel = vscode.window.createWebviewPanel('vs-browser.changes', 'VS Browser - New version changes', vscode.ViewColumn.Active);
 
-    panel = createWebviewPanel(changesWeview, panel, context, {
-      version: extensionVersion
+    panel = createWebviewPanel(changesWeview, context, {
+      viewType: 'changes',
+      title: 'VS Browser - New version changes',
+      version: extensionVersion,
+      startServer: false,
     });
   }
-
-  // Track currently webview panel
-  // let currentPanel: vscode.WebviewPanel | undefined = undefined;
 
   // And make sure we register a serializer for our webview type
   vscode.window.registerWebviewPanelSerializer('vs-browser', new VSBrowserSerializer(context));
   vscode.window.registerWebviewPanelSerializer('vs-browser.proxy', new VSBrowserSerializer(context));
   vscode.window.registerWebviewPanelSerializer('vs-browser.withoutproxy', new VSBrowserSerializer(context));
   // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
 
   // create a new status bar item that we can now manage
   const configs = vscode.workspace.getConfiguration('vs-browser');
@@ -68,85 +66,20 @@ export function activate(context: vscode.ExtensionContext) {
 
   // vs-browser.start
   let start = vscode.commands.registerCommand('vs-browser.start', () => {
-    // Ccreate new column
-    const configs = vscode.workspace.getConfiguration('vs-browser');
-    const column = configs.get<string>('columnToShowIn') || 'Two';
-    let columnToShowIn = vscode.ViewColumn.Two;
-    switch (column) {
-      case 'One':
-        columnToShowIn = vscode.ViewColumn.One;
-        break;
-      case 'Two':
-        columnToShowIn = vscode.ViewColumn.Two;
-        break;
-      case 'Three':
-        columnToShowIn = vscode.ViewColumn.Three;
-        break;
-      case 'Active':
-        columnToShowIn = vscode.ViewColumn.Active;
-        break;
-      case 'Beside':
-        columnToShowIn = vscode.ViewColumn.Beside;
-        break;
-      default:
-    }
     // Create and show a new webview
-    let panel = vscode.window.createWebviewPanel(
-      'vs-browser', // Identifies the type of the webview. Used internally
-      'VS Browser', // Title of the panel displayed to the user
-      columnToShowIn, // Editor column to show the new webview panel in.
-      {
-        enableScripts: true,
-        // freeze when panel not focused
-        retainContextWhenHidden: true,
-        // enable find widget
-        enableFindWidget: true,
-      });
-
-    // Inject event and context to panel
-    panel = createWebviewPanel(browserWebview, panel, context);
+    createWebviewPanel(browserWebview, context, {
+      viewType: 'browser',
+      title: 'VS Browser',
+    });
   });
   context.subscriptions.push(start);
 
   // vs-browser.startWithProxy
   let startWithProxy = vscode.commands.registerCommand('vs-browser.startWithProxy', () => {
-    // Ccreate new column
-    const configs = vscode.workspace.getConfiguration('vs-browser');
-    const column = configs.get<string>('columnToShowIn') || 'Two';
-    let columnToShowIn = vscode.ViewColumn.Two;
-    switch (column) {
-      case 'One':
-        columnToShowIn = vscode.ViewColumn.One;
-        break;
-      case 'Two':
-        columnToShowIn = vscode.ViewColumn.Two;
-        break;
-      case 'Three':
-        columnToShowIn = vscode.ViewColumn.Three;
-        break;
-      case 'Active':
-        columnToShowIn = vscode.ViewColumn.Active;
-        break;
-      case 'Beside':
-        columnToShowIn = vscode.ViewColumn.Beside;
-        break;
-      default:
-    }
     // Create and show a new webview
-    let panel = vscode.window.createWebviewPanel(
-      'vs-browser.proxy', // Identifies the type of the webview. Used internally
-      'VS Browser - Proxy', // Title of the panel displayed to the user
-      columnToShowIn, // Editor column to show the new webview panel in.
-      {
-        enableScripts: true,
-        // freeze when panel not focused
-        retainContextWhenHidden: true,
-        // enable find widget
-        enableFindWidget: true,
-      });
-
-    // Inject event and context to panel
-    panel = createWebviewPanel(browserWebview, panel, context, {
+    createWebviewPanel(browserWebview, context, {
+      viewType: 'proxy',
+      title: 'VS Browser - Proxy',
       proxy: true
     });
   });
@@ -154,43 +87,10 @@ export function activate(context: vscode.ExtensionContext) {
 
   // vs-browser.startWithoutProxy
   let startWithoutProxy = vscode.commands.registerCommand('vs-browser.startWithoutProxy', () => {
-    // Ccreate new column
-    const configs = vscode.workspace.getConfiguration('vs-browser');
-    const column = configs.get<string>('columnToShowIn') || 'Two';
-    let columnToShowIn = vscode.ViewColumn.Two;
-    switch (column) {
-      case 'One':
-        columnToShowIn = vscode.ViewColumn.One;
-        break;
-      case 'Two':
-        columnToShowIn = vscode.ViewColumn.Two;
-        break;
-      case 'Three':
-        columnToShowIn = vscode.ViewColumn.Three;
-        break;
-      case 'Active':
-        columnToShowIn = vscode.ViewColumn.Active;
-        break;
-      case 'Beside':
-        columnToShowIn = vscode.ViewColumn.Beside;
-        break;
-      default:
-    }
     // Create and show a new webview
-    let panel = vscode.window.createWebviewPanel(
-      'vs-browser.withoutproxy', // Identifies the type of the webview. Used internally
-      'VS Browser - Without Proxy', // Title of the panel displayed to the user
-      columnToShowIn, // Editor column to show the new webview panel in.
-      {
-        enableScripts: true,
-        // freeze when panel not focused
-        retainContextWhenHidden: true,
-        // enable find widget
-        enableFindWidget: true,
-      });
-
-    // Inject event and context to panel
-    panel = createWebviewPanel(browserWebview, panel, context, {
+    createWebviewPanel(browserWebview, context, {
+      viewType: 'withoutproxy',
+      title: 'VS Browser - Without proxy',
       proxy: false
     });
   });
@@ -214,20 +114,19 @@ class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
     //
     // Make sure we hold on to the `webviewPanel` passed in here and
     // also restore any event listeners we need on it.
-    webviewPanel = createWebviewPanel(browserWebview, webviewPanel, this.context, state);
+    webviewPanel = createWebviewPanel(browserWebview, this.context, state);
   }
 }
 
 /**
  * Inject event and context to panel
- * @param panel Panel which is created
  * @param context Extension context
- * @param url Url that will be open when start
+ * @param data Data to inject
  * @returns
  */
-function createWebviewPanel(template: Function, panel: vscode.WebviewPanel, context: vscode.ExtensionContext, data: Data = {}) {
+function createWebviewPanel(template: Function, context: vscode.ExtensionContext, data: Data) {
   // Start proxy server
-  if (vscode.workspace.getConfiguration('vs-browser.localProxyServer.enabled')) {
+  if (vscode.workspace.getConfiguration('vs-browser.localProxyServer.enabled') && data['startServer']) {
     server.start(function () {
       const configs = vscode.workspace.getConfiguration('vs-browser');
       const port = configs.get<number>('localProxyServer.port') || 9999;
@@ -235,6 +134,41 @@ function createWebviewPanel(template: Function, panel: vscode.WebviewPanel, cont
       startStatusBarItem.color = '#00ff00';
     });
   }
+
+  // Ccreate new column
+  const configs = vscode.workspace.getConfiguration('vs-browser');
+  const column = configs.get<string>('columnToShowIn') || 'Two';
+  let columnToShowIn = vscode.ViewColumn.Two;
+  switch (column) {
+    case 'One':
+      columnToShowIn = vscode.ViewColumn.One;
+      break;
+    case 'Two':
+      columnToShowIn = vscode.ViewColumn.Two;
+      break;
+    case 'Three':
+      columnToShowIn = vscode.ViewColumn.Three;
+      break;
+    case 'Active':
+      columnToShowIn = vscode.ViewColumn.Active;
+      break;
+    case 'Beside':
+      columnToShowIn = vscode.ViewColumn.Beside;
+      break;
+    default:
+  }
+  let panel = vscode.window.createWebviewPanel(
+    'vsbrowser.' + data['viewType'], // Identifies the type of the webview. Used internally
+    data['title'], // Title of the panel displayed to the user
+    columnToShowIn, // Editor column to show the new webview panel in.
+    {
+      enableScripts: true,
+      // freeze when panel not focused
+      retainContextWhenHidden: true,
+      // enable find widget
+      enableFindWidget: true,
+    }
+  );
 
   panel.webview.html = getWebViewContent(template, panel.webview, context.extensionUri, data);
   // Handle messages from the webview

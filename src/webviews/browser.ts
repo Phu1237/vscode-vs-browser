@@ -246,112 +246,130 @@ export default (webviewUri: string, data: Data) => {
     </div>
     <script>
         const vscode = acquireVsCodeApi(); // VS Code API
+        let url =  autoCompleteUrl('${url}');
         let iframe = document.getElementById('webview');
         let error = document.getElementById('webview-failed-load');
         let btn_reload = document.getElementById('btn-reload');
-        let btn_go_to_settings = document.getElementById('btn-go');
+        let btn_go = document.getElementById('btn-go');
         let btn_inspect = document.getElementById('btn-inspect');
-        let btn_settings = document.getElementById('btn-go-to-settings');
+        let btn_go_to_settings = document.getElementById('btn-go-to-settings');
         let addressbar = document.getElementById('addressbar');
 
-        addressbar.value = autoCompleteUrl('${url}');
-        iframe.src = autoCompleteUrl('${url}');
+        addressbar.value = '${url}';
+        iframe.src = '${url}';
 
         window.onload = function () {
-            if (${reloadAutoReloadEnabled}) {
-                btn_reload.classList.add('active');
-            }
-            if (${proxy}) {
-                // Watch to update addressbar
-                const observer = new MutationObserver(function () {
-                    addressbar.value = iframe.getAttribute('srcurl');
-                    vscode.setState({
-                        proxy: ${proxy},
-                        url: iframe.getAttribute('srcurl'),
-                        autoCompleteUrl: '${autoCompleteUrl}',
-                        localProxyServerEnable: ${localProxyServerEnabled},
-                        localProxyServerPort: ${localProxyServerPort},
-                        reloadAutoReloadEnabled: ${reloadAutoReloadEnabled},
-                        reloadAutoReloadDurationTime: ${reloadAutoReloadDurationTime},
-            });
-            });
-            observer.observe(iframe, {
-                attributes: true,
-                attributeFilter: ['srcurl']
-            });
+          // Set a restore point for the webview
+          vscode.setState({
+            proxy: ${proxy},
+            url: url,
+            autoCompleteUrl: '${autoCompleteUrl}',
+            localProxyServerEnable: ${localProxyServerEnabled},
+            localProxyServerPort: ${localProxyServerPort},
+            reloadAutoReloadEnabled: ${reloadAutoReloadEnabled},
+            reloadAutoReloadDurationTime: ${reloadAutoReloadDurationTime},
+            viewType: '${data['viewType']}',
+            title: '${data['title']}',
+          });
 
+          // Watch to update addressbar
+          const observer = new MutationObserver(function () {
+            let url = iframe.getAttribute('srcurl') || '${url}';
+            addressbar.value = url;
+
+            vscode.setState({
+              proxy: ${proxy},
+              url: url,
+              autoCompleteUrl: '${autoCompleteUrl}',
+              localProxyServerEnable: ${localProxyServerEnabled},
+              localProxyServerPort: ${localProxyServerPort},
+              reloadAutoReloadEnabled: ${reloadAutoReloadEnabled},
+              reloadAutoReloadDurationTime: ${reloadAutoReloadDurationTime},
+              viewType: '${data['viewType']}',
+              title: '${data['title']}',
+            });
+          });
+          observer.observe(iframe, {
+            attributes: true,
+            attributeFilter: ['srcurl']
+          });
+
+          if (${reloadAutoReloadEnabled}) {
+            btn_reload.classList.add('active');
+          }
+          if (${proxy}) {
             // Append proxy script to the page content
             let script = document.createElement('script');
             script.type = 'module';
-            script.src = '${asset('src / assets / proxy.js')}';
+            script.src = '${asset('src/assets/proxy.js')}';
             document.querySelector('body').appendChild(script);
+          }
         }
-      }
 
         // Receive message from webview
         window.addEventListener('message', event => {
-            const message = event.data; // The JSON data our extension sent
+          const message = event.data; // The JSON data our extension sent
 
-            switch (message.command) {
-                case 'reload':
-                    reloadIframe();
-                    break;
-            }
+          switch (message.command) {
+            case 'reload':
+              reloadIframe();
+              break;
+          }
         });
         addressbar.addEventListener("keyup", function (event) {
-            // Number 13 is the "Enter" key on the keyboard
-            if (event.keyCode === 13) {
-                // Cancel the default action, if needed
-                event.preventDefault();
-                addressbar.blur();
-                // Trigger the button element with a click
-                btn_go.click();
-            }
+          // Number 13 is the "Enter" key on the keyboard
+          if (event.keyCode === 13) {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            addressbar.blur();
+            // Trigger the button element with a click
+            btn_go.click();
+          }
         });
         btn_go.onclick = function () {
-            let url = addressbar.value;
-            reloadIframe(url);
+          let url = addressbar.value;
+          reloadIframe(url);
         }
         btn_inspect.onclick = function () {
-            vscode.postMessage({
-                command: 'open-inspector',
-            });
+          vscode.postMessage({
+            command: 'open-inspector',
+          });
         }
         btn_go_to_settings.onclick = function () {
-            vscode.postMessage({
-                command: 'go-to-settings'
-            })
+          vscode.postMessage({
+            command: 'go-to-settings'
+          })
         }
         // Just run when iframe first loaded
         iframe.onload = function () {
-            btn_reload.classList.remove('loading');
-            try {
-                let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            }
-            catch (err) {
-                // show failed load message
-                vscode.postMessage({
-                    command: 'show-message-box',
-                    type: 'error',
-                    text: 'VS Browser: Some errors occurred. Use another method if the web page is not loaded.',
-                    detail: err.message
-                })
-            }
-            if (${reloadAutoReloadEnabled}) {
-                setTimeout(reloadIframe, ${reloadAutoReloadDurationTime});
-            }
+          btn_reload.classList.remove('loading');
+          try {
+            let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          }
+          catch (err) {
+            // show failed load message
+            vscode.postMessage({
+                command: 'show-message-box',
+                type: 'error',
+                text: 'VS Browser: Some errors occurred. Use another method if the web page is not loaded.',
+                detail: err.message
+            })
+          }
+          if (${reloadAutoReloadEnabled}) {
+            setTimeout(reloadIframe, ${reloadAutoReloadDurationTime});
+          }
         }
 
         function autoCompleteUrl(url) {
-            return url.replace(/^(?:(.*:)?\\\/\\/) ? (.*) / i, (match, schemma, nonSchemmaUrl) => {
-                return schemma ? match : '${autoCompleteUrl}' + nonSchemmaUrl;
-            });
+          return url.replace(/^(?:(.*:)?\\\/\\/)?(.*)/i, (match, schemma, nonSchemmaUrl) => {
+            return schemma ? match : '${autoCompleteUrl}' + nonSchemmaUrl;
+          });
         }
 
         function reloadIframe(src = addressbar.value) {
-            btn_reload.classList.add('loading');
-            iframe.src = autoCompleteUrl(src);
-            console.log('reloadIframe: ' + autoCompleteUrl(src));
+          btn_reload.classList.add('loading');
+          iframe.src = autoCompleteUrl(src);
+          console.log('reloadIframe: ' + autoCompleteUrl(src));
         }
     </script>
 </body>

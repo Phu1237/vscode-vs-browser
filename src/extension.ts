@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
   // Check if the extension is updated
   let oldVersion = context.globalState.get<string>('version');
   let extensionVersion = context.extension.packageJSON.version;
-  let showChanges = true;
+  let showChanges = false;
   if (oldVersion !== extensionVersion || showChanges) {
     context.globalState.update('version', extensionVersion);
     outputConsole.appendLine('> Extension is updated to ' + extensionVersion);
@@ -37,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
   statusBarItemHelper.createStartStatusBarItem(context);
 
   // And make sure we register a serializer for our webview type
-  vscode.window.registerWebviewPanelSerializer('vs-browser', new VSBrowserSerializer(context));
+  vscode.window.registerWebviewPanelSerializer('vs-browser.browser', new VSBrowserSerializer(context));
   vscode.window.registerWebviewPanelSerializer('vs-browser.proxy', new VSBrowserSerializer(context));
   vscode.window.registerWebviewPanelSerializer('vs-browser.withoutproxy', new VSBrowserSerializer(context));
   // The command has been defined in the package.json file
@@ -92,6 +92,6 @@ class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
     //
     // Make sure we hold on to the `webviewPanel` passed in here and
     // also restore any event listeners we need on it.
-    webviewPanel = webviewHelper.createWebviewPanel(browserWebview, this.context, state);
+    webviewPanel = webviewHelper.createWebviewPanel(browserWebview, this.context, state, webviewPanel);
   }
 }

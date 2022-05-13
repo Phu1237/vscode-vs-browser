@@ -1,16 +1,20 @@
-import Config from "./types/Config";
+import Data from "../types/data";
 import * as vscode from 'vscode';
 
-export const webView = (data: Config, assets: any) => {
+export default (webviewUri: string, data: Data) => {
+  // Render asset url
+  function asset(path: string) {
+    return webviewUri + path;
+  }
   // Get current config
   const configs = vscode.workspace.getConfiguration("vs-browser");
   const proxy: boolean = data['proxy'] !== undefined ? data['proxy'] : configs.get<boolean>("proxy") || false;
   const url: string = data['url'] !== undefined ? data['url'] : configs.get<string>("url") || '';
   const autoCompleteUrl: string = data['autoCompleteUrl'] !== undefined ? data['autoCompleteUrl'] : configs.get<string>("autoCompleteUrl") || 'http://';
-  const localProxyServerEnable: boolean = data['localProxyServerEnable'] !== undefined ? data['localProxyServerEnable'] : configs.get<boolean>("localProxyServer.enable") || false;
+  const localProxyServerEnabled: boolean = data['localProxyServerEnabled'] !== undefined ? data['localProxyServerEnabled'] : configs.get<boolean>("localProxyServer.enabled") || false;
   const localProxyServerPort: number = data['localProxyServerPort'] !== undefined ? data['localProxyServerPort'] : configs.get<number>("localProxyServer.port") || 9999;
-  const reloadEnableAutoReload: boolean = data['reloadEnableAutoReload'] !== undefined ? data['reloadEnableAutoReload'] : configs.get<boolean>("reload.enableAutoReload") || false;
-  const reloadTime: number = data['reloadTime'] !== undefined ? data['reloadTime'] : configs.get<number>("reload.time") || 10000;
+  const reloadAutoReloadEnabled: boolean = data['reloadAutoReloadEnabled'] !== undefined ? data['reloadAutoReloadEnabled'] : configs.get<boolean>("reload.autoReloadEnabled") || false;
+  const reloadAutoReloadDurationTime: number = data['reloadAutoReloadDurationTime'] !== undefined ? data['reloadAutoReloadDurationTime'] : configs.get<number>("reload.autoReloadDurationTime") || 15000;
 
   return `
   <!DOCTYPE html>
@@ -121,7 +125,7 @@ export const webView = (data: Config, assets: any) => {
         margin-left: 0.25rem;
       }
 
-      #navbar button#btn-preferences {
+      #navbar button#btn-settings {
         margin-left: 0.25rem;
       }
 
@@ -204,7 +208,7 @@ export const webView = (data: Config, assets: any) => {
       }
     </style>
     `
-    + (localProxyServerEnable === true ? `<script>window.localProxy = 'http://localhost:${localProxyServerPort}/'</script>` : '') +
+    + (localProxyServerEnabled === true ? `<script>window.localProxy = 'http://localhost:${localProxyServerPort}/'</script>` : '') +
     `
   </head>
   <body>
@@ -229,7 +233,7 @@ export const webView = (data: Config, assets: any) => {
           <path d="M4.355.522a.5.5 0 0 1 .623.333l.291.956A4.979 4.979 0 0 1 8 1c1.007 0 1.946.298 2.731.811l.29-.956a.5.5 0 1 1 .957.29l-.41 1.352A4.985 4.985 0 0 1 13 6h.5a.5.5 0 0 0 .5-.5V5a.5.5 0 0 1 1 0v.5A1.5 1.5 0 0 1 13.5 7H13v1h1.5a.5.5 0 0 1 0 1H13v1h.5a1.5 1.5 0 0 1 1.5 1.5v.5a.5.5 0 1 1-1 0v-.5a.5.5 0 0 0-.5-.5H13a5 5 0 0 1-10 0h-.5a.5.5 0 0 0-.5.5v.5a.5.5 0 1 1-1 0v-.5A1.5 1.5 0 0 1 2.5 10H3V9H1.5a.5.5 0 0 1 0-1H3V7h-.5A1.5 1.5 0 0 1 1 5.5V5a.5.5 0 0 1 1 0v.5a.5.5 0 0 0 .5.5H3c0-1.364.547-2.601 1.432-3.503l-.41-1.352a.5.5 0 0 1 .333-.623zM4 7v4a4 4 0 0 0 3.5 3.97V7H4zm4.5 0v7.97A4 4 0 0 0 12 11V7H8.5zM12 6a3.989 3.989 0 0 0-1.334-2.982A3.983 3.983 0 0 0 8 2a3.983 3.983 0 0 0-2.667 1.018A3.989 3.989 0 0 0 4 6h8z"/>
         </svg>
       </button>
-      <button id="btn-preferences" title="Preference Settings">
+      <button id="btn-settings" title="Go to Settings">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
           <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z" />
         </svg>
@@ -245,14 +249,14 @@ export const webView = (data: Config, assets: any) => {
       let btn_reload = document.getElementById('btn-reload');
       let btn_go = document.getElementById('btn-go');
       let btn_inspect = document.getElementById('btn-inspect');
-      let btn_preferences = document.getElementById('btn-preferences');
+      let btn_settings = document.getElementById('btn-settings');
       let addressbar = document.getElementById('addressbar');
 
       addressbar.value = autoCompleteUrl('${url}');
       iframe.src = autoCompleteUrl('${url}');
 
       window.onload = function () {
-        if (${reloadEnableAutoReload}) {
+        if (${reloadAutoReloadEnabled}) {
           btn_reload.classList.add('active');
         }
         if (${proxy}) {
@@ -263,10 +267,10 @@ export const webView = (data: Config, assets: any) => {
               proxy: ${proxy},
               url: iframe.getAttribute('srcurl'),
               autoCompleteUrl: '${autoCompleteUrl}',
-              localProxyServerEnable: ${localProxyServerEnable},
+              localProxyServerEnable: ${localProxyServerEnabled},
               localProxyServerPort: ${localProxyServerPort},
-              reloadEnableAutoReload: ${reloadEnableAutoReload},
-              reloadTime: ${reloadTime},
+              reloadAutoReloadEnabled: ${reloadAutoReloadEnabled},
+              reloadAutoReloadDurationTime: ${reloadAutoReloadDurationTime},
             });
           });
           observer.observe(iframe, {
@@ -277,7 +281,7 @@ export const webView = (data: Config, assets: any) => {
           // Append proxy script to the page content
           let script = document.createElement('script');
           script.type = 'module';
-          script.src = '${assets['proxy']}';
+          script.src = '${asset('src/assets/proxy.js')}';
           document.querySelector('body').appendChild(script);
         }
       }
@@ -311,9 +315,9 @@ export const webView = (data: Config, assets: any) => {
           command: 'open-inspector',
         });
       }
-      btn_preferences.onclick = function () {
+      btn_settings.onclick = function () {
         vscode.postMessage({
-          command: 'go-to-preferences'
+          command: 'go-to-settings'
         })
       }
       // Just run when iframe first loaded
@@ -331,8 +335,8 @@ export const webView = (data: Config, assets: any) => {
               detail: err.message
             })
         }
-        if (${reloadEnableAutoReload}) {
-          setTimeout(reloadIframe, ${reloadTime});
+        if (${reloadAutoReloadEnabled}) {
+          setTimeout(reloadIframe, ${reloadAutoReloadDurationTime});
         }
       }
 

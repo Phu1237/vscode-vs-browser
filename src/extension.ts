@@ -2,9 +2,10 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as server from './server';
-import { webView } from './panel';
+import browserWebview from './webviews/browser';
+import changesWeview from './webviews/changes';
 
-import Config from './types/Config';
+import Data from './types/data';
 
 // Create output channel
 const outputConsole = vscode.window.createOutputChannel('VS Browser');
@@ -22,17 +23,15 @@ export function activate(context: vscode.ExtensionContext) {
   // Check if the extension is updated
   let oldVersion = context.globalState.get<string>('version');
   let extensionVersion = context.extension.packageJSON.version;
-  if (oldVersion !== extensionVersion) {
+  let showChanges = true;
+  if (oldVersion !== extensionVersion || showChanges) {
     context.globalState.update('version', extensionVersion);
     outputConsole.appendLine('> Extension is updated to ' + extensionVersion);
-    let panel = vscode.window.createWebviewPanel('vs-browser.changes', 'VS Browser - Updated changes', vscode.ViewColumn.Active);
-    panel.webview.html = `
-    <html><body>
-      <h1>Changes (version ${extensionVersion})</h1>
-      <ul>
-        <li>Fix <b>Updated changes window</b> always show after change workspace.</li>
-      </ul>
-    </body></html>`;
+    let panel = vscode.window.createWebviewPanel('vs-browser.changes', 'VS Browser - New version changes', vscode.ViewColumn.Active);
+
+    panel = createWebviewPanel(changesWeview, panel, context, {
+      version: extensionVersion
+    });
   }
 
   // Track currently webview panel
@@ -105,7 +104,7 @@ export function activate(context: vscode.ExtensionContext) {
       });
 
     // Inject event and context to panel
-    panel = createWebviewPanel(panel, context);
+    panel = createWebviewPanel(browserWebview, panel, context);
   });
   context.subscriptions.push(start);
 
@@ -147,7 +146,7 @@ export function activate(context: vscode.ExtensionContext) {
       });
 
     // Inject event and context to panel
-    panel = createWebviewPanel(panel, context, {
+    panel = createWebviewPanel(browserWebview, panel, context, {
       proxy: true
     });
   });
@@ -191,7 +190,7 @@ export function activate(context: vscode.ExtensionContext) {
       });
 
     // Inject event and context to panel
-    panel = createWebviewPanel(panel, context, {
+    panel = createWebviewPanel(browserWebview, panel, context, {
       proxy: false
     });
   });
@@ -215,7 +214,7 @@ class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
     //
     // Make sure we hold on to the `webviewPanel` passed in here and
     // also restore any event listeners we need on it.
-    webviewPanel = createWebviewPanel(webviewPanel, this.context, state);
+    webviewPanel = createWebviewPanel(browserWebview, webviewPanel, this.context, state);
   }
 }
 
@@ -226,9 +225,9 @@ class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
  * @param url Url that will be open when start
  * @returns
  */
-function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.ExtensionContext, data: Config = {}) {
+function createWebviewPanel(template: Function, panel: vscode.WebviewPanel, context: vscode.ExtensionContext, data: Data = {}) {
   // Start proxy server
-  if (vscode.workspace.getConfiguration('vs-browser.localProxyServer.enable')) {
+  if (vscode.workspace.getConfiguration('vs-browser.localProxyServer.enabled')) {
     server.start(function () {
       const configs = vscode.workspace.getConfiguration('vs-browser');
       const port = configs.get<number>('localProxyServer.port') || 9999;
@@ -237,14 +236,14 @@ function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.Extensio
     });
   }
 
-  panel.webview.html = getWebViewContent(panel.webview, context.extensionUri, data);
+  panel.webview.html = getWebViewContent(template, panel.webview, context.extensionUri, data);
   // Handle messages from the webview
   panel.webview.onDidReceiveMessage(
     message => {
       console.log('Received message:', message);
       switch (message.command) {
-        case 'go-to-preferences':
-          console.log('Click on Go to Preferences button');
+        case 'go-to-settings':
+          console.log('Click on Go to Settings button');
           vscode.commands.executeCommand('workbench.action.openSettings', 'vs-browser');
           return;
         case 'open-inspector':
@@ -294,7 +293,7 @@ function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.Extensio
   panel.onDidDispose(
     () => {
       // When the panel is closed, cancel any future updates to the webview content
-      if (vscode.workspace.getConfiguration('vs-browser.localProxyServer.enable')) {
+      if (vscode.workspace.getConfiguration('vs-browser.localProxyServer.enabled')) {
         server.stop(function () {
           startStatusBarItem.text = '$(globe) VS Browser';
         });
@@ -319,15 +318,11 @@ function createWebviewPanel(panel: vscode.WebviewPanel, context: vscode.Extensio
  * @param data
  * @returns
  */
-function getWebViewContent(webview: vscode.Webview, extensionUri: vscode.Uri, data: Config) {
-  // And get the special URI to use with the webview
-  const assets: Object = {
-    'proxy': webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, '/src/assets', 'proxy.js')),
-    'image': webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, '/src/assets', 'img.jpg'))
-  };
-  outputConsole.appendLine('Configs:' + JSON.stringify(data));
+function getWebViewContent(template: Function, webview: vscode.Webview, extensionUri: vscode.Uri, data: Data) {
+  // Create uri for webview
+  const webviewUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, '/'));
 
-  return webView(data, assets);
+  return template(webviewUri, data);
 }
 
 /**

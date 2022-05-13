@@ -1,14 +1,15 @@
-type Config = {
+type Data = {
   proxy?: boolean;
   url?: string;
   autoCompleteUrl?: string;
-  localProxyServerEnable?: boolean;
+  localProxyServerEnabled?: boolean;
   localProxyServerPort?: number;
-  reloadEnableAutoReload?: boolean;
-  reloadTime?: number;
+  reloadAutoReloadEnabled?: boolean;
+  reloadAutoReloadDurationTime?: number;
   columnToShowIn?: string;
   showMessageDialog?: boolean;
   showStatusBarItem?: boolean;
+  version?: string;
 };
 
-export default Config;
+export default Data;

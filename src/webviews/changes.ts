@@ -95,7 +95,7 @@ export default (webviewUri: string, data: Data) => {
       <td>false</td>
       </tr>
       <tr>
-      <td>reload.durationTime</td>
+      <td>reload.autoReloadDurationTime</td>
       <td style="text-align: left">The limited time in milliseconds</td>
       <td>15000</td>
       </tr>
@@ -117,7 +117,7 @@ export default (webviewUri: string, data: Data) => {
       </tbody>
     </table>
     <div style="margin-top: 10px;">
-    <button id="go-to-settings">
+    <button id="btn-go-to-settings">
       Open Settings
     </button>
     </div>
@@ -160,10 +160,9 @@ export default (webviewUri: string, data: Data) => {
 
     <script>
       const vscode = acquireVsCodeApi(); // VS Code API
-      let btn_reload = document.getElementById('btn-reload');
-      let btn_settings = document.getElementById('btn-settings');
+      let btn_go_to_settings = document.getElementById('btn-go-to-settings');
 
-      btn_settings.onclick = function () {
+      btn_go_to_settings.onclick = function () {
         vscode.postMessage({
           command: 'go-to-settings'
         })

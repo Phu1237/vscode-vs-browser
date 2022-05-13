@@ -1,6 +1,8 @@
 type Data = {
   viewType: string;
   title: string;
+  version?: string;
+  startServer?: boolean;
   proxy?: boolean;
   url?: string;
   autoCompleteUrl?: string;
@@ -11,8 +13,6 @@ type Data = {
   columnToShowIn?: string;
   showMessageDialog?: boolean;
   showStatusBarItem?: boolean;
-  version?: string;
-  startServer?: boolean;
 };
 
 export default Data;

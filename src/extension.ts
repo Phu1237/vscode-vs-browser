@@ -58,7 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
     webviewHelper.createWebviewPanel(browserWebview, context, {
       viewType: 'proxy',
       title: 'VS Browser - Proxy',
-      proxy: true
+      proxyMode: true
     });
   });
   context.subscriptions.push(startWithProxy);
@@ -69,7 +69,7 @@ export function activate(context: vscode.ExtensionContext) {
     webviewHelper.createWebviewPanel(browserWebview, context, {
       viewType: 'withoutproxy',
       title: 'VS Browser - Without proxy',
-      proxy: false
+      proxyMode: false
     });
   });
   context.subscriptions.push(startWithoutProxy);

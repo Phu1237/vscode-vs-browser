@@ -8,8 +8,8 @@ export default (webviewUri: string, data: Data) => {
   }
   // Get current config
   const configs = vscode.workspace.getConfiguration("vs-browser");
-  const proxy: boolean = data['proxy'] !== undefined ? data['proxy'] : configs.get<boolean>("proxy") || false;
-  const url: string = data['url'] !== undefined ? data['url'] : configs.get<string>("url") || '';
+  const proxyMode: boolean = data['proxyMode'] !== undefined ? data['proxyMode'] : configs.get<boolean>("proxyMode") || false;
+  const url: string = data['url'] !== undefined ? data['url'] : configs.get<string>("url") || 'http://localhost';
   const autoCompleteUrl: string = data['autoCompleteUrl'] !== undefined ? data['autoCompleteUrl'] : configs.get<string>("autoCompleteUrl") || 'http://';
   const localProxyServerEnabled: boolean = data['localProxyServerEnabled'] !== undefined ? data['localProxyServerEnabled'] : configs.get<boolean>("localProxyServer.enabled") || false;
   const localProxyServerPort: number = data['localProxyServerPort'] !== undefined ? data['localProxyServerPort'] : configs.get<number>("localProxyServer.port") || 9999;
@@ -261,7 +261,7 @@ export default (webviewUri: string, data: Data) => {
         window.onload = function () {
           // Set a restore point for the webview
           vscode.setState({
-            proxy: ${proxy},
+            proxyMode: ${proxyMode},
             url: url,
             autoCompleteUrl: '${autoCompleteUrl}',
             localProxyServerEnable: ${localProxyServerEnabled},
@@ -272,32 +272,31 @@ export default (webviewUri: string, data: Data) => {
             title: '${data['title']}',
           });
 
-          // Watch to update addressbar
-          const observer = new MutationObserver(function () {
-            let url = iframe.getAttribute('srcurl') || '${url}';
-            addressbar.value = url;
-
-            vscode.setState({
-              proxy: ${proxy},
-              url: url,
-              autoCompleteUrl: '${autoCompleteUrl}',
-              localProxyServerEnable: ${localProxyServerEnabled},
-              localProxyServerPort: ${localProxyServerPort},
-              reloadAutoReloadEnabled: ${reloadAutoReloadEnabled},
-              reloadAutoReloadDurationTime: ${reloadAutoReloadDurationTime},
-              viewType: '${data['viewType']}',
-              title: '${data['title']}',
-            });
-          });
-          observer.observe(iframe, {
-            attributes: true,
-            attributeFilter: ['srcurl']
-          });
-
           if (${reloadAutoReloadEnabled}) {
             btn_reload.classList.add('active');
           }
-          if (${proxy}) {
+          if (${proxyMode}) {
+            // Watch to update addressbar
+            const observer = new MutationObserver(function () {
+              let url = iframe.getAttribute('srcurl') || '${url}';
+              addressbar.value = url;
+
+              vscode.setState({
+                proxyMode: ${proxyMode},
+                url: url,
+                autoCompleteUrl: '${autoCompleteUrl}',
+                localProxyServerEnable: ${localProxyServerEnabled},
+                localProxyServerPort: ${localProxyServerPort},
+                reloadAutoReloadEnabled: ${reloadAutoReloadEnabled},
+                reloadAutoReloadDurationTime: ${reloadAutoReloadDurationTime},
+                viewType: '${data['viewType']}',
+                title: '${data['title']}',
+              });
+            });
+            observer.observe(iframe, {
+              attributes: true,
+              attributeFilter: ['srcurl']
+            });
             // Append proxy script to the page content
             let script = document.createElement('script');
             script.type = 'module';
@@ -345,6 +344,25 @@ export default (webviewUri: string, data: Data) => {
           btn_reload.classList.remove('loading');
           try {
             let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            let observer = new MutationObserver(function () {
+              let url = iframeDoc.location.href;
+              // Set a restore point for the webview
+              vscode.setState({
+                proxyMode: ${proxyMode},
+                url: url,
+                autoCompleteUrl: '${autoCompleteUrl}',
+                localProxyServerEnable: ${localProxyServerEnabled},
+                localProxyServerPort: ${localProxyServerPort},
+                reloadAutoReloadEnabled: ${reloadAutoReloadEnabled},
+                reloadAutoReloadDurationTime: ${reloadAutoReloadDurationTime},
+                viewType: '${data['viewType']}',
+                title: '${data['title']}',
+              });
+            });
+            observer.observe(iframeDoc.body, {
+              childList: true,
+              subtree: true
+            });
           }
           catch (err) {
             // show failed load message

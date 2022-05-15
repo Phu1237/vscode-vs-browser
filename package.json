@@ -53,7 +53,7 @@
         ],
         "configuration": {
             "properties": {
-                "vs-browser.proxy": {
+                "vs-browser.proxyMode": {
                     "type": "boolean",
                     "default": false,
                     "description": "Use proxy to prevent the some errors (Longer loading time and can not use with localhost)"

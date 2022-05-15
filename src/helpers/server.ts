@@ -46,6 +46,8 @@ proxy.on('proxyRes', function (proxyRes: any, req: any, res: any) {
   let body: any = null;
   proxyRes.on('end', function () {
     body = buffer.toString('utf8');
+    console.log((res.hasHeader('Content-Type') && res.getHeader('Content-Type')) ? res.getHeader('Content-Type') : 'no content-type');
+
     if (res.hasHeader('Content-Type') && res.getHeader('Content-Type').match(/([^;]+)*/g)[0] === 'text/html') {
       let url = req.originalUrl;
       let regex = /(http(|s))\:\/\/([^\/]+)*/g;

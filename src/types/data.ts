@@ -3,7 +3,7 @@ type Data = {
   title: string;
   version?: string;
   startServer?: boolean;
-  proxy?: boolean;
+  proxyMode?: boolean;
   url?: string;
   autoCompleteUrl?: string;
   localProxyServerEnabled?: boolean;

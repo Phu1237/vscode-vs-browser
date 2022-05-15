@@ -15,8 +15,9 @@ import * as server from './server';
 export function createWebviewPanel(template: Function, context: vscode.ExtensionContext, data: Data, webviewPanel?: vscode.WebviewPanel) {
   // Start proxy server
   const configs = vscode.workspace.getConfiguration('vs-browser');
+  let proxyMode = configs.get<boolean>('proxyMode');
   let localProxyServerEnabled = configs.get<boolean>('localProxyServer.enabled');
-  if (localProxyServerEnabled && (data['startServer'] === true || data['startServer'] === undefined)) {
+  if (proxyMode && localProxyServerEnabled && (data['startServer'] === true || data['startServer'] === undefined)) {
     server.start(function () {
       const configs = vscode.workspace.getConfiguration('vs-browser');
       const port = configs.get<number>('localProxyServer.port') || 9999;

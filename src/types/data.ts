@@ -1,8 +1,6 @@
 type Data = {
   viewType: string;
   title: string;
-  version?: string;
-  startServer?: boolean;
   proxyMode?: boolean;
   url?: string;
   autoCompleteUrl?: string;

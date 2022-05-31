@@ -27,8 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
     webviewHelper.createWebviewPanel(changesWeview, context, {
       viewType: 'changes',
       title: 'VS Browser - New version changes',
-      version: extensionVersion,
-      startServer: false,
+      localProxyServerEnabled: false,
       columnToShowIn: 'Active',
     });
   }

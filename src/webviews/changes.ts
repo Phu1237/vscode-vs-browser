@@ -37,7 +37,7 @@ export default (webviewUri: string, data: Data) => {
     <div>
         <h1>Changes (version ${extensionVersion})</h1>
         <ul>
-            <li>Add <b>Local Proxy server (Beta)</b></li>
+            <li>Add <b>Local Proxy server (Beta) (many bugs)</b></li>
             <li>Add <b>Local Proxy server settings</b></li>
             <li>Add <b>Auto-complete URL</b> setting</li>
             <li>

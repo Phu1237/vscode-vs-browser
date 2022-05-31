@@ -34,7 +34,7 @@ This product is free but if you like my work and you want to support me, buy me 
 ### [2.0.0]
 
 - Refactor code for better performance
-- Add `Local Proxy server` (Beta)
+- Add `Local Proxy server` (Beta) (many bugs)
 - Add `Local Proxy server settings`
 - Add `Auto-complete URL` setting
 - Change settings name

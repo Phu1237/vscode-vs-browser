@@ -7,7 +7,7 @@
         "name": "Phu1237",
         "url": "https://github.com/Phu1237"
     },
-    "version": "1.2.1",
+    "version": "2.0.0",
     "license": "SEE LICENSE IN LICENSE.md",
     "bugs": {
         "url": "https://github.com/Phu1237/vscode-vs-browser/issues",
@@ -56,7 +56,7 @@
                 "vs-browser.proxyMode": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Use proxy to prevent the some errors (Longer loading time and can not use with localhost)"
+                    "description": "Use proxy to prevent the some errors (Longer loading time and can not use with localhost except localProxyServer)"
                 },
                 "vs-browser.url": {
                     "type": "string",
@@ -81,7 +81,7 @@
                 "vs-browser.localProxyServer.enabled": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Enable local proxy server"
+                    "description": "Enable local proxy server (Beta)"
                 },
                 "vs-browser.localProxyServer.port": {
                     "type": "number",

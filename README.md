@@ -31,9 +31,23 @@ This product is free but if you like my work and you want to support me, buy me 
 
 ## Release Notes
 
+### [2.0.0]
+
+- Refactor code for better performance
+- Add `Local Proxy server` (Beta)
+- Add `Local Proxy server settings`
+- Add `Auto-complete URL` setting
+- Change settings name
+  - `proxy` => `proxyMode`
+  - `reload.enableAutoReload` => `reload.autoReloadEnabled`
+  - `reload.time` => `reload.reloadAutoReloadDurationTime`
+- Fix `Start without Proxy` command not working properly
+- Fix `Auto reload` not reload current page
+- Fix `Address bar value` not show current page URL
+
 ### [1.2.1]
 
-- Fix `Updated changes window` always show after change workspace
+- Fix `Updated changes window` always show after open another workspace
 
 ### [1.2.0]
 
@@ -82,6 +96,7 @@ This product is free but if you like my work and you want to support me, buy me 
 ## Known Issues
 
 - Sometimes, the dialog still displays even if nothing goes wrong
-- Auto reload not reload to the current page (reload to the URL on URL input now)
+- Local proxy server won't stop even if all browsers are closed
+- Local Proxy server</b> does not support form submit (Pure/HTML form submit) yet
 
 **Enjoy!**

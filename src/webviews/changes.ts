@@ -37,9 +37,17 @@ export default (webviewUri: string, data: Data) => {
     <div>
         <h1>Changes (version ${extensionVersion})</h1>
         <ul>
-            <li>Add <b>Local Proxy server (beta)</b></li>
+            <li>Add <b>Local Proxy server (Beta)</b></li>
             <li>Add <b>Local Proxy server settings</b></li>
             <li>Add <b>Auto-complete URL</b> setting</li>
+            <li>
+              Change settings name
+              <ul>
+                <li><b>proxy</b> => <b>proxyMode</b></li>
+                <li><b>reload.enableAutoReload</b> => <b>reload.autoReloadEnabled</b></li>
+                <li><b>reload.time</b> => <b>reload.reloadAutoReloadDurationTime</b></li>
+              </ul>
+            </li>
             <li>Fix <b>Start without Proxy</b> command not working properly</li>
             <li>Fix <b>Auto reload</b> not reload current page</li>
             <li>Fix <b>Address bar value</b> not show current page URL</li>

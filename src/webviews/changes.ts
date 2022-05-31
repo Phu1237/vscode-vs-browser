@@ -1,13 +1,14 @@
 import Data from '../types/data';
+const packageJSON = require('../../package.json');
 
 export default (webviewUri: string, data: Data) => {
   // Render asset url
   function asset(path: string) {
     return webviewUri + path;
   }
-  let extensionVersion = data['version'] || '0.0.0';
+  let extensionVersion = packageJSON.version || '0.0.0';
 
-  return `
+  let content = `
 <!DOCTYPE html>
 <html>
 
@@ -63,63 +64,20 @@ export default (webviewUri: string, data: Data) => {
                     <th>Description</th>
                     <th>Default</th>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>proxy</td>
-                        <td style="text-align: left">Use proxy to prevent the some errors (Longer loading time and can not use with localhost)</td>
-                        <td>false</td>
-                    </tr>
-                    <tr>
-                        <td>url</td>
-                        <td style="text-align: left">Default URL open when starting the browser</td>
-                        <td>http://localhost</td>
-                    </tr>
-                    <tr>
-                        <td>autoCompleteUrl</td>
-                        <td style="text-align: left">Auto-complete URL when your URL is not an absolute URL</td>
-                        <td>http://</td>
-                    </tr>
-                    <tr>
-                        <td>localProxyServer.enabled</td>
-                        <td style="text-align: left">Enable/Disable Local proxy server</td>
-                        <td>false</td>
-                    </tr>
-                    <tr>
-                        <td>localProxyServer.port</td>
-                        <td style="text-align: left">Local proxy server port</td>
-                        <td>9999</td>
-                    </tr>
-                    <tr>
-                        <td>reload.onSave</td>
-                        <td style="text-align: left">Auto reload the browser when file is saved</td>
-                        <td>false</td>
-                    </tr>
-                    <tr>
-                        <td>reload.autoReloadEnabled</td>
-                        <td style="text-align: left">Enable/Disable Auto reload the browser after a limited time</td>
-                        <td>false</td>
-                    </tr>
-                    <tr>
-                        <td>reload.autoReloadDurationTime</td>
-                        <td style="text-align: left">The limited time in milliseconds</td>
-                        <td>15000</td>
-                    </tr>
-                    <tr>
-                        <td>columnToShowIn</td>
-                        <td style="text-align: left">Default column to show in</td>
-                        <td>Two</td>
-                    </tr>
-                    <tr>
-                        <td>showMessageDialog</td>
-                        <td style="text-align: left">Show message dialog (sometimes the dialog still displays even if nothing goes wrong)</td>
-                        <td>false</td>
-                    </tr>
-                    <tr>
-                        <td>showStatusBarItem</td>
-                        <td style="text-align: left">Show status bar item</td>
-                        <td>true</td>
-                    </tr>
-                </tbody>
+                <tbody>`;
+  for (let property in packageJSON.contributes.configuration.properties) {
+    let value = packageJSON.contributes.configuration.properties[property];
+    let key = property.replace(/vs-browser\./g, '');
+    let description = String(value.description) || '';
+    let defaultValue = String(value.default) || '';
+
+    content += `<tr>
+                <td>${key}</td>
+                <td style="text-align: left">${description}</td>
+                <td>${defaultValue}</td>
+            </tr>`;
+  }
+  content += `</tbody>
             </table>
             <div style="margin-top: 10px;">
                 <button id="btn-go-to-settings">
@@ -138,14 +96,14 @@ export default (webviewUri: string, data: Data) => {
                 <b>Local Proxy server</b> does not support form submit (Pure/HTML form submit) yet<br />
                 <i>Notes:</i>
                 <ul>
-                    <li>JS form submit still working</li>
+                    <li>Form without redirecting page (JS) still working</li>
                 </ul>
             </li>
             <li>
                 Sometimes, the dialog still displays even if nothing goes wrong<br />
                 <i>Solves:</i>
                 <ul>
-                    <li>Turn of <b>showMessageDialogg</b> setting</li>
+                    <li>Turn off <b>showMessageDialogg</b> setting</li>
                     <li><b>Using Local Proxy Server</b></li>
                 </ul>
             </li>
@@ -177,4 +135,5 @@ export default (webviewUri: string, data: Data) => {
 
 </html>
   `;
+  return content;
 };

@@ -300,7 +300,7 @@ export default (webviewUri: string, data: Data) => {
             // Append proxy script to the page content
             let script = document.createElement('script');
             script.type = 'module';
-            script.src = '${asset('src/assets/proxy.js')}';
+            script.src = '${asset('assets/proxy.js')}';
             document.querySelector('body').appendChild(script);
           }
         }

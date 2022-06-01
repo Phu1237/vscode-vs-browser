@@ -31,6 +31,10 @@ This product is free but if you like my work and you want to support me, buy me 
 
 ## Release Notes
 
+### [2.0.1]
+
+- Fix proxy mode not working
+
 ### [2.0.0]
 
 - Refactor code for better performance

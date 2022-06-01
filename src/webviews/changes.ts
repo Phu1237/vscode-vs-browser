@@ -2,13 +2,13 @@ import Data from '../types/data';
 const packageJSON = require('../../package.json');
 
 export default (webviewUri: string, data: Data) => {
-  // Render asset url
-  function asset(path: string) {
-    return webviewUri + path;
-  }
-  let extensionVersion = packageJSON.version || '0.0.0';
+	// Render asset url
+	function asset(path: string) {
+		return webviewUri + path;
+	}
+	let extensionVersion = packageJSON.version || '0.0.0';
 
-  let content = `
+	let content = `
 <!DOCTYPE html>
 <html>
 
@@ -48,6 +48,7 @@ export default (webviewUri: string, data: Data) => {
                 <li><b>reload.time</b> => <b>reload.reloadAutoReloadDurationTime</b></li>
               </ul>
             </li>
+            <li>Fix <b>Proxy Mode</b> not working properly</li>
             <li>Fix <b>Start without Proxy</b> command not working properly</li>
             <li>Fix <b>Auto reload</b> not reload current page</li>
             <li>Fix <b>Address bar value</b> not show current page URL</li>
@@ -73,19 +74,19 @@ export default (webviewUri: string, data: Data) => {
                     <th>Default</th>
                 </thead>
                 <tbody>`;
-  for (let property in packageJSON.contributes.configuration.properties) {
-    let value = packageJSON.contributes.configuration.properties[property];
-    let key = property.replace(/vs-browser\./g, '');
-    let description = String(value.description) || '';
-    let defaultValue = String(value.default) || '';
+	for (let property in packageJSON.contributes.configuration.properties) {
+		let value = packageJSON.contributes.configuration.properties[property];
+		let key = property.replace(/vs-browser\./g, '');
+		let description = String(value.description) || '';
+		let defaultValue = String(value.default) || '';
 
-    content += `<tr>
+		content += `<tr>
                 <td>${key}</td>
                 <td style="text-align: left">${description}</td>
                 <td>${defaultValue}</td>
             </tr>`;
-  }
-  content += `</tbody>
+	}
+	content += `</tbody>
             </table>
             <div style="margin-top: 10px;">
                 <button id="btn-go-to-settings">
@@ -143,5 +144,5 @@ export default (webviewUri: string, data: Data) => {
 
 </html>
   `;
-  return content;
+	return content;
 };

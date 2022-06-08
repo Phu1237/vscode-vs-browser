@@ -37,21 +37,7 @@ export default (webviewUri: string, data: Data) => {
     <div>
         <h1>Changes (version ${extensionVersion})</h1>
         <ul>
-            <li>Add <b>Local Proxy server (Beta) (many bugs)</b></li>
-            <li>Add <b>Local Proxy server settings</b></li>
-            <li>Add <b>Auto-complete URL</b> setting</li>
-            <li>
-              Change settings name
-              <ul>
-                <li><b>proxy</b> => <b>proxyMode</b></li>
-                <li><b>reload.enableAutoReload</b> => <b>reload.autoReloadEnabled</b></li>
-                <li><b>reload.time</b> => <b>reload.reloadAutoReloadDurationTime</b></li>
-              </ul>
-            </li>
-            <li>Fix <b>Proxy Mode</b> not working properly</li>
-            <li>Fix <b>Start without Proxy</b> command not working properly</li>
-            <li>Fix <b>Auto reload</b> not reload current page</li>
-            <li>Fix <b>Address bar value</b> not show current page URL</li>
+            <li>Add <b>Cookie domain rewrite</b> for <b>Local Proxy server</b></li>
         </ul>
     </div>
     <div>
@@ -98,6 +84,9 @@ export default (webviewUri: string, data: Data) => {
     <div>
         <h2>*Bugs: </h2>
         <ul>
+            <li>
+                <b>Local Proxy server</b> have many bugs right now</b>
+            </li>
             <li>
                 <b>Local Proxy server</b> will not be automatically closed when you closed all the panel</b>
             </li>

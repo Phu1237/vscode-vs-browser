@@ -88,6 +88,11 @@
 					"default": 9999,
 					"description": "Local proxy server port"
 				},
+				"vs-browser.localProxyServer.cookieDomainRewrite": {
+					"type": "boolean",
+					"default": false,
+					"description": "Enable cookie domain rewrite"
+				},
 				"vs-browser.reload.onSave": {
 					"type": "boolean",
 					"default": false,

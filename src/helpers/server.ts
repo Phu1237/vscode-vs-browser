@@ -14,6 +14,7 @@ var httpProxy = require('http-proxy');
 const configs = vscode.workspace.getConfiguration("vs-browser");
 const HOST = "localhost";
 const PORT = configs.get<number>("localProxyServer.port") || 9999;
+const cookieDomainRewrite = configs.get<boolean>("localProxyServer.cookieDomainRewrite") || false;
 export let status = 0;
 export let online = 0;
 export let runningPort = 9999;
@@ -112,7 +113,9 @@ export function start(callback: Function = () => { }) {
       if (regex.test(url)) {
         url = url.match(regex)[0];
         options.target = url;
-        options.cookieDomainRewrite = url;
+				if (cookieDomainRewrite) {
+					options.cookieDomainRewrite = url;
+				}
         req.url = req.url.split('/').splice(4).join('/');
 
         proxy.web(req, res, options);

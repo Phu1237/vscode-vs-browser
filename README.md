@@ -33,6 +33,10 @@ This product is free but if you like my work and you want to support me, buy me 
 
 ### [2.0.2]
 
+- `Local Proxy server`: Update `location` depend on header location not just status code
+
+### [2.0.2]
+
 - Add `Cookie domain rewrite` for `Local Proxy server`
 
 ### [2.0.1]

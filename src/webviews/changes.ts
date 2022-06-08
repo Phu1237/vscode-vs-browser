@@ -37,6 +37,7 @@ export default (webviewUri: string, data: Data) => {
     <div>
         <h1>Changes (version ${extensionVersion})</h1>
         <ul>
+            <li><b>Local Proxy server</b>: Update <b>location</b> depend on header location not just status code</li>
             <li>Add <b>Cookie domain rewrite</b> for <b>Local Proxy server</b></li>
         </ul>
     </div>

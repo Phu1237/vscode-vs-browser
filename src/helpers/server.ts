@@ -71,7 +71,7 @@ proxy.on('proxyRes', function (proxyRes: any, req: any, res: any) {
     res.write(body);
     res.end();
   });
-  if (proxyRes.statusCode === 301 || proxyRes.statusCode === 302 || !!proxyRes.headers.location) {
+  if (proxyRes.statusCode === 301 || proxyRes.statusCode === 302 || proxyRes.headers.location !== undefined) {
     res.writeHead(301, {
       'location': 'http://' + HOST + ':' + PORT + '/' + proxyRes.headers.location
     });

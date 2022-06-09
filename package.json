@@ -98,7 +98,7 @@
 					"default": false,
 					"description": "Auto reload the browser when file is saved"
 				},
-				"vs-browser.reload.autoReloadenabled": {
+				"vs-browser.reload.autoReloadEnabled": {
 					"type": "boolean",
 					"default": false,
 					"description": "Auto reload the browser after a setted time"

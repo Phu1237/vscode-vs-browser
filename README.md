@@ -31,7 +31,7 @@ This product is free but if you like my work and you want to support me, buy me 
 
 ## Release Notes
 
-### [2.0.5]
+### [2.0.6]
 
 - Fix `reload.autoReloadEnabled` name (`reload.autoReloadenabled` => `reload.autoReloadEnabled`)
 - Fix `location` undefined

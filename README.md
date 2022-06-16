@@ -31,7 +31,7 @@ This product is free but if you like my work and you want to support me, buy me 
 
 ## Release Notes
 
-### [2.0.7]
+### [2.0.8]
 
 - `Local Proxy server`: Add `forceLocation`(Some website redirect the user with some weird status code (eg. 400), so you can bypass the status code and keep redirecting the user to the correct URL)
 

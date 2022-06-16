@@ -13,6 +13,7 @@ export default (webviewUri: string, data: Data) => {
   const autoCompleteUrl: string = data['autoCompleteUrl'] !== undefined ? data['autoCompleteUrl'] : configs.get<string>("autoCompleteUrl") || 'http://';
   const localProxyServerEnabled: boolean = data['localProxyServerEnabled'] !== undefined ? data['localProxyServerEnabled'] : configs.get<boolean>("localProxyServer.enabled") || false;
   const localProxyServerPort: number = data['localProxyServerPort'] !== undefined ? data['localProxyServerPort'] : configs.get<number>("localProxyServer.port") || 9999;
+  const localProxyServerForceLocation: boolean = data['localProxyServerForceLocation'] !== undefined ? data['localProxyServerForceLocation'] : configs.get<boolean>("localProxyServer.forceLocation") || false;
   const reloadAutoReloadEnabled: boolean = data['reloadAutoReloadEnabled'] !== undefined ? data['reloadAutoReloadEnabled'] : configs.get<boolean>("reload.autoReloadEnabled") || false;
   const reloadAutoReloadDurationTime: number = data['reloadAutoReloadDurationTime'] !== undefined ? data['reloadAutoReloadDurationTime'] : configs.get<number>("reload.autoReloadDurationTime") || 15000;
 
@@ -211,6 +212,7 @@ export default (webviewUri: string, data: Data) => {
     + (localProxyServerEnabled === true ? `
     <script>window.localProxy = 'http://localhost:${localProxyServerPort}/'</script>` : '') +
     `
+    <script>window.forceLocation = ${localProxyServerForceLocation}</script>
 </head>
 
 <body>

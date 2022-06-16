@@ -37,11 +37,7 @@ export default (webviewUri: string, data: Data) => {
     <div>
         <h1>Changes (version ${extensionVersion})</h1>
         <ul>
-						<li>Fix <b>reload.autoReloadEnabled</b> name (<b>reload.autoReloadenabled</b> => <b>reload.autoReloadEnabled</b></li>
-						<li>Fix <b>location</b> undefined</li>
-						<li>Add <b>Cookie domain rewrite</b> for <b>Local Proxy server</b></li>
-            <li><b>Local Proxy server</b>: Update <b>location</b> depend on header location not just status code</li>
-            <li>Add <b>Cookie domain rewrite</b> for <b>Local Proxy server</b></li>
+					<li><b>Local Proxy server</b>: Add <b>forceLocation</b> (Some website redirect the user with some weird status code (eg. 400), so you can bypass the status code and keep redirecting the user to the correct URL)</li>
         </ul>
     </div>
     <div>

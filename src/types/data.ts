@@ -6,6 +6,8 @@ type Data = {
   autoCompleteUrl?: string;
   localProxyServerEnabled?: boolean;
   localProxyServerPort?: number;
+  localProxyServerCookieDomainRewrite?: boolean;
+  localProxyServerForceLocation?: boolean;
   reloadAutoReloadEnabled?: boolean;
   reloadAutoReloadDurationTime?: number;
   columnToShowIn?: string;

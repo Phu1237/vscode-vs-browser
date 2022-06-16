@@ -85,9 +85,11 @@ customElements.define('using-proxy', class extends HTMLIFrameElement {
     // clean up the array with undefined values
     proxies = proxies.filter(p => !!p);
     return fetch(proxies[i] + url, options).then(res => {
-      if (!res.ok) {
-        throw new Error(`${res.status} ${res.statusText}`);
-      }
+			if (window.forceLocation) {
+				if (!res.ok) {
+					throw new Error(`${res.status} ${res.statusText}`);
+				}
+			}
       return res;
     }).catch(error => {
       if (i === proxies.length - 1) {

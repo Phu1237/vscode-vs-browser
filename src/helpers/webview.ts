@@ -14,7 +14,7 @@ import * as server from './server';
 */
 export function createWebviewPanel(template: Function, context: vscode.ExtensionContext, data: Data, webviewPanel?: vscode.WebviewPanel) {
   // Start proxy server
-  const configs = vscode.workspace.getConfiguration('vs-browser');
+  let configs = vscode.workspace.getConfiguration('vs-browser');
   let proxyMode = data['proxyMode'] !== undefined ? data['proxyMode'] : configs.get<boolean>('proxyMode') || false;
   let localProxyServerEnabled = data['localProxyServerEnabled'] !== undefined ? data['localProxyServerEnabled'] : configs.get<boolean>('localProxyServer.enabled') || false;
   if (proxyMode && localProxyServerEnabled) {
@@ -82,6 +82,7 @@ export function getWebViewContent(template: Function, webview: vscode.Webview, e
 }
 
 function bindWebviewEvents(panel: any, template: Function, context: vscode.ExtensionContext, data: Data): vscode.WebviewPanel {
+  let configs = vscode.workspace.getConfiguration('vs-browser');
   panel.webview.html = getWebViewContent(template, panel.webview, context.extensionUri, data);
   // Handle messages from the webview
   panel.webview.onDidReceiveMessage(
@@ -152,9 +153,12 @@ function bindWebviewEvents(panel: any, template: Function, context: vscode.Exten
   );
 
   // Handle when save file
-  vscode.workspace.onDidSaveTextDocument(() => {
-    panel.webview.postMessage({ command: 'reload' });
-  });
+  let reloadOnSave = data['reloadOnSave'] !== undefined ? data['reloadOnSave'] : configs.get<boolean>('reload.onSave') || false;
+  if (reloadOnSave) {
+    vscode.workspace.onDidSaveTextDocument(() => {
+      panel.webview.postMessage({ command: 'reload' });
+    });
+  }
 
   return panel;
 }

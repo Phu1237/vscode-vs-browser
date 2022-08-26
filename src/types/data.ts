@@ -8,6 +8,7 @@ type Data = {
   localProxyServerPort?: number;
   localProxyServerCookieDomainRewrite?: boolean;
   localProxyServerForceLocation?: boolean;
+  reloadOnSave?: boolean;
   reloadAutoReloadEnabled?: boolean;
   reloadAutoReloadDurationTime?: number;
   columnToShowIn?: string;

@@ -2,13 +2,13 @@ import Data from '../types/data';
 const packageJSON = require('../../package.json');
 
 export default (webviewUri: string, data: Data) => {
-	// Render asset url
-	function asset(path: string) {
-		return webviewUri + path;
-	}
-	let extensionVersion = packageJSON.version || '0.0.0';
+  // Render asset url
+  function asset(path: string) {
+    return webviewUri + path;
+  }
+  let extensionVersion = packageJSON.version || '0.0.0';
 
-	let content = `
+  let content = `
 <!DOCTYPE html>
 <html>
 
@@ -37,7 +37,8 @@ export default (webviewUri: string, data: Data) => {
     <div>
         <h1>Changes (version ${extensionVersion})</h1>
         <ul>
-					<li><b>Local Proxy server</b>: Add <b>forceLocation</b> (Some website redirect the user with some weird status code (eg. 400), so you can bypass the status code and keep redirecting the user to the correct URL)</li>
+          <li><b>Fix</b>: The browser reload even if reload on save is disabled</li>
+          <li><b>Fix</b>: The browser configs not affects after changed</li>
         </ul>
     </div>
     <div>
@@ -60,19 +61,19 @@ export default (webviewUri: string, data: Data) => {
                     <th>Default</th>
                 </thead>
                 <tbody>`;
-	for (let property in packageJSON.contributes.configuration.properties) {
-		let value = packageJSON.contributes.configuration.properties[property];
-		let key = property.replace(/vs-browser\./g, '');
-		let description = String(value.description) || '';
-		let defaultValue = String(value.default) || '';
+  for (let property in packageJSON.contributes.configuration.properties) {
+    let value = packageJSON.contributes.configuration.properties[property];
+    let key = property.replace(/vs-browser\./g, '');
+    let description = String(value.description) || '';
+    let defaultValue = String(value.default) || '';
 
-		content += `<tr>
+    content += `<tr>
                 <td>${key}</td>
                 <td style="text-align: left">${description}</td>
                 <td>${defaultValue}</td>
             </tr>`;
-	}
-	content += `</tbody>
+  }
+  content += `</tbody>
             </table>
             <div style="margin-top: 10px;">
                 <button id="btn-go-to-settings">
@@ -133,5 +134,5 @@ export default (webviewUri: string, data: Data) => {
 
 </html>
   `;
-	return content;
+  return content;
 };

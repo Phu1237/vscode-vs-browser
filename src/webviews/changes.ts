@@ -37,8 +37,8 @@ export default (webviewUri: string, data: Data) => {
     <div>
         <h1>Changes (version ${extensionVersion})</h1>
         <ul>
-          <li><b>Fix</b>: The browser reload even if reload on save is disabled</li>
-          <li><b>Fix</b>: The browser configs not affects after changed</li>
+          <li><b>Fix</b>: Dark mode background color</li>
+          <li><b>Update</b>: Extension dependencies</li>
         </ul>
     </div>
     <div>

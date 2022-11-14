@@ -44,10 +44,14 @@ export default (webviewUri: string, data: Data) => {
 
         body.vscode-light {
             color: black;
+            color-scheme: light;
+            background-color: white;
         }
 
         body.vscode-dark {
             color: white;
+            color-scheme: dark;
+            background-color: black;
         }
 
         body.vscode-light #navbar {

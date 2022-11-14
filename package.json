@@ -7,7 +7,7 @@
 		"name": "Phu1237",
 		"url": "https://github.com/Phu1237"
 	},
-    "version": "2.0.9",
+	"version": "2.0.9",
 	"license": "SEE LICENSE IN LICENSE.md",
 	"bugs": {
 		"url": "https://github.com/Phu1237/vscode-vs-browser/issues",
@@ -103,7 +103,7 @@
 					"default": false,
 					"description": "Auto reload the browser when file is saved"
 				},
-                "vs-browser.reload.autoReloadDurationEnabled": {
+				"vs-browser.reload.autoReloadDurationEnabled": {
 					"type": "boolean",
 					"default": false,
 					"description": "Auto reload the browser after a setted time"

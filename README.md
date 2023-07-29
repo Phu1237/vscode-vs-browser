@@ -31,6 +31,13 @@ This product is free but if you like my work and you want to support me, buy me 
 
 ## Release Notes
 
+### [2.0.11]
+
+- Local Proxy Server: It's working more correctly now. Please give it a try.</li>
+- Fix: Localhost website now work even if Proxy Mode is enabled</li>
+- Fix: Url on Address bar now correct with current page</li>
+- Fix: The state of your old session will be restored after reopening VS Code</li>
+
 ### [2.0.8]
 
 - `Local Proxy server`: Add `forceLocation`(Some website redirect the user with some weird status code (eg. 400), so you can bypass the status code and keep redirecting the user to the correct URL)

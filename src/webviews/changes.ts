@@ -37,8 +37,10 @@ export default (webviewUri: string, data: Data) => {
     <div>
         <h1>Changes (version ${extensionVersion})</h1>
         <ul>
-          <li><b>Fix</b>: Dark mode background color</li>
-          <li><b>Update</b>: Extension dependencies</li>
+          <li><b>Local Proxy Server</b>: It's working more correctly now. Please give it a try.</li>
+          <li><b>Fix</b>: Localhost website now work even if Proxy Mode is enabled</li>
+          <li><b>Fix</b>: Url on Address bar now correct with current page</li>
+          <li><b>Fix</b>: The state of your old session will be restored after reopening VS Code</li>
         </ul>
     </div>
     <div>
@@ -92,7 +94,7 @@ export default (webviewUri: string, data: Data) => {
                 <b>Local Proxy server</b> will not be automatically closed when you closed all the panel</b>
             </li>
             <li>
-                <b>Local Proxy server</b> does not support form submit (Pure/HTML form submit) yet<br />
+                <b>Local Proxy server</b> form submit may not working correctly<br />
                 <i>Notes:</i>
                 <ul>
                     <li>Form without redirecting page (JS) still working</li>

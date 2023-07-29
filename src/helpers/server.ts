@@ -55,11 +55,14 @@ proxy.on('proxyRes', function (proxyRes: any, req: any, res: any) {
 			url = url.match(regex)[0];
 
 			// Capture html tag not a|img and add the rest of the string of the tag after src|href="(capture)> to the new string
-			body = body.replaceAll(/<((?!a|img).*)(.*?) (src|href)=('|"|)((http(s|)).*?)>/g, '<$1$2 $3=$4http://' + HOST + ':' + PORT + '/$5>');
+
+			// body = body.replaceAll(/<((?!a|img).*)(.*?) (src|href)=('|"|)((http(s|)).*?)>/g, '<$1$2 $3=$4http://' + HOST + ':' + PORT + '/$5>');
 			// a|img tag will be same as before for proxy work and image get directly
-			body = body.replaceAll(/<(a|img) (.*?)(src|href)=('|"|)\/(.*?)>/g, '<$1 $2$3=$4' + url + '/$5>');
+			// body = body.replaceAll(/<(a|img) (.*?)(src|href)=('|"|)\/(.*?)>/g, '<$1 $2$3=$4' + url + '/$5>');
 			// Replace tag with src|href with relative path
-			body = body.replaceAll(/<((?!a|img).*) (.*?)(src|href)=('|"|)\/(.*?)>/g, '<$1 $2$3=$4http://' + HOST + ':' + PORT + '/' + url + '/$5>');
+			// body = body.replaceAll(/<((?!a|img).*) (.*?)(src|href)=('|"|)\/(.*?)>/g, '<$1 $2$3=$4http://' + HOST + ':' + PORT + '/' + url + '/$5>');
+      // body = body.replaceAll(/<head>/g, '<head><base href="http://' + HOST + ':' + PORT + '/' + url + '">');
+      // body = body.replaceAll(/head/g, '1');
 		} else if (res.hasHeader('Content-Type') && (res.getHeader('Content-Type').match(/([^;]+)*/g)[0] === 'text/css' || res.getHeader('Content-Type').match(/([^;]+)*/g)[0] === 'text/javascript')) {
 			let url = req.originalUrl;
 			let regex = /(http(|s))\:\/\/([^\/]+)*/g;

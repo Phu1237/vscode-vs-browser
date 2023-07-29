@@ -287,8 +287,12 @@ export default (webviewUri: string, data: Data) => {
               let url = iframe.getAttribute('srcurl') || '${url}';
               addressbar.value = url;
 
+              let proxyMode = ${proxyMode};
+              if (url && url.match(/^http:\/\/localhost/g)) {
+                proxyMode = false;
+              }
               vscode.setState({
-                proxyMode: ${proxyMode},
+                proxyMode: proxyMode,
                 url: url,
                 autoCompleteUrl: '${autoCompleteUrl}',
                 localProxyServerEnable: ${localProxyServerEnabled},
@@ -348,37 +352,6 @@ export default (webviewUri: string, data: Data) => {
         // Just run when iframe first loaded
         iframe.onload = function () {
           btn_reload.classList.remove('loading');
-          try {
-            let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            let observer = new MutationObserver(function () {
-              let url = iframeDoc.location.href;
-              // Set a restore point for the webview
-              vscode.setState({
-                proxyMode: ${proxyMode},
-                url: url,
-                autoCompleteUrl: '${autoCompleteUrl}',
-                localProxyServerEnable: ${localProxyServerEnabled},
-                localProxyServerPort: ${localProxyServerPort},
-                reloadAutoReloadEnabled: ${reloadAutoReloadEnabled},
-                reloadAutoReloadDurationTime: ${reloadAutoReloadDurationTime},
-                viewType: '${data['viewType']}',
-                title: '${data['title']}',
-              });
-            });
-            observer.observe(iframeDoc.body, {
-              childList: true,
-              subtree: true
-            });
-          }
-          catch (err) {
-            // show failed load message
-            vscode.postMessage({
-                command: 'show-message-box',
-                type: 'error',
-                text: 'VS Browser: Some errors occurred. Use another method if the web page is not loaded.',
-                detail: err.message
-            })
-          }
           if (${reloadAutoReloadEnabled}) {
             setTimeout(reloadIframe, ${reloadAutoReloadDurationTime});
           }

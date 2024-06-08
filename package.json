@@ -1,176 +1,188 @@
 {
-	"name": "vs-browser",
-	"displayName": "VS Browser",
-	"description": "Built-in browser for Visual Studio Code",
-	"publisher": "Phu1237",
-	"author": {
-		"name": "Phu1237",
-		"url": "https://github.com/Phu1237"
-	},
-	"version": "2.0.11",
-	"license": "SEE LICENSE IN LICENSE.md",
-	"bugs": {
-		"url": "https://github.com/Phu1237/vscode-vs-browser/issues",
-		"email": "phu1237@gmail.com"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Phu1237/vscode-vs-browser"
-	},
-	"engines": {
-		"vscode": "^1.63.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"icon": "images/icon.png",
-	"keywords": [
-		"vs",
-		"browser",
-		"visual",
-		"studio",
-		"code",
-		"vscode"
-	],
-	"activationEvents": [
-		"onStartupFinished"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "vs-browser.start",
-				"title": "VS Browser: Start Browser"
-			},
-			{
-				"command": "vs-browser.startWithProxy",
-				"title": "VS Browser: Start Browser with Proxy"
-			},
-			{
-				"command": "vs-browser.startWithoutProxy",
-				"title": "VS Browser: Start Browser without Proxy"
-			}
-		],
-		"configuration": {
-			"properties": {
-				"vs-browser.proxyMode": {
-					"type": "boolean",
-					"default": false,
-					"description": "Use proxy to prevent the some errors (Longer loading time and can not use with localhost except localProxyServer)"
-				},
-				"vs-browser.url": {
-					"type": "string",
-					"default": "http://localhost",
-					"description": "Default URL open when starting the browser"
-				},
-				"vs-browser.autoCompleteUrl": {
-					"type": "string",
-					"default": "http://",
-					"enum": [
-						"http://",
-						"https://",
-						"https://www.google.com/search?q="
-					],
-					"enumDescriptions": [
-						"http://your-url",
-						"https://your-url",
-						"https://www.google.com/search?q=your-url"
-					],
-					"description": "Auto-complete URL when your URL is not an absolute URL"
-				},
-				"vs-browser.localProxyServer.enabled": {
-					"type": "boolean",
-					"default": false,
-					"description": "Enable local proxy server (Beta)"
-				},
-				"vs-browser.localProxyServer.port": {
-					"type": "number",
-					"default": 9999,
-					"description": "Local proxy server port"
-				},
-				"vs-browser.localProxyServer.cookieDomainRewrite": {
-					"type": "boolean",
-					"default": false,
-					"description": "Enable cookie domain rewrite"
-				},
-				"vs-browser.localProxyServer.forceLocation": {
-					"type": "boolean",
-					"default": false,
-					"description": "Some website redirect the user with some weird status code (eg. 400), so you can bypass the status code and keep redirecting the user to the correct URL"
-				},
-				"vs-browser.reload.onSave": {
-					"type": "boolean",
-					"default": false,
-					"description": "Auto reload the browser when file is saved"
-				},
-				"vs-browser.reload.autoReloadDurationEnabled": {
-					"type": "boolean",
-					"default": false,
-					"description": "Auto reload the browser after a setted time"
-				},
-				"vs-browser.reload.autoReloadDurationTime": {
-					"type": "number",
-					"default": 15000,
-					"description": "The duration time to reload in milliseconds"
-				},
-				"vs-browser.columnToShowIn": {
-					"type": "string",
-					"default": "Two",
-					"enum": [
-						"One",
-						"Two",
-						"Three",
-						"Active",
-						"Beside"
-					],
-					"enumDescriptions": [
-						"Show in First column",
-						"Show in Second Column",
-						"Show in Third column",
-						"Show in Active Column",
-						"Show in Beside column of Active column"
-					],
-					"description": "Default column to show in"
-				},
-				"vs-browser.showMessageDialog": {
-					"type": "boolean",
-					"default": false,
-					"description": "Show message dialog (sometimes the dialog still displays even if nothing goes wrong)"
-				},
-				"vs-browser.showStatusBarItem": {
-					"type": "boolean",
-					"default": true,
-					"description": "Show status bar item"
-				}
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "yarn run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "yarn run compile && yarn run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.4",
-		"@types/http-proxy": "^1.17.8",
-		"@types/mocha": "^9.0.0",
-		"@types/node": "14.x",
-		"@types/vscode": "^1.63.0",
-		"@typescript-eslint/eslint-plugin": "^5.1.0",
-		"@typescript-eslint/parser": "^5.1.0",
-		"@vscode/test-electron": "^1.6.2",
-		"eslint": "^8.1.0",
-		"glob": "^7.1.7",
-		"mocha": "^9.1.3",
-		"typescript": "^4.4.4"
-	},
-	"dependencies": {
-		"connect": "^3.7.0",
-		"http-proxy": "^1.18.1",
-		"morgan": "^1.10.0",
-		"zlib": "^1.0.5"
-	}
+    "name": "vs-browser",
+    "displayName": "VS Browser",
+    "description": "Built-in browser for Visual Studio Code",
+    "publisher": "Phu1237",
+    "author": {
+        "name": "Phu1237",
+        "url": "https://github.com/Phu1237"
+    },
+    "version": "2.0.11",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "bugs": {
+        "url": "https://github.com/Phu1237/vscode-vs-browser/issues",
+        "email": "phu1237@gmail.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Phu1237/vscode-vs-browser"
+    },
+    "engines": {
+        "vscode": "^1.63.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "icon": "images/icon.png",
+    "keywords": [
+        "vs",
+        "browser",
+        "visual",
+        "studio",
+        "code",
+        "vscode"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "vs-browser.start",
+                "title": "VS Browser: Start Browser"
+            },
+            {
+                "command": "vs-browser.startWithProxy",
+                "title": "VS Browser: Start Browser with Proxy"
+            },
+            {
+                "command": "vs-browser.startWithoutProxy",
+                "title": "VS Browser: Start Browser without Proxy"
+            }
+        ],
+        "configuration": {
+            "title": "VS Browser",
+            "properties": {
+                "vs-browser.proxyMode": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use proxy to prevent the some errors (Longer loading time and can not use with localhost except localProxyServer)"
+                },
+                "vs-browser.url": {
+                    "type": "string",
+                    "default": "http://localhost",
+                    "description": "Default URL open when starting the browser"
+                },
+                "vs-browser.autoCompleteUrl": {
+                    "type": "string",
+                    "default": "http://",
+                    "enum": [
+                        "http://",
+                        "https://",
+                        "https://www.google.com/search?q="
+                    ],
+                    "enumDescriptions": [
+                        "http://your-url",
+                        "https://your-url",
+                        "https://www.google.com/search?q=your-url"
+                    ],
+                    "description": "Auto-complete URL when your URL is not an absolute URL"
+                },
+                "vs-browser.colorScheme": {
+                    "type": "object",
+                    "default": {
+                        "http://localhost": "system"
+                    },
+                    "description": "Color scheme for specific website URLs",
+                    "additionalProperties": {
+                        "type": "string",
+                        "default": "system"
+                    }
+                },
+                "vs-browser.localProxyServer.enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable local proxy server (Beta)"
+                },
+                "vs-browser.localProxyServer.port": {
+                    "type": "number",
+                    "default": 9999,
+                    "description": "Local proxy server port"
+                },
+                "vs-browser.localProxyServer.cookieDomainRewrite": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable cookie domain rewrite"
+                },
+                "vs-browser.localProxyServer.forceLocation": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Some website redirect the user with some weird status code (eg. 400), so you can bypass the status code and keep redirecting the user to the correct URL"
+                },
+                "vs-browser.reload.onSave": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Auto reload the browser when file is saved"
+                },
+                "vs-browser.reload.autoReloadDurationEnabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Auto reload the browser after a setted time"
+                },
+                "vs-browser.reload.autoReloadDurationTime": {
+                    "type": "number",
+                    "default": 15000,
+                    "description": "The duration time to reload in milliseconds"
+                },
+                "vs-browser.columnToShowIn": {
+                    "type": "string",
+                    "default": "Two",
+                    "enum": [
+                        "One",
+                        "Two",
+                        "Three",
+                        "Active",
+                        "Beside"
+                    ],
+                    "enumDescriptions": [
+                        "Show in First column",
+                        "Show in Second Column",
+                        "Show in Third column",
+                        "Show in Active Column",
+                        "Show in Beside column of Active column"
+                    ],
+                    "description": "Default column to show in"
+                },
+                "vs-browser.showMessageDialog": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Show message dialog (sometimes the dialog still displays even if nothing goes wrong)"
+                },
+                "vs-browser.showStatusBarItem": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show status bar item"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "yarn run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "yarn run compile && yarn run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/glob": "^7.1.4",
+        "@types/http-proxy": "^1.17.8",
+        "@types/mocha": "^9.0.0",
+        "@types/node": "14.x",
+        "@types/vscode": "^1.63.0",
+        "@typescript-eslint/eslint-plugin": "^5.1.0",
+        "@typescript-eslint/parser": "^5.1.0",
+        "@vscode/test-electron": "^1.6.2",
+        "eslint": "^8.1.0",
+        "glob": "^7.1.7",
+        "mocha": "^9.1.3",
+        "typescript": "^4.4.4"
+    },
+    "dependencies": {
+        "connect": "^3.7.0",
+        "http-proxy": "^1.18.1",
+        "morgan": "^1.10.0",
+        "zlib": "^1.0.5"
+    }
 }

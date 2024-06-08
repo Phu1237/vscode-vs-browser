@@ -1,0 +1,186 @@
+html,
+body,
+iframe {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+body.vscode-light {
+  color: black;
+  color-scheme: light;
+  background-color: white;
+}
+
+body.vscode-dark {
+  color: white;
+  color-scheme: dark;
+  background-color: black;
+}
+
+body.vscode-light #navbar {
+  background-color: #f7f7f7;
+  border-top: 1px solid #ebebeb;
+}
+
+body.vscode-dark #navbar {
+  background-color: #3b3b3b;
+}
+
+body.vscode-light #navbar #addressbar {
+  background-color: #fff;
+  color: black;
+}
+
+body.vscode-dark #navbar #addressbar {
+  background-color: #2b2b2b;
+  color: white;
+}
+
+#navbar {
+  display: flex;
+  flex: 0 1;
+  padding: 0.25rem;
+  border-bottom: none;
+  z-index: 100;
+}
+
+#navbar #addressbar {
+  padding: 0.25rem 1rem;
+  width: 100%;
+  border: none;
+  border-radius: 2px;
+  font-size: 15px;
+}
+
+#navbar #addressbar:focus {
+  outline: 2px solid #466c88;
+}
+
+#navbar button {
+  all: unset;
+  position: relative;
+  display: flex;
+  padding: 0.5rem;
+  background-color: transparent;
+  text-align: center;
+}
+
+body.vscode-light #navbar button:hover {
+  background-color: #dcdcdc;
+}
+
+body.vscode-dark #navbar button:hover {
+  background-color: #515151;
+}
+
+#navbar button.active {
+  color: green;
+}
+
+#navbar button svg {
+  margin: auto;
+}
+
+#navbar button#btn-reload.loading svg {
+  animation: animation-spin 3s infinite linear;
+}
+
+#navbar button#btn-reload {
+  margin-right: 0.25rem;
+}
+
+#navbar button#btn-go {
+  margin-left: 0.25rem;
+}
+
+#navbar button#btn-go-to-settings {
+  margin-left: 0.25rem;
+}
+
+.webview-container {
+  box-sizing: border-box;
+  flex: 1 0;
+  padding: 0;
+}
+
+.webview-container #webview {
+  transition: all 0.25s;
+  margin: 0;
+  padding: 0;
+  visibility: visible;
+}
+
+.webview-container #webview-failed-load {
+  display: none;
+  position: absolute;
+  padding: 0 2rem;
+  width: 100%;
+  max-width: 400px;
+  top: calc(58%);
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.webview-container #webview-failed-load svg {
+  margin: 0 auto;
+  display: block;
+  text-align: center;
+}
+
+.webview-container #webview-failed-load svg:before {
+  animation: in-down 0.2s ease-in-out;
+  font-size: 48px;
+  width: 44px;
+  height: 60px;
+}
+
+.webview-container #webview-failed-load h4 {
+  opacity: 0;
+  animation: in-up 0.2s ease-in-out forwards;
+  animation-delay: 0.1s;
+  text-align: center;
+}
+
+@keyframes animation-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes in-down {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes in-up {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}

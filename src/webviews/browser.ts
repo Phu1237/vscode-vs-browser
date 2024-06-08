@@ -25,6 +25,7 @@ export default (webviewUri: string, data: Data) => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="${asset('assets/css/browser.css')}">
+    <script src="${asset('assets/js/jquery-3.7.1.slim.min.js')}"></script>
 
     `
     + (localProxyServerEnabled === true ? `
@@ -36,7 +37,7 @@ export default (webviewUri: string, data: Data) => {
 
 <body>
     <div id="navbar">
-        <button id="btn-reload" onclick="reloadIframe()" title="Reload">
+        <button id="btn-reload" title="Reload">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" />
                 <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" />
@@ -66,49 +67,26 @@ export default (webviewUri: string, data: Data) => {
         <iframe is="using-proxy" id="webview" frameborder="0"></iframe>
     </div>
     <script>
-        const vscode = acquireVsCodeApi(); // VS Code API
-        let url =  autoCompleteUrl('${url}');
-        let iframe = document.getElementById('webview');
-        let error = document.getElementById('webview-failed-load');
-        let btn_reload = document.getElementById('btn-reload');
-        let btn_go = document.getElementById('btn-go');
-        let btn_inspect = document.getElementById('btn-inspect');
-        let btn_go_to_settings = document.getElementById('btn-go-to-settings');
-        let addressbar = document.getElementById('addressbar');
+        $(document).ready(function() {
+            const vscode = acquireVsCodeApi(); // VS Code API
 
-        addressbar.value = '${url}';
-        iframe.src = '${url}';
+            let iframe = $('#webview');
 
-        window.onload = function () {
-          // Set a restore point for the webview
-          vscode.setState({
-            proxyMode: ${proxyMode},
-            url: url,
-            autoCompleteUrl: '${autoCompleteUrl}',
-            localProxyServerEnable: ${localProxyServerEnabled},
-            localProxyServerPort: ${localProxyServerPort},
-            reloadAutoReloadEnabled: ${reloadAutoReloadEnabled},
-            reloadAutoReloadDurationTime: ${reloadAutoReloadDurationTime},
-            viewType: '${data['viewType']}',
-            title: '${data['title']}',
-          });
+            let btn_reload = $('#btn-reload');
+            let btn_go = $('#btn-go');
+            let btn_inspect = $('#btn-inspect');
+            let btn_go_to_settings = $('#btn-go-to-settings');
 
-          if (${reloadAutoReloadEnabled}) {
-            btn_reload.classList.add('active');
-          }
-          if (${proxyMode}) {
-            // Watch to update addressbar
-            const observer = new MutationObserver(function () {
-              let url = iframe.getAttribute('srcurl') || '${url}';
-              addressbar.value = url;
+            // Set address
+            let addressbar = $('#addressbar');
+            let url = autoCompleteUrl('${url}');
+            addressbar.val('${url}');
+            iframe.attr('src', '${url}');
 
-              let proxyMode = ${proxyMode};
-              if (url && url.match(/^http:\/\/localhost/g)) {
-                proxyMode = false;
-              }
+            function setVSCodeState(options) {
               vscode.setState({
-                proxyMode: proxyMode,
-                url: url,
+                proxyMode: ${proxyMode},
+                url: '${url}',
                 autoCompleteUrl: '${autoCompleteUrl}',
                 localProxyServerEnable: ${localProxyServerEnabled},
                 localProxyServerPort: ${localProxyServerPort},
@@ -116,73 +94,109 @@ export default (webviewUri: string, data: Data) => {
                 reloadAutoReloadDurationTime: ${reloadAutoReloadDurationTime},
                 viewType: '${data['viewType']}',
                 title: '${data['title']}',
+                ...options,
+              });
+            }
+            // Set a restore point for the webview
+            setVSCodeState({
+              url: url,
+            });
+
+            if (${reloadAutoReloadEnabled}) {
+              btn_reload.addClass('active');
+            }
+            if (${proxyMode}) {
+              // Watch to update addressbar
+              const observer = new MutationObserver(function () {
+                let url = iframe.getAttribute('srcurl') || '${url}';
+                addressbar.value = url;
+
+                let proxyMode = ${proxyMode};
+                if (url && url.match(/^http:\/\/localhost/g)) {
+                  proxyMode = false;
+                }
+                setVSCodeState({
+                  proxyMode: proxyMode,
+                  url: url,
+                });
+              });
+              observer.observe(iframe[0], {
+                attributes: true,
+                attributeFilter: ['srcurl']
+              });
+              // Append proxy script to the page content
+              let script = $('<script type="module" src="${asset('assets/js/proxy.js')}" />');
+              $('body').append(script);
+            }
+
+            // Receive message from webview
+            window.addEventListener('message', event => {
+              const message = event.data; // The JSON data our extension sent
+
+              switch (message.command) {
+                case 'reload':
+                  reloadIframe();
+                  break;
+              }
+            });
+            addressbar.on("keyup", function (event) {
+              // Number 13 is the "Enter" key on the keyboard
+              if (event.keyCode === 13) {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                addressbar.blur();
+                // Trigger the button element with a click
+                btn_go.click();
+              }
+            });
+
+            /**
+             * Button handler
+             */
+            btn_reload.on('click', function () {
+              reloadIframe();
+            });
+            btn_go.on('click', function () {
+              let url = addressbar.val();
+              reloadIframe(url);
+              console.log('url', url);
+              if (!${proxyMode}) {
+                setVSCodeState({
+                  url: url,
+                });
+              }
+            });
+            btn_inspect.on('click', function () {
+              vscode.postMessage({
+                command: 'open-inspector',
               });
             });
-            observer.observe(iframe, {
-              attributes: true,
-              attributeFilter: ['srcurl']
+            btn_go_to_settings.on('click', function () {
+              vscode.postMessage({
+                command: 'go-to-settings'
+              })
             });
-            // Append proxy script to the page content
-            let script = document.createElement('script');
-            script.type = 'module';
-            script.src = '${asset('assets/proxy.js')}';
-            document.querySelector('body').appendChild(script);
-          }
-        }
 
-        // Receive message from webview
-        window.addEventListener('message', event => {
-          const message = event.data; // The JSON data our extension sent
+            // Just run when iframe first loaded
+            iframe.on('load', function () {
+              btn_reload.removeClass('loading');
+              if (${reloadAutoReloadEnabled}) {
+                setTimeout(reloadIframe, ${reloadAutoReloadDurationTime});
+              }
+            });
 
-          switch (message.command) {
-            case 'reload':
-              reloadIframe();
-              break;
-          }
+            function autoCompleteUrl(baseUrl) {
+              return baseUrl.replace(/^(?:(.*:)?\\\/\\/)?(.*)/i, (match, schemma, nonSchemmaUrl) => {
+                return schemma ? match : '${autoCompleteUrl}' + nonSchemmaUrl;
+              });
+            }
+
+            function reloadIframe(src = addressbar.val()) {
+              btn_reload.addClass('loading');
+              iframe.attr('src', autoCompleteUrl(src));
+              console.log('reloadIframe: ' + autoCompleteUrl(src));
+            }
         });
-        addressbar.addEventListener("keyup", function (event) {
-          // Number 13 is the "Enter" key on the keyboard
-          if (event.keyCode === 13) {
-            // Cancel the default action, if needed
-            event.preventDefault();
-            addressbar.blur();
-            // Trigger the button element with a click
-            btn_go.click();
-          }
-        });
-        btn_go.onclick = function () {
-          let url = addressbar.value;
-          reloadIframe(url);
-        }
-        btn_inspect.onclick = function () {
-          vscode.postMessage({
-            command: 'open-inspector',
-          });
-        }
-        btn_go_to_settings.onclick = function () {
-          vscode.postMessage({
-            command: 'go-to-settings'
-          })
-        }
-        // Just run when iframe first loaded
-        iframe.onload = function () {
-          btn_reload.classList.remove('loading');
-          if (${reloadAutoReloadEnabled}) {
-            setTimeout(reloadIframe, ${reloadAutoReloadDurationTime});
-          }
-        }
-
-        function autoCompleteUrl(url) {
-          return url.replace(/^(?:(.*:)?\\\/\\/)?(.*)/i, (match, schemma, nonSchemmaUrl) => {
-            return schemma ? match : '${autoCompleteUrl}' + nonSchemmaUrl;
-          });
-        }
-
-        function reloadIframe(src = addressbar.value) {
-          btn_reload.classList.add('loading');
-          iframe.src = autoCompleteUrl(src);
-          console.log('reloadIframe: ' + autoCompleteUrl(src));
-        }
     </script>
 </body>
 

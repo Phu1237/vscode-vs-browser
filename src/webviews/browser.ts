@@ -1,9 +1,10 @@
+import * as vscode from 'vscode';
 import Data from "../types/data";
 import * as vscode from 'vscode';
 
 export default (webviewUri: string, data: Data) => {
   // Render asset url
-  function asset(path: string) {
+  function asset(path: string): string {
     return webviewUri + path;
   }
   // Get current config
@@ -14,8 +15,8 @@ export default (webviewUri: string, data: Data) => {
   const localProxyServerEnabled: boolean = data['localProxyServerEnabled'] !== undefined ? data['localProxyServerEnabled'] : configs.get<boolean>("localProxyServer.enabled") || false;
   const localProxyServerPort: number = data['localProxyServerPort'] !== undefined ? data['localProxyServerPort'] : configs.get<number>("localProxyServer.port") || 9999;
   const localProxyServerForceLocation: boolean = data['localProxyServerForceLocation'] !== undefined ? data['localProxyServerForceLocation'] : configs.get<boolean>("localProxyServer.forceLocation") || false;
-  const reloadAutoReloadEnabled: boolean = data['reloadAutoReloadEnabled'] !== undefined ? data['reloadAutoReloadEnabled'] : configs.get<boolean>("reload.autoReloadEnabled") || false;
-  const reloadAutoReloadDurationTime: number = data['reloadAutoReloadDurationTime'] !== undefined ? data['reloadAutoReloadDurationTime'] : configs.get<number>("reload.autoReloadDurationTime") || 15000;
+  const autoReloadDurationEnabled: boolean = data['autoReloadDurationEnabled'] !== undefined ? data['autoReloadDurationEnabled'] : configs.get<boolean>("reload.autoReloadEnabled") || false;
+  const autoReloadDurationTime: number = data['autoReloadDurationTime'] !== undefined ? data['autoReloadDurationTime'] : configs.get<number>("reload.autoReloadDurationTime") || 15000;
 
   return `
 <!DOCTYPE html>
@@ -90,8 +91,8 @@ export default (webviewUri: string, data: Data) => {
                 autoCompleteUrl: '${autoCompleteUrl}',
                 localProxyServerEnable: ${localProxyServerEnabled},
                 localProxyServerPort: ${localProxyServerPort},
-                reloadAutoReloadEnabled: ${reloadAutoReloadEnabled},
-                reloadAutoReloadDurationTime: ${reloadAutoReloadDurationTime},
+                autoReloadDurationEnabled: ${autoReloadDurationEnabled},
+                autoReloadDurationTime: ${autoReloadDurationTime},
                 viewType: '${data['viewType']}',
                 title: '${data['title']}',
                 ...options,
@@ -102,7 +103,7 @@ export default (webviewUri: string, data: Data) => {
               url: url,
             });
 
-            if (${reloadAutoReloadEnabled}) {
+            if (${autoReloadDurationEnabled}) {
               btn_reload.addClass('active');
             }
             if (${proxyMode}) {
@@ -180,8 +181,8 @@ export default (webviewUri: string, data: Data) => {
             // Just run when iframe first loaded
             iframe.on('load', function () {
               btn_reload.removeClass('loading');
-              if (${reloadAutoReloadEnabled}) {
-                setTimeout(reloadIframe, ${reloadAutoReloadDurationTime});
+              if (${autoReloadDurationEnabled}) {
+                setTimeout(reloadIframe, ${autoReloadDurationTime});
               }
             });
 

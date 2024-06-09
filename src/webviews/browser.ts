@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import Data from "../types/data";
-import * as vscode from 'vscode';
 
 export default (webviewUri: string, data: Data) => {
   // Render asset url
@@ -15,7 +14,7 @@ export default (webviewUri: string, data: Data) => {
   const localProxyServerEnabled: boolean = data['localProxyServerEnabled'] !== undefined ? data['localProxyServerEnabled'] : configs.get<boolean>("localProxyServer.enabled") || false;
   const localProxyServerPort: number = data['localProxyServerPort'] !== undefined ? data['localProxyServerPort'] : configs.get<number>("localProxyServer.port") || 9999;
   const localProxyServerForceLocation: boolean = data['localProxyServerForceLocation'] !== undefined ? data['localProxyServerForceLocation'] : configs.get<boolean>("localProxyServer.forceLocation") || false;
-  const autoReloadDurationEnabled: boolean = data['autoReloadDurationEnabled'] !== undefined ? data['autoReloadDurationEnabled'] : configs.get<boolean>("reload.autoReloadEnabled") || false;
+  const autoReloadDurationEnabled: boolean = data['autoReloadDurationEnabled'] !== undefined ? data['autoReloadDurationEnabled'] : configs.get<boolean>("reload.autoReloadDurationEnabled") || false;
   const autoReloadDurationTime: number = data['autoReloadDurationTime'] !== undefined ? data['autoReloadDurationTime'] : configs.get<number>("reload.autoReloadDurationTime") || 15000;
 
   return `

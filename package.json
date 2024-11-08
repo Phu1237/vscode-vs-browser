@@ -153,6 +153,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Show status bar item"
+                },
+                "vs-browser.showUpdateChanges": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show \"New version changes\" after the updated"
                 }
             }
         }

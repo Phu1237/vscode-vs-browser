@@ -5,7 +5,7 @@ import Data from "../types/data";
 import { showMessage } from ".";
 import * as statusBarItem from "./statusBarItem";
 import * as server from "./server";
-import * as CONST_WEBVIEW from "../constants/webview";
+import CONST_WEBVIEW from "../constants/webview";
 
 /**
  * Inject event and context to panel
@@ -121,33 +121,6 @@ function bindWebviewEvents(
     (message: any) => {
       console.log("Received message:", message);
       switch (message.command) {
-        case "switch-color-scheme":
-          let configs = vscode.workspace.getConfiguration("vs-browser");
-          let configColorScheme = configs.get<Object>("colorScheme");
-          let url: keyof Object = message.value;
-          configColorScheme = Object.assign({}, configColorScheme);
-
-          let newColorScheme = getNewColorScheme();
-          if (configColorScheme[url]) {
-            let colorScheme: any = configColorScheme[url];
-
-            console.log(`Old color scheme of ${url}: ${newColorScheme}`);
-            newColorScheme = getNewColorScheme(colorScheme);
-          }
-          console.log(`New color scheme for ${url}: ${newColorScheme}`);
-          configs.update(
-            "colorScheme",
-            {
-              ...configColorScheme,
-              [url]: newColorScheme,
-            },
-            true
-          );
-          panel.webview.postMessage({
-            command: CONST_WEBVIEW.POST_MESSAGE.COMMAND.SET_COLOR_SCHEME,
-            value: newColorScheme,
-          });
-          return;
         case "open-inspector":
           console.log("Click on Open Inspector button");
           vscode.commands.executeCommand(
@@ -232,19 +205,4 @@ function bindWebviewEvents(
   }
 
   return panel;
-}
-
-export function getNewColorScheme(colorScheme: string = "system") {
-  let validColorSchemeList = ["system", "light", "dark"];
-
-  let colorSchemeIndex = validColorSchemeList.indexOf(colorScheme);
-  // in case of invalid color scheme
-  if (colorSchemeIndex === -1) {
-    colorSchemeIndex = 0;
-  }
-  let newColorSchemeIndex = colorSchemeIndex + 1;
-  if (newColorSchemeIndex >= validColorSchemeList.length) {
-    newColorSchemeIndex = 0;
-  }
-  return validColorSchemeList[newColorSchemeIndex];
 }

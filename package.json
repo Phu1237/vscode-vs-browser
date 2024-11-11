@@ -79,17 +79,6 @@
                     ],
                     "description": "Auto-complete URL when your URL is not an absolute URL"
                 },
-                "vs-browser.colorScheme": {
-                    "type": "object",
-                    "default": {
-                        "http://localhost": "system"
-                    },
-                    "description": "Color scheme for specific website URLs",
-                    "additionalProperties": {
-                        "type": "string",
-                        "default": "system"
-                    }
-                },
                 "vs-browser.localProxyServer.enabled": {
                     "type": "boolean",
                     "default": false,

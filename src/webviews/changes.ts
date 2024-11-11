@@ -1,12 +1,12 @@
-import Data from '../types/data';
-const packageJSON = require('../../package.json');
+import Data from "../types/data";
+const packageJSON = require("../../package.json");
 
 export default (webviewUri: string, data: Data) => {
   // Render asset url
   function asset(path: string) {
     return webviewUri + path;
   }
-  let extensionVersion = packageJSON.version || '0.0.0';
+  let extensionVersion = packageJSON.version || "0.0.0";
 
   let content = `
 <!DOCTYPE html>
@@ -37,10 +37,9 @@ export default (webviewUri: string, data: Data) => {
     <div>
         <h1>Changes (version ${extensionVersion})</h1>
         <ul>
-          <li><b>Local Proxy Server</b>: It's working more correctly now. Please give it a try.</li>
-          <li><b>Fix</b>: Localhost website now work even if Proxy Mode is enabled</li>
-          <li><b>Fix</b>: Url on Address bar now correct with current page</li>
-          <li><b>Fix</b>: The state of your old session will be restored after reopening VS Code</li>
+          <li><b>Add</b>: Add show update change setting to Show "New version changes" after the updated</li>
+          <li><b>Fix</b>: Not start with old URL after reopening VS Code</li>
+          <li><b>Fix</b>: Auto reload after duration time not working correctly</li>
         </ul>
     </div>
     <div>
@@ -54,7 +53,7 @@ export default (webviewUri: string, data: Data) => {
             </li>
         </ul>
         <div style="text-align: center">
-            <img src="${asset('images/start-extension.gif')}" />
+            <img src="${asset("images/start-extension.gif")}" />
             <br />
             <table>
                 <thead>
@@ -65,9 +64,9 @@ export default (webviewUri: string, data: Data) => {
                 <tbody>`;
   for (let property in packageJSON.contributes.configuration.properties) {
     let value = packageJSON.contributes.configuration.properties[property];
-    let key = property.replace(/vs-browser\./g, '');
-    let description = String(value.description) || '';
-    let defaultValue = String(value.default) || '';
+    let key = property.replace(/vs-browser\./g, "");
+    let description = String(value.description) || "";
+    let defaultValue = String(value.default) || "";
 
     content += `<tr>
                 <td>${key}</td>

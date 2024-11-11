@@ -4,7 +4,6 @@ type Data = {
   proxyMode?: boolean;
   url?: string;
   autoCompleteUrl?: string;
-  colorScheme?: any;
   localProxyServerEnabled?: boolean;
   localProxyServerPort?: number;
   localProxyServerCookieDomainRewrite?: boolean;

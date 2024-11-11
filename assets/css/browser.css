@@ -87,6 +87,7 @@ body.vscode-dark #navbar button:hover {
   color: green;
 }
 
+#navbar button span,
 #navbar button svg {
   margin: auto;
 }
@@ -149,6 +150,10 @@ body.vscode-dark #navbar button:hover {
   animation: in-up 0.2s ease-in-out forwards;
   animation-delay: 0.1s;
   text-align: center;
+}
+
+.hidden {
+    display: none !important;;
 }
 
 @keyframes animation-spin {

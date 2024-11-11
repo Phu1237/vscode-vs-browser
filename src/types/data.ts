@@ -4,13 +4,14 @@ type Data = {
   proxyMode?: boolean;
   url?: string;
   autoCompleteUrl?: string;
+  colorScheme?: any;
   localProxyServerEnabled?: boolean;
   localProxyServerPort?: number;
   localProxyServerCookieDomainRewrite?: boolean;
   localProxyServerForceLocation?: boolean;
   reloadOnSave?: boolean;
-  reloadAutoReloadEnabled?: boolean;
-  reloadAutoReloadDurationTime?: number;
+  autoReloadDurationEnabled?: boolean;
+  autoReloadDurationTime?: number;
   columnToShowIn?: string;
   showMessageDialog?: boolean;
   showStatusBarItem?: boolean;

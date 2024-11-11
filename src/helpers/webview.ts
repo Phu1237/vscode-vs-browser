@@ -1,56 +1,71 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 // types
-import Data from '../types/data';
+import Data from "../types/data";
 // helpers
-import { showMessage } from '.';
-import * as statusBarItem from './statusBarItem';
-import * as server from './server';
+import { showMessage } from ".";
+import * as statusBarItem from "./statusBarItem";
+import * as server from "./server";
+import * as CONST_WEBVIEW from "../constants/webview";
 
 /**
-* Inject event and context to panel
-* @param context Extension context
-* @param data Data to inject
-* @returns
-*/
-export function createWebviewPanel(template: Function, context: vscode.ExtensionContext, data: Data, webviewPanel?: vscode.WebviewPanel) {
+ * Inject event and context to panel
+ * @param context Extension context
+ * @param data Data to inject
+ * @returns
+ */
+export function createWebviewPanel(
+  template: Function,
+  context: vscode.ExtensionContext,
+  data: Data,
+  webviewPanel?: vscode.WebviewPanel
+) {
   // Start proxy server
-  let configs = vscode.workspace.getConfiguration('vs-browser');
-  let proxyMode = data['proxyMode'] !== undefined ? data['proxyMode'] : configs.get<boolean>('proxyMode') || false;
-  let localProxyServerEnabled = data['localProxyServerEnabled'] !== undefined ? data['localProxyServerEnabled'] : configs.get<boolean>('localProxyServer.enabled') || false;
+  let configs = vscode.workspace.getConfiguration("vs-browser");
+  let proxyMode =
+    data["proxyMode"] !== undefined
+      ? data["proxyMode"]
+      : configs.get<boolean>("proxyMode") || false;
+  let localProxyServerEnabled =
+    data["localProxyServerEnabled"] !== undefined
+      ? data["localProxyServerEnabled"]
+      : configs.get<boolean>("localProxyServer.enabled") || false;
   if (proxyMode && localProxyServerEnabled) {
     server.start(function () {
-      const configs = vscode.workspace.getConfiguration('vs-browser');
-      const port = configs.get<number>('localProxyServer.port') || 9999;
-      statusBarItem.startStatusBarItem.text = '$(cloud) VS Browser: ' + port;
+      const configs = vscode.workspace.getConfiguration("vs-browser");
+      const port = configs.get<number>("localProxyServer.port") || 9999;
+      statusBarItem.startStatusBarItem.text = "$(cloud) VS Browser: " + port;
     });
   }
 
   let panel = webviewPanel;
   if (!panel) {
     // Create new column
-    const column = data['columnToShowIn'] !== undefined ? data['columnToShowIn'] : configs.get<string>('columnToShowIn') || 'Two';
+    const column =
+      data["columnToShowIn"] !== undefined
+        ? data["columnToShowIn"]
+        : configs.get<string>("columnToShowIn") || "Two";
     let columnToShowIn = vscode.ViewColumn.Two;
     switch (column) {
-      case 'One':
+      case "One":
         columnToShowIn = vscode.ViewColumn.One;
         break;
-      case 'Two':
+      case "Two":
         columnToShowIn = vscode.ViewColumn.Two;
         break;
-      case 'Three':
+      case "Three":
         columnToShowIn = vscode.ViewColumn.Three;
         break;
-      case 'Active':
+      case "Active":
         columnToShowIn = vscode.ViewColumn.Active;
         break;
-      case 'Beside':
+      case "Beside":
         columnToShowIn = vscode.ViewColumn.Beside;
         break;
       default:
     }
     panel = vscode.window.createWebviewPanel(
-      'vs-browser.' + data['viewType'], // Identifies the type of the webview. Used internally
-      data['title'], // Title of the panel displayed to the user
+      "vs-browser." + data["viewType"], // Identifies the type of the webview. Used internally
+      data["title"], // Title of the panel displayed to the user
       columnToShowIn, // Editor column to show the new webview panel in.
       {
         enableScripts: true,
@@ -68,42 +83,91 @@ export function createWebviewPanel(template: Function, context: vscode.Extension
 }
 
 /**
-* Get webview context
-* @param webview
-* @param extensionUri
-* @param data
-* @returns
-*/
-export function getWebViewContent(template: Function, webview: vscode.Webview, extensionUri: vscode.Uri, data: Data) {
+ * Get webview context
+ * @param webview
+ * @param extensionUri
+ * @param data
+ * @returns
+ */
+export function getWebViewContent(
+  template: Function,
+  webview: vscode.Webview,
+  extensionUri: vscode.Uri,
+  data: Data
+) {
   // Create uri for webview
-  const webviewUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, '/'));
+  const webviewUri = webview.asWebviewUri(
+    vscode.Uri.joinPath(extensionUri, "/")
+  );
 
   return template(webviewUri, data);
 }
 
-function bindWebviewEvents(panel: any, template: Function, context: vscode.ExtensionContext, data: Data): vscode.WebviewPanel {
-  let configs = vscode.workspace.getConfiguration('vs-browser');
-  panel.webview.html = getWebViewContent(template, panel.webview, context.extensionUri, data);
+function bindWebviewEvents(
+  panel: any,
+  template: Function,
+  context: vscode.ExtensionContext,
+  data: Data
+): vscode.WebviewPanel {
+  let configs = vscode.workspace.getConfiguration("vs-browser");
+  panel.webview.html = getWebViewContent(
+    template,
+    panel.webview,
+    context.extensionUri,
+    data
+  );
   // Handle messages from the webview
   panel.webview.onDidReceiveMessage(
     (message: any) => {
-      console.log('Received message:', message);
+      console.log("Received message:", message);
       switch (message.command) {
-        case 'go-to-settings':
-          console.log('Click on Go to Settings button');
-          vscode.commands.executeCommand('workbench.action.openSettings', 'vs-browser');
+        case "switch-color-scheme":
+          let configs = vscode.workspace.getConfiguration("vs-browser");
+          let configColorScheme = configs.get<Object>("colorScheme");
+          let url: keyof Object = message.value;
+          configColorScheme = Object.assign({}, configColorScheme);
+
+          let newColorScheme = getNewColorScheme();
+          if (configColorScheme[url]) {
+            let colorScheme: any = configColorScheme[url];
+
+            console.log(`Old color scheme of ${url}: ${newColorScheme}`);
+            newColorScheme = getNewColorScheme(colorScheme);
+          }
+          console.log(`New color scheme for ${url}: ${newColorScheme}`);
+          configs.update(
+            "colorScheme",
+            {
+              ...configColorScheme,
+              [url]: newColorScheme,
+            },
+            true
+          );
+          panel.webview.postMessage({
+            command: CONST_WEBVIEW.POST_MESSAGE.COMMAND.SET_COLOR_SCHEME,
+            value: newColorScheme,
+          });
           return;
-        case 'open-inspector':
-          console.log('Click on Open Inspector button');
-          vscode.commands.executeCommand('workbench.action.webview.openDeveloperTools');
+        case "open-inspector":
+          console.log("Click on Open Inspector button");
+          vscode.commands.executeCommand(
+            "workbench.action.webview.openDeveloperTools"
+          );
           return;
-        case 'show-message-box':
+        case "go-to-settings":
+          console.log("Click on Go to Settings button");
+          vscode.commands.executeCommand(
+            "workbench.action.openSettings",
+            "vs-browser"
+          );
+          return;
+        case "show-message-box":
           let type = message.type;
           let text = message.text;
           let detail = message.detail;
           console.log(message.detail);
           showMessage(type, text, {
-            detail: detail
+            detail: detail,
           });
           return;
       }
@@ -118,17 +182,17 @@ function bindWebviewEvents(panel: any, template: Function, context: vscode.Exten
 
       switch (panel.viewColumn) {
         case vscode.ViewColumn.One:
-          console.log('ViewColumn.One');
+          console.log("ViewColumn.One");
           // updateWebviewForCat(panel, 'Coding Cat');
           return;
 
         case vscode.ViewColumn.Two:
-          console.log('ViewColumn.Two');
+          console.log("ViewColumn.Two");
           // updateWebviewForCat(panel, 'Compiling Cat');
           return;
 
         case vscode.ViewColumn.Three:
-          console.log('ViewColumn.Three');
+          console.log("ViewColumn.Three");
           // updateWebviewForCat(panel, 'Testing Cat');
           return;
       }
@@ -140,11 +204,13 @@ function bindWebviewEvents(panel: any, template: Function, context: vscode.Exten
   panel.onDidDispose(
     () => {
       // When the panel is closed, cancel any future updates to the webview content
-      const configs = vscode.workspace.getConfiguration('vs-browser');
-      let localProxyServerEnabled = configs.get<boolean>('localProxyServer.enabled');
+      const configs = vscode.workspace.getConfiguration("vs-browser");
+      let localProxyServerEnabled = configs.get<boolean>(
+        "localProxyServer.enabled"
+      );
       if (localProxyServerEnabled) {
         server.stop(function () {
-          statusBarItem.startStatusBarItem.text = '$(globe) VS Browser';
+          statusBarItem.startStatusBarItem.text = "$(globe) VS Browser";
         });
       }
     },
@@ -153,12 +219,32 @@ function bindWebviewEvents(panel: any, template: Function, context: vscode.Exten
   );
 
   // Handle when save file
-  let reloadOnSave = data['reloadOnSave'] !== undefined ? data['reloadOnSave'] : configs.get<boolean>('reload.onSave') || false;
+  let reloadOnSave =
+    data["reloadOnSave"] !== undefined
+      ? data["reloadOnSave"]
+      : configs.get<boolean>("reload.onSave") || false;
   if (reloadOnSave) {
     vscode.workspace.onDidSaveTextDocument(() => {
-      panel.webview.postMessage({ command: 'reload' });
+      panel.webview.postMessage({
+        command: CONST_WEBVIEW.POST_MESSAGE.COMMAND.RELOAD,
+      });
     });
   }
 
   return panel;
+}
+
+export function getNewColorScheme(colorScheme: string = "system") {
+  let validColorSchemeList = ["system", "light", "dark"];
+
+  let colorSchemeIndex = validColorSchemeList.indexOf(colorScheme);
+  // in case of invalid color scheme
+  if (colorSchemeIndex === -1) {
+    colorSchemeIndex = 0;
+  }
+  let newColorSchemeIndex = colorSchemeIndex + 1;
+  if (newColorSchemeIndex >= validColorSchemeList.length) {
+    newColorSchemeIndex = 0;
+  }
+  return validColorSchemeList[newColorSchemeIndex];
 }

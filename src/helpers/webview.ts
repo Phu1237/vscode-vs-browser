@@ -6,6 +6,7 @@ import { showMessage } from ".";
 import * as statusBarItem from "./statusBarItem";
 import * as server from "./server";
 import CONST_WEBVIEW from "../constants/webview";
+import path = require("path");
 
 /**
  * Inject event and context to panel
@@ -93,14 +94,21 @@ export function getWebViewContent(
   template: Function,
   webview: vscode.Webview,
   extensionUri: vscode.Uri,
+  extensionPath: string,
   data: Data
 ) {
   // Create uri for webview
   const webviewUri = webview.asWebviewUri(
     vscode.Uri.joinPath(extensionUri, "/")
-  );
+  ) as unknown as string;
 
-  return template(webviewUri, data);
+  return template(
+    {
+      webviewUri: webviewUri,
+      extensionPath: extensionPath + "/",
+    } as WebviewContext,
+    data
+  );
 }
 
 function bindWebviewEvents(
@@ -114,6 +122,7 @@ function bindWebviewEvents(
     template,
     panel.webview,
     context.extensionUri,
+    context.extensionPath,
     data
   );
   // Handle messages from the webview

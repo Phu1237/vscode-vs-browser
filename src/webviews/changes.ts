@@ -1,10 +1,10 @@
 import Data from "../types/data";
 const packageJSON = require("../../package.json");
 
-export default (webviewUri: string, data: Data) => {
+export default (webviewContext: WebviewContext, data: Data) => {
   // Render asset url
   function asset(path: string) {
-    return webviewUri + path;
+    return webviewContext.webviewUri + path;
   }
   let extensionVersion = packageJSON.version || "0.0.0";
 

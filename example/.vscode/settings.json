@@ -1,0 +1,16 @@
+{
+    "vs-browser.proxyMode": false,
+    "vs-browser.url": "http://localhost",
+    "vs-browser.autoCompleteUrl": "http://",
+    "vs-browser.localProxyServer.enabled": false,
+    "vs-browser.localProxyServer.port": 9999,
+    "vs-browser.localProxyServer.cookieDomainRewrite": false,
+    "vs-browser.localProxyServer.forceLocation": false,
+    "vs-browser.reload.onSave": false,
+    "vs-browser.reload.autoReloadDurationEnabled": false,
+    "vs-browser.reload.autoReloadDurationTime": false,
+    "vs-browser.columnToShowIn": "Two",
+    "vs-browser.showMessageDialog": false,
+    "vs-browser.showStatusBarItem": true,
+    "vs-browser.showUpdateChanges": true
+}

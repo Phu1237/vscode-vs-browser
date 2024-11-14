@@ -87,6 +87,5 @@ export default (webviewContext: WebviewContext, data: Data) => {
       convertVarToHTML(replaceObject[key])
     );
   }
-  console.log(html);
   return html;
 };

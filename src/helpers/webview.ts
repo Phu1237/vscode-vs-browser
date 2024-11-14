@@ -165,17 +165,14 @@ function bindWebviewEvents(
       switch (panel.viewColumn) {
         case vscode.ViewColumn.One:
           console.log("ViewColumn.One");
-          // updateWebviewForCat(panel, 'Coding Cat');
           return;
 
         case vscode.ViewColumn.Two:
           console.log("ViewColumn.Two");
-          // updateWebviewForCat(panel, 'Compiling Cat');
           return;
 
         case vscode.ViewColumn.Three:
           console.log("ViewColumn.Three");
-          // updateWebviewForCat(panel, 'Testing Cat');
           return;
       }
     },

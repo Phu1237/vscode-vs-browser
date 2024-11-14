@@ -36,8 +36,10 @@ export default (webviewContext: WebviewContext, data: Data) => {
 <body>
     <div>
         <h1>Changes (version ${extensionVersion})</h1>
+        <b>THIS VERSION IS A BREAKING CHANGES VERSION SO PLEASE TAKE A LOOK AT YOUR SETTINGS.<br/>I have change some setting name so it may not get your old setting.<br/>Thanks!</b>
         <ul>
           <li><b>Add</b>: Add show update change setting to Show "New version changes" after the updated</li>
+          <li><b>Refactor</b>: Refactor source code. Change some setting name so it may not get your old setting</li>
           <li><b>Fix</b>: Not start with old URL after reopening VS Code</li>
           <li><b>Fix</b>: Auto reload after duration time not working correctly</li>
         </ul>

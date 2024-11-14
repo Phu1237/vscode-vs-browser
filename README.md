@@ -13,7 +13,7 @@ Built-in browser for Visual Studio Code
 ## Usage
 
 - Open command palette (`Ctrl+Shift+P`) & enter "`VS Browser: Start Browser`"
-- All extension settings are `disable by default`, you should update extension settings for a better experience
+- You should update extension settings for a better experience
 
 ## Extension Settings
 
@@ -31,12 +31,19 @@ This product is free but if you like my work and you want to support me, buy me 
 
 ## Release Notes
 
+### [2.1.0] BREAKING CHANGES VERSION
+
+- `Add`: Add show update change setting to Show "New version changes" after the updated
+- `Refactor`: Refactor source code. Change some setting name so it may not get your old setting
+- `Fix`: Not start with old URL after reopening VS Code
+- `Fix`: Auto reload after duration time not working correctly
+
 ### [2.0.11]
 
-- Local Proxy Server: It's working more correctly now. Please give it a try.</li>
-- Fix: Localhost website now work even if Proxy Mode is enabled</li>
-- Fix: Url on Address bar now correct with current page</li>
-- Fix: The state of your old session will be restored after reopening VS Code</li>
+- Local Proxy Server: It's working more correctly now. Please give it a try
+- Fix: Localhost website now work even if Proxy Mode is enabled
+- Fix: Url on Address bar now correct with current page
+- Fix: The state of your old session will be restored after reopening VS Code
 
 ### [2.0.8]
 

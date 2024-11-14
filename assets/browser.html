@@ -129,7 +129,7 @@
         if ({ proxyMode }) {
           // Watch to update addressbar
           const observer = new MutationObserver(function () {
-            let url = iframe.getAttribute("srcurl") || { url };
+            let url = iframe.attr("srcurl") || { url };
             addressbar.value = url;
 
             let proxyMode = { proxyMode };
@@ -198,10 +198,12 @@
         });
 
         // Just run when iframe first loaded
+        let reloadTimeout = null;
         iframe.on("load", function () {
           btn_reload.removeClass("loading");
           if ({ autoReloadDurationEnabled }) {
-            setTimeout(reloadIframe, { autoReloadDurationTime });
+            clearTimeout(reloadTimeout);
+            reloadTimeout = setTimeout(reloadIframe, { autoReloadDurationTime });
           }
         });
 

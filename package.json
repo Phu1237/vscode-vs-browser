@@ -64,6 +64,17 @@
                     "default": "http://localhost",
                     "description": "Default URL open when starting the browser"
                 },
+                "vs-browser.favourites": {
+                    "type": "object",
+                    "default": {
+                        "http://localhost": "localhost"
+                    },
+                    "description": "Favourite websites",
+                    "additionalProperties": {
+                        "type": "string",
+                        "default": ""
+                    }
+                },
                 "vs-browser.autoCompleteUrl": {
                     "type": "string",
                     "default": "http://",
@@ -174,6 +185,7 @@
         "typescript": "^4.4.4"
     },
     "dependencies": {
+        "@vscode/codicons": "^0.0.36",
         "connect": "^3.7.0",
         "http-proxy": "^1.18.1",
         "morgan": "^1.10.0",

@@ -15,7 +15,12 @@
         <i id="btn-reload--icon" class="codicon codicon-refresh"></i>
       </button>
       <!-- addressbar -->
-      <input type="text" id="addressbar" placeholder="Url" />
+      <div class="addressbar">
+        <input type="text" id="addressbar" placeholder="Url" />
+        <button id="btn-fav" title="Add this page to favourites">
+          <i class="codicon codicon-star"></i>
+        </button>
+      </div>
       <!-- go to url -->
       <button id="btn-go" title="Go to URL">
         <svg
@@ -43,37 +48,169 @@
         <i class="codicon codicon-settings-gear"></i>
       </button>
     </div>
+    <div id="favbar">
+      <div id="favourite-items" class="favourite-items"></div>
+      <div id="favourite-item-all" class="favourite-item-all">
+        |&nbsp;
+        <div id="show-all-favourites" class="favourite-item">
+          <div class="favourite-item--icon">
+            <i
+              id="show-all-favourites--icon"
+              class="codicon codicon-folder"
+            ></i>
+          </div>
+          <div class="favourite-item--title">All Favourites</div>
+        </div>
+      </div>
+      <div
+        id="favourite-item-all--dropdown"
+        class="favourite-item-all--dropdown"
+      ></div>
+    </div>
     <div class="webview-container">
-      <iframe is="using-proxy" id="webview" frameborder="0"></iframe>
+      <iframe
+        is="using-proxy"
+        id="webview"
+        frameborder="0"
+        sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"
+      ></iframe>
     </div>
     <script>
       $(document).ready(function () {
         const vscode = acquireVsCodeApi(); // VS Code API
 
-        let iframe = $("#webview");
+        const iframe = $("#webview");
 
-        let btn_reload = $("#btn-reload");
-        let btn_go = $("#btn-go");
-        let btn_inspect = $("#btn-inspect");
-        let btn_go_to_settings = $("#btn-go-to-settings");
+        const btn_reload = $("#btn-reload");
+        const addressbar = $("#addressbar");
+        const btn_fav = $("#btn-fav");
+        const btn_go = $("#btn-go");
+        const btn_inspect = $("#btn-inspect");
+        const btn_go_to_settings = $("#btn-go-to-settings");
 
-        // Set address
-        let addressbar = $("#addressbar");
-        let url = autoCompleteUrl({ url });
-        addressbar.val({ url });
-        iframe.attr("src", { url });
+        // ----------------------------------------------------------------
+        // Configuration
+        // ----------------------------------------------------------------
+        const config = {
+          viewType: { viewType },
+          title: { title },
+          proxyMode: { proxyMode },
+          url: { url },
+          favourites: { favourites },
+          autoCompleteUrl: { autoCompleteUrl },
+          localProxyServerEnabled: { localProxyServerEnabled },
+          localProxyServerPort: { localProxyServerPort },
+          localProxyServerForceLocation: { localProxyServerForceLocation },
+          autoReloadDurationEnabled: { autoReloadDurationEnabled },
+          autoReloadDurationTime: { autoReloadDurationTime },
+        };
+        function renderConfigs() {
+          // proxyMode
+          if (config.proxyMode) {
+            // Watch to update addressbar
+            const observer = new MutationObserver(function () {
+              let url = iframe.attr("srcurl") || { url };
+              addressbar.val(url);
 
+              let proxyMode = { proxyMode };
+              if (url && url.match(/^http:\/\/localhost/g)) {
+                proxyMode = false;
+              }
+              setVSCodeState({
+                proxyMode: proxyMode,
+                url: url,
+              });
+            });
+            observer.observe(iframe[0], {
+              attributes: true,
+              attributeFilter: ["srcurl"],
+            });
+            // Append proxy script to the page content
+            let script = $('<script type="module" src="{ proxyJS }" />');
+            $("body").append(script);
+          }
+          // url
+          goToUrl(config.url);
+          // favourites
+          if (Object.keys(config.favourites).length > 0) {
+            initFavourites();
+          }
+          // autoReloadDurationEnabled
+          btn_reload.toggleClass("active", config.autoReloadDurationEnabled);
+        }
+        renderConfigs();
+        // Favourites
+        let showAllFavourites = false;
+        function initFavourites() {
+          renderFavourites();
+          bindFavouriteEvents();
+        }
+        function renderFavourites() {
+          $("#favourite-items").empty();
+          $("#favourite-item-all--dropdown").empty();
+          for (const [key, value] of Object.entries(config.favourites)) {
+            const favouriteItemHTML = `<div class="favourite-item">
+                <div class="favourite-item--icon">
+                    <i class='codicon codicon-globe'></i>
+                </div>
+                <div class="favourite-item--title">${value}</div>
+            </div>`;
+
+            const favouriteItemInItems = $(favouriteItemHTML);
+            favouriteItemInItems.on("click", () => goToUrl(key));
+            $("#favourite-items").append(favouriteItemInItems);
+
+            const favouriteItemInAll = $(favouriteItemHTML);
+            favouriteItemInAll.on("click", () => goToUrl(key));
+            $("#favourite-item-all--dropdown").append(favouriteItemInAll);
+          }
+        }
+        function isPageFavourited(page) {
+          return config.favourites.hasOwnProperty(page);
+        }
+        function togglePageFavouriteIcon(page) {
+          const isFavourited = isPageFavourited(page);
+          const favIcon = btn_fav.find("i");
+          favIcon.toggleClass("codicon-star", !isFavourited);
+          favIcon.toggleClass("codicon-star-full", isFavourited);
+        }
+        function bindFavouriteEvents() {
+          btn_fav.on("click", () => {
+            let url = addressbar.val();
+            togglePageFavouriteIcon(url);
+            renderFavourites();
+          });
+          $("#show-all-favourites").on("click", () => {
+            showAllFavourites = !showAllFavourites;
+            $("#show-all-favourites--icon").toggleClass(
+              "codicon-folder",
+              !showAllFavourites
+            );
+            $("#show-all-favourites--icon").toggleClass(
+              "codicon-folder-opened",
+              showAllFavourites
+            );
+            $("#favourite-item-all--dropdown").toggle(showAllFavourites);
+          });
+        }
+
+        // ----------------------------------------------------------------
+        // setVSCodeState
+        // ----------------------------------------------------------------
+        function reloadIframe() {
+          iframe.attr("src", iframe.attr("src"));
+        }
         function setVSCodeState(options) {
           let state = {
-            proxyMode: { proxyMode },
-            url: { url },
-            autoCompleteUrl: { autoCompleteUrl },
-            localProxyServerEnable: { localProxyServerEnabled },
-            localProxyServerPort: { localProxyServerPort },
-            autoReloadDurationEnabled: { autoReloadDurationEnabled },
-            autoReloadDurationTime: { autoReloadDurationTime },
-            viewType: { viewType },
-            title: { title },
+            proxyMode: config.proxyMode,
+            url: config.url,
+            autoCompleteUrl: config.autoCompleteUrl,
+            localProxyServerEnable: config.localProxyServerEnable,
+            localProxyServerPort: config.localProxyServerPort,
+            autoReloadDurationEnabled: config.autoReloadDurationEnabled,
+            autoReloadDurationTime: config.autoReloadDurationTime,
+            viewType: config.viewType,
+            title: config.title,
           };
 
           vscode.setState({
@@ -82,36 +219,7 @@
           });
         }
         // Set a restore point for the webview
-        setVSCodeState({
-          url: url,
-        });
-
-        if ({ autoReloadDurationEnabled }) {
-          btn_reload.addClass("active");
-        }
-        if ({ proxyMode }) {
-          // Watch to update addressbar
-          const observer = new MutationObserver(function () {
-            let url = iframe.attr("srcurl") || { url };
-            addressbar.value = url;
-
-            let proxyMode = { proxyMode };
-            if (url && url.match(/^http:\/\/localhost/g)) {
-              proxyMode = false;
-            }
-            setVSCodeState({
-              proxyMode: proxyMode,
-              url: url,
-            });
-          });
-          observer.observe(iframe[0], {
-            attributes: true,
-            attributeFilter: ["srcurl"],
-          });
-          // Append proxy script to the page content
-          let script = $('<script type="module" src="{ proxyJS }" />');
-          $("body").append(script);
-        }
+        setVSCodeState();
 
         // Receive message from webview
         window.addEventListener("message", (event) => {
@@ -141,13 +249,7 @@
           reloadIframe();
         });
         btn_go.on("click", function () {
-          let url = addressbar.val();
-          reloadIframe(url);
-          if (!{ proxyMode }) {
-            setVSCodeState({
-              url: url,
-            });
-          }
+          goToUrl(addressbar.val());
         });
         btn_inspect.on("click", function () {
           vscode.postMessage({
@@ -164,16 +266,28 @@
         let reloadTimeout = null;
         iframe.on("load", function () {
           btn_reload.removeClass("loading");
-          if ({ autoReloadDurationEnabled }) {
+          if (config.autoReloadDurationEnabled) {
             clearTimeout(reloadTimeout);
-            reloadTimeout = setTimeout(reloadIframe, { autoReloadDurationTime });
+            reloadTimeout = setTimeout(
+              reloadIframe,
+              config.autoReloadDurationTime
+            );
           }
         });
 
+        function goToUrl(targetUrl) {
+          addressbar.val(targetUrl);
+          reloadIframe(targetUrl);
+          if (!config.proxyMode) {
+            setVSCodeState({
+              url: targetUrl,
+            });
+          }
+        }
         function autoCompleteUrl(url) {
           if (!/^https?:\/\//i.test(url)) {
             // If not, prepend 'http://'
-            url = { autoCompleteUrl } + url;
+            url = config.autoCompleteUrl + url;
           }
           return url;
         }
@@ -181,8 +295,6 @@
         function reloadIframe(src = addressbar.val()) {
           btn_reload.addClass("loading");
           iframe.attr("src", autoCompleteUrl(src));
-          url = autoCompleteUrl(src);
-          console.log("reloadIframe: " + autoCompleteUrl(src));
         }
       });
     </script>

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import Data from "../types/data";
+import Data, { FavouriteData } from "../types/data";
 import { readFileSync } from "fs";
 import CONST_WEBVIEW from "../constants/webview";
 
@@ -30,6 +30,10 @@ export default (webviewContext: WebviewContext, data: Data) => {
     data["url"] !== undefined
       ? data["url"]
       : configs.get<string>("url") || "http://localhost";
+  const favourites: FavouriteData =
+    data["favourites"] !== undefined
+      ? data["favourites"]
+      : configs.get<FavouriteData>("favourites") || {};
   const autoCompleteUrl: string =
     data["autoCompleteUrl"] !== undefined
       ? data["autoCompleteUrl"]
@@ -56,6 +60,7 @@ export default (webviewContext: WebviewContext, data: Data) => {
       : configs.get<number>("reload.autoReloadDurationTime") || 15000;
 
   const replaceObject: ReplaceObject = {
+    codiconsCss: asset("node_modules/@vscode/codicons/dist/codicon.css"),
     browserCss: asset("assets/css/browser.css"),
     jqueryJS: asset("assets/js/jquery-3.7.1.slim.min.js"),
     proxyJS: asset("assets/js/proxy.js"),
@@ -66,6 +71,7 @@ export default (webviewContext: WebviewContext, data: Data) => {
     localProxyServerForceLocationScript: `<script>window.forceLocation = ${localProxyServerForceLocation}</script>`,
     proxyMode: proxyMode,
     url: `'${url}'`,
+    favourites: JSON.stringify(favourites),
     autoCompleteUrl: `'${autoCompleteUrl}'`,
     localProxyServerEnabled: localProxyServerEnabled,
     localProxyServerPort: localProxyServerPort,
@@ -87,5 +93,9 @@ export default (webviewContext: WebviewContext, data: Data) => {
       convertVarToHTML(replaceObject[key])
     );
   }
+  console.log(favourites);
+
+  console.log(html);
+
   return html;
 };

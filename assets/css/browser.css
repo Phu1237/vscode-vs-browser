@@ -87,12 +87,12 @@ body.vscode-dark #navbar button:hover {
   color: green;
 }
 
-#navbar button span,
-#navbar button svg {
+#navbar button i {
   margin: auto;
+  font-size: 25px;
 }
 
-#navbar button#btn-reload.loading svg {
+#navbar button#btn-reload.loading i {
   animation: animation-spin 3s infinite linear;
 }
 
@@ -153,7 +153,7 @@ body.vscode-dark #navbar button:hover {
 }
 
 .hidden {
-    display: none !important;;
+  display: none !important;
 }
 
 @keyframes animation-spin {

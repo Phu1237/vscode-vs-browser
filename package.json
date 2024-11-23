@@ -64,7 +64,7 @@
                     "default": "http://localhost",
                     "description": "Default URL open when starting the browser"
                 },
-                "vs-browser.favourites": {
+                "vs-browser.favourites.list": {
                     "type": "object",
                     "default": {
                         "http://localhost": "localhost"
@@ -74,6 +74,21 @@
                         "type": "string",
                         "default": ""
                     }
+                },
+                "vs-browser.favourites.savingProfile": {
+                    "type": "string",
+                    "default": "global",
+                    "enum": [
+                        "auto",
+                        "global",
+                        "workspace"
+                    ],
+                    "enumDescriptions": [
+                        "Let VS Code decide",
+                        "Use User profile for saving profile",
+                        "Use Workspace profile for saving profile"
+                    ],
+                    "description": "Favourite websites saving profile"
                 },
                 "vs-browser.autoCompleteUrl": {
                     "type": "string",

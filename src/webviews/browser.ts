@@ -12,6 +12,32 @@ function convertVarToHTML(v: any): string {
   return String(v);
 }
 
+function getFavourites(
+  workspaceFolder?: vscode.WorkspaceFolder
+): FavouriteData {
+  let favorites = {};
+  const configs = vscode.workspace.getConfiguration("vs-browser.favourites");
+  const configsFavouritesList = configs.get<FavouriteData>("list") ?? {};
+  favorites = {
+    ...configsFavouritesList,
+  };
+
+  // Not supported yet
+  if (workspaceFolder) {
+    const workspaceConfigs = vscode.workspace.getConfiguration(
+      "vs-browser.favourites",
+      workspaceFolder
+    );
+    const workspaceConfigsFavouritesList =
+      workspaceConfigs.get<FavouriteData>("list") ?? {};
+    favorites = {
+      ...workspaceConfigsFavouritesList,
+    };
+  }
+
+  return favorites;
+}
+
 export default (webviewContext: WebviewContext, data: Data) => {
   // Render asset url
   function asset(path: string): string {
@@ -31,9 +57,7 @@ export default (webviewContext: WebviewContext, data: Data) => {
       ? data["url"]
       : configs.get<string>("url") || "http://localhost";
   const favourites: FavouriteData =
-    data["favourites"] !== undefined
-      ? data["favourites"]
-      : configs.get<FavouriteData>("favourites") || {};
+    data["favourites"] !== undefined ? data["favourites"] : getFavourites();
   const autoCompleteUrl: string =
     data["autoCompleteUrl"] !== undefined
       ? data["autoCompleteUrl"]
@@ -80,7 +104,20 @@ export default (webviewContext: WebviewContext, data: Data) => {
     autoReloadDurationTime: autoReloadDurationTime,
     viewType: `'${viewType}'`,
     title: `'${title}'`,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    CONST_WEBVIEW_POST_MESSAGE_COMMAND_FAVOURITE_ADD: `'${CONST_WEBVIEW.POST_MESSAGE.COMMAND.FAVOURITE_ADD}'`,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    CONST_WEBVIEW_POST_MESSAGE_COMMAND_FAVOURITE_REMOVE: `'${CONST_WEBVIEW.POST_MESSAGE.COMMAND.FAVOURITE_REMOVE}'`,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    CONST_WEBVIEW_POST_MESSAGE_COMMAND_GO_TO_SETTINGS: `'${CONST_WEBVIEW.POST_MESSAGE.COMMAND.GO_TO_SETTINGS}'`,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    CONST_WEBVIEW_POST_MESSAGE_COMMAND_OPEN_INSPECTOR: `'${CONST_WEBVIEW.POST_MESSAGE.COMMAND.OPEN_INSPECTOR}'`,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    CONST_WEBVIEW_POST_MESSAGE_COMMAND_REFRESH_FAVOURITES: `'${CONST_WEBVIEW.POST_MESSAGE.COMMAND.REFRESH_FAVOURITES}'`,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     CONST_WEBVIEW_POST_MESSAGE_COMMAND_RELOAD: `'${CONST_WEBVIEW.POST_MESSAGE.COMMAND.RELOAD}'`,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    CONST_WEBVIEW_POST_MESSAGE_COMMAND_SHOW_MESSAGE_BOX: `'${CONST_WEBVIEW.POST_MESSAGE.COMMAND.SHOW_MESSAGE_BOX}'`,
   };
 
   let html = readFileSync(

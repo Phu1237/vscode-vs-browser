@@ -1,12 +1,12 @@
 import * as vscode from "vscode";
 // types
-import Data from "../types/data";
+import Data, { FavouriteData } from "../types/data";
 // helpers
 import { showMessage } from ".";
 import * as statusBarItem from "./statusBarItem";
 import * as server from "./server";
+import CONST_CONFIGS from "../constants/configs";
 import CONST_WEBVIEW from "../constants/webview";
-import path = require("path");
 
 /**
  * Inject event and context to panel
@@ -127,27 +127,68 @@ function bindWebviewEvents(
   );
   // Handle messages from the webview
   panel.webview.onDidReceiveMessage(
-    (message: any) => {
-      console.log("Received message:", message);
+    (message: WebviewMessage) => {
       switch (message.command) {
-        case "open-inspector":
+        case CONST_WEBVIEW.POST_MESSAGE.COMMAND.FAVOURITE_ADD:
+        case CONST_WEBVIEW.POST_MESSAGE.COMMAND.FAVOURITE_REMOVE: {
+          const configs = vscode.workspace.getConfiguration(
+            "vs-browser.favourites"
+          );
+          const configsFavouritesSavingProfile =
+            configs.get("savingProfile") ||
+            CONST_CONFIGS.FAVOURITES_SAVING_PROFILE.DEFAULT;
+
+          let favouritesSavingProfile;
+          if (
+            configsFavouritesSavingProfile ===
+            CONST_CONFIGS.FAVOURITES_SAVING_PROFILE.NAME.GLOBAL
+          ) {
+            favouritesSavingProfile = vscode.ConfigurationTarget.Global;
+          } else if (
+            configsFavouritesSavingProfile ===
+            CONST_CONFIGS.FAVOURITES_SAVING_PROFILE.NAME.WORKSPACE
+          ) {
+            favouritesSavingProfile = vscode.ConfigurationTarget.Workspace;
+          }
+
+          let favourites = configs.get<FavouriteData>("list") || {};
+          favourites = {
+            ...favourites,
+          };
+          if (
+            message.command === CONST_WEBVIEW.POST_MESSAGE.COMMAND.FAVOURITE_ADD
+          ) {
+            console.log("Click on Add to Favourites button");
+            favourites[message.value] = message.value;
+          } else {
+            console.log("Click on Remove from Favourites button");
+            delete favourites[message.value];
+          }
+          configs.update("list", favourites, favouritesSavingProfile);
+
+          panel.webview.postMessage({
+            command: CONST_WEBVIEW.POST_MESSAGE.COMMAND.REFRESH_FAVOURITES,
+            value: favourites,
+          });
+          return;
+        }
+        case CONST_WEBVIEW.POST_MESSAGE.COMMAND.OPEN_INSPECTOR:
           console.log("Click on Open Inspector button");
           vscode.commands.executeCommand(
             "workbench.action.webview.openDeveloperTools"
           );
           return;
-        case "go-to-settings":
-          console.log("Click on Go to Settings button");
+        case CONST_WEBVIEW.POST_MESSAGE.COMMAND.GO_TO_SETTINGS:
           vscode.commands.executeCommand(
             "workbench.action.openSettings",
             "vs-browser"
           );
           return;
-        case "show-message-box":
-          let type = message.type;
-          let text = message.text;
-          let detail = message.detail;
-          console.log(message.detail);
+        case CONST_WEBVIEW.POST_MESSAGE.COMMAND.SHOW_MESSAGE_BOX:
+          let type = message.value.type;
+          let text = message.value.text;
+          let detail = message.value.detail;
+          console.log(message.value.detail);
           showMessage(type, text, {
             detail: detail,
           });

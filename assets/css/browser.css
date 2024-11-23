@@ -61,9 +61,9 @@ body.vscode-dark #navbar #addressbar {
 }
 
 #navbar .addressbar {
-    position: relative;
-    display: flex;
-    width: -webkit-fill-available;
+  position: relative;
+  display: flex;
+  width: -webkit-fill-available;
 }
 
 #navbar .addressbar #addressbar {
@@ -79,8 +79,8 @@ body.vscode-dark #navbar #addressbar {
 }
 
 #navbar .addressbar #btn-fav {
-    position: absolute;
-    right: 0;
+  position: absolute;
+  right: 0;
 }
 
 #navbar button {

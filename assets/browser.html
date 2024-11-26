@@ -133,19 +133,29 @@
                 bindFavouriteEvents();
             }
             function renderFavourites() {
+                let canAddToFavourites = true;
                 $("#favourite-items").empty();
                 $("#favourite-item-all--dropdown").empty();
                 for (const [key, value] of Object.entries(config.favourites)) {
                     const favouriteItemHTML = `<div class="favourite-item">
-                <div class="favourite-item--icon">
-                    <i class='codicon codicon-globe'></i>
-                </div>
-                <div class="favourite-item--title">${value}</div>
-            </div>`;
+                        <div class="favourite-item--icon">
+                            <i class='codicon codicon-globe'></i>
+                        </div>
+                        <div class="favourite-item--title">${value}</div>
+                    </div>`;
 
-                    const favouriteItemInItems = $(favouriteItemHTML);
-                    favouriteItemInItems.on("click", () => goToUrl(key));
-                    $("#favourite-items").append(favouriteItemInItems);
+                    if (canAddToFavourites) {
+                        const favouriteItemInItems = $(favouriteItemHTML);
+                        favouriteItemInItems.on("click", () => goToUrl(key));
+                        $("#favourite-items").append(favouriteItemInItems);
+                        // Remove if the item is partially or fully outside the visible container
+                        const itemBounding = favouriteItemInItems[0].getBoundingClientRect();
+                        const itemsBounding = $("#favourite-items")[0].getBoundingClientRect();
+                        if (itemBounding.right > itemsBounding.right) {
+                            favouriteItemInItems.remove();
+                            canAddToFavourites = false;
+                        }
+                    }
 
                     const favouriteItemInAll = $(favouriteItemHTML);
                     favouriteItemInAll.on("click", () => goToUrl(key));

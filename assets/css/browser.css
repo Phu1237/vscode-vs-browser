@@ -136,6 +136,7 @@ body.vscode-dark #favbar .favourite-item:hover {
 #favbar .favourite-items {
   display: flex;
   padding: 5px;
+  max-width: 80%;
 }
 
 #favbar .favourite-item {
@@ -154,9 +155,10 @@ body.vscode-dark #favbar .favourite-item:hover {
 
 #favbar .favourite-item-all {
   position: relative;
-  padding: 5px;
   display: flex;
   margin-left: auto;
+  padding: 5px;
+
 }
 
 #favbar .favourite-item-all--dropdown {

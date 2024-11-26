@@ -14,6 +14,9 @@ import CONST_WEBVIEW from "../constants/webview";
  * @param data Data to inject
  * @returns
  */
+
+let activePanels: Array<vscode.WebviewPanel> = [];
+
 export function createWebviewPanel(
   template: Function,
   context: vscode.ExtensionContext,
@@ -80,6 +83,7 @@ export function createWebviewPanel(
 
   panel = bindWebviewEvents(panel, template, context, data);
 
+  activePanels.push(panel);
   return panel;
 }
 
@@ -109,6 +113,20 @@ export function getWebViewContent(
     } as WebviewContext,
     data
   );
+}
+
+export function sendMessageToActivePanels(message: WebviewMessage) {
+  console.log("Sending message to active panels: ", activePanels, message);
+  activePanels.forEach((activePanel) => {
+    sendMessageToWebview(activePanel, message);
+  });
+}
+
+export function sendMessageToWebview(
+  panel: vscode.WebviewPanel,
+  message: WebviewMessage
+) {
+  panel.webview.postMessage(message);
 }
 
 function bindWebviewEvents(
@@ -163,8 +181,9 @@ function bindWebviewEvents(
             delete favourites[message.value];
           }
           configs.update("list", favourites, favouritesSavingProfile);
+          console.log("Saved favorites: ", favourites);
 
-          panel.webview.postMessage({
+          sendMessageToActivePanels({
             type: CONST_WEBVIEW.POST_MESSAGE.TYPE.REFRESH_FAVOURITES,
             value: favourites,
           });
@@ -231,6 +250,7 @@ function bindWebviewEvents(
           statusBarItem.startStatusBarItem.text = "$(globe) VS Browser";
         });
       }
+      activePanels = activePanels.filter((p) => p !== panel);
     },
     null,
     context.subscriptions

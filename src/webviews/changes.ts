@@ -129,7 +129,7 @@ export default (webviewContext: WebviewContext, data: Data) => {
 
         btn_go_to_settings.onclick = function () {
             vscode.postMessage({
-                command: 'go-to-settings'
+                type: 'go-to-settings'
             })
         }
     </script>

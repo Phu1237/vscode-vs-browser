@@ -128,9 +128,9 @@ function bindWebviewEvents(
   // Handle messages from the webview
   panel.webview.onDidReceiveMessage(
     (message: WebviewMessage) => {
-      switch (message.command) {
-        case CONST_WEBVIEW.POST_MESSAGE.COMMAND.FAVOURITE_ADD:
-        case CONST_WEBVIEW.POST_MESSAGE.COMMAND.FAVOURITE_REMOVE: {
+      switch (message.type) {
+        case CONST_WEBVIEW.POST_MESSAGE.TYPE.FAVOURITE_ADD:
+        case CONST_WEBVIEW.POST_MESSAGE.TYPE.FAVOURITE_REMOVE: {
           const configs = vscode.workspace.getConfiguration(
             "vs-browser.favourites"
           );
@@ -155,9 +155,7 @@ function bindWebviewEvents(
           favourites = {
             ...favourites,
           };
-          if (
-            message.command === CONST_WEBVIEW.POST_MESSAGE.COMMAND.FAVOURITE_ADD
-          ) {
+          if (message.type === CONST_WEBVIEW.POST_MESSAGE.TYPE.FAVOURITE_ADD) {
             console.log("Click on Add to Favourites button");
             favourites[message.value] = message.value;
           } else {
@@ -167,24 +165,24 @@ function bindWebviewEvents(
           configs.update("list", favourites, favouritesSavingProfile);
 
           panel.webview.postMessage({
-            command: CONST_WEBVIEW.POST_MESSAGE.COMMAND.REFRESH_FAVOURITES,
+            type: CONST_WEBVIEW.POST_MESSAGE.TYPE.REFRESH_FAVOURITES,
             value: favourites,
           });
           return;
         }
-        case CONST_WEBVIEW.POST_MESSAGE.COMMAND.OPEN_INSPECTOR:
+        case CONST_WEBVIEW.POST_MESSAGE.TYPE.OPEN_INSPECTOR:
           console.log("Click on Open Inspector button");
           vscode.commands.executeCommand(
             "workbench.action.webview.openDeveloperTools"
           );
           return;
-        case CONST_WEBVIEW.POST_MESSAGE.COMMAND.GO_TO_SETTINGS:
+        case CONST_WEBVIEW.POST_MESSAGE.TYPE.GO_TO_SETTINGS:
           vscode.commands.executeCommand(
             "workbench.action.openSettings",
             "vs-browser"
           );
           return;
-        case CONST_WEBVIEW.POST_MESSAGE.COMMAND.SHOW_MESSAGE_BOX:
+        case CONST_WEBVIEW.POST_MESSAGE.TYPE.SHOW_MESSAGE_BOX:
           let type = message.value.type;
           let text = message.value.text;
           let detail = message.value.detail;
@@ -246,7 +244,7 @@ function bindWebviewEvents(
   if (reloadOnSave) {
     vscode.workspace.onDidSaveTextDocument(() => {
       panel.webview.postMessage({
-        command: CONST_WEBVIEW.POST_MESSAGE.COMMAND.RELOAD,
+        type: CONST_WEBVIEW.POST_MESSAGE.TYPE.RELOAD,
       });
     });
   }

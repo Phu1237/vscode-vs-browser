@@ -64,14 +64,14 @@
 
             const CONSTANTS = {
                 POST_MESSAGE: {
-                    COMMAND: {
-                        FAVOURITE_ADD: { CONST_WEBVIEW_POST_MESSAGE_COMMAND_FAVOURITE_ADD },
-                        FAVOURITE_REMOVE: { CONST_WEBVIEW_POST_MESSAGE_COMMAND_FAVOURITE_REMOVE },
-                        GO_TO_SETTINGS: { CONST_WEBVIEW_POST_MESSAGE_COMMAND_GO_TO_SETTINGS },
-                        OPEN_INSPECTOR: { CONST_WEBVIEW_POST_MESSAGE_COMMAND_OPEN_INSPECTOR },
-                        RELOAD: { CONST_WEBVIEW_POST_MESSAGE_COMMAND_RELOAD },
-                        REFRESH_FAVOURITES: { CONST_WEBVIEW_POST_MESSAGE_COMMAND_REFRESH_FAVOURITES },
-                        SHOW_MESSAGE_BOX: { CONST_WEBVIEW_POST_MESSAGE_COMMAND_SHOW_MESSAGE_BOX },
+                    TYPE: {
+                        FAVOURITE_ADD: { CONST_WEBVIEW_POST_MESSAGE_TYPE_FAVOURITE_ADD },
+                        FAVOURITE_REMOVE: { CONST_WEBVIEW_POST_MESSAGE_TYPE_FAVOURITE_REMOVE },
+                        GO_TO_SETTINGS: { CONST_WEBVIEW_POST_MESSAGE_TYPE_GO_TO_SETTINGS },
+                        OPEN_INSPECTOR: { CONST_WEBVIEW_POST_MESSAGE_TYPE_OPEN_INSPECTOR },
+                        RELOAD: { CONST_WEBVIEW_POST_MESSAGE_TYPE_RELOAD },
+                        REFRESH_FAVOURITES: { CONST_WEBVIEW_POST_MESSAGE_TYPE_REFRESH_FAVOURITES },
+                        SHOW_MESSAGE_BOX: { CONST_WEBVIEW_POST_MESSAGE_TYPE_SHOW_MESSAGE_BOX },
                     },
                 },
             };
@@ -180,14 +180,14 @@
             function btnFavouriteClick() {
                 let url = addressbar.val();
                 const isFavourited = togglePageFavouriteIcon(url);
-                let postMessageCommand = CONSTANTS.POST_MESSAGE.COMMAND.FAVOURITE_ADD;
+                let postMessageType = CONSTANTS.POST_MESSAGE.TYPE.FAVOURITE_ADD;
                 if (isFavourited) {
-                    postMessageCommand =
-                        CONSTANTS.POST_MESSAGE.COMMAND.FAVOURITE_REMOVE;
+                    postMessageType =
+                        CONSTANTS.POST_MESSAGE.TYPE.FAVOURITE_REMOVE;
                 }
 
                 vscode.postMessage({
-                    command: postMessageCommand,
+                    type: postMessageType,
                     value: url,
                 });
                 renderFavourites();
@@ -224,15 +224,15 @@
             window.addEventListener("message", (event) => {
                 const message = event.data; // The JSON data our extension sent
 
-                switch (message.command) {
-                    case CONSTANTS.POST_MESSAGE.COMMAND.REFRESH_FAVOURITES:
+                switch (message.type) {
+                    case CONSTANTS.POST_MESSAGE.TYPE.REFRESH_FAVOURITES:
                         config.favourites = message.value;
                         console.log('Received favorites: ', message.value);
 
                         initFavourites();
                         togglePageFavouriteIcon(config.url);
                         break;
-                    case CONSTANTS.POST_MESSAGE.COMMAND.RELOAD:
+                    case CONSTANTS.POST_MESSAGE.TYPE.RELOAD:
                         reloadIframe();
                         break;
                 }
@@ -259,12 +259,12 @@
             });
             btn_inspect.on("click", function () {
                 vscode.postMessage({
-                    command: CONSTANTS.POST_MESSAGE.COMMAND.OPEN_INSPECTOR,
+                    type: CONSTANTS.POST_MESSAGE.TYPE.OPEN_INSPECTOR,
                 });
             });
             btn_go_to_settings.on("click", function () {
                 vscode.postMessage({
-                    command: CONSTANTS.POST_MESSAGE.COMMAND.GO_TO_SETTINGS,
+                    type: CONSTANTS.POST_MESSAGE.TYPE.GO_TO_SETTINGS,
                 });
             });
 
@@ -278,7 +278,7 @@
                 } catch (err) {
                     // show failed load message
                     vscode.postMessage({
-                        command: CONSTANTS.POST_MESSAGE.COMMAND.SHOW_MESSAGE_BOX,
+                        type: CONSTANTS.POST_MESSAGE.TYPE.SHOW_MESSAGE_BOX,
                         value: {
                             type: "error",
                             text: "VS Browser: Some errors occurred. Use another method if the web page is not loaded.",

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-const COMMAND = {
+const TYPE = {
   FAVOURITE_ADD: "favorite-add",
   FAVOURITE_REMOVE: "favorite-remove",
   GO_TO_SETTINGS: "go-to-settings",
@@ -10,5 +10,5 @@ const COMMAND = {
 };
 
 export default {
-  COMMAND,
+  TYPE,
 };

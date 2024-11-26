@@ -1,4 +1,4 @@
 interface WebviewMessage {
-  command: string;
+  type: string;
   value?: any;
 }

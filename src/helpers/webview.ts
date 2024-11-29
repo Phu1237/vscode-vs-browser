@@ -81,7 +81,7 @@ export function createWebviewPanel(
     );
   }
 
-  panel = bindWebviewEvents(panel, template, context, data);
+  bindWebviewEvents(panel, template, context, data);
 
   activePanels.push(panel);
   return panel;
@@ -134,7 +134,7 @@ function bindWebviewEvents(
   template: Function,
   context: vscode.ExtensionContext,
   data: Data
-): vscode.WebviewPanel {
+): void {
   let configs = vscode.workspace.getConfiguration("vs-browser");
   panel.webview.html = getWebViewContent(
     template,
@@ -216,27 +216,27 @@ function bindWebviewEvents(
     context.subscriptions
   );
   // Handle panel state change event
-  panel.onDidChangeViewState(
-    (e: any) => {
-      let panel = e.webviewPanel;
+  // panel.onDidChangeViewState(
+  //   (e: any) => {
+  //     let panel = e.webviewPanel;
 
-      switch (panel.viewColumn) {
-        case vscode.ViewColumn.One:
-          console.log("ViewColumn.One");
-          return;
+  //     switch (panel.viewColumn) {
+  //       case vscode.ViewColumn.One:
+  //         console.log("ViewColumn.One");
+  //         return;
 
-        case vscode.ViewColumn.Two:
-          console.log("ViewColumn.Two");
-          return;
+  //       case vscode.ViewColumn.Two:
+  //         console.log("ViewColumn.Two");
+  //         return;
 
-        case vscode.ViewColumn.Three:
-          console.log("ViewColumn.Three");
-          return;
-      }
-    },
-    null,
-    context.subscriptions
-  );
+  //       case vscode.ViewColumn.Three:
+  //         console.log("ViewColumn.Three");
+  //         return;
+  //     }
+  //   },
+  //   null,
+  //   context.subscriptions
+  // );
   // Handle when panel is closed
   panel.onDidDispose(
     () => {
@@ -268,6 +268,27 @@ function bindWebviewEvents(
       });
     });
   }
+}
 
-  return panel;
+export class WebviewViewProvider {
+  constructor(
+    private readonly template: Function,
+    private readonly context: vscode.ExtensionContext,
+    private readonly data: Data
+  ) {}
+
+  // Resolves and sets up the Webview
+  resolveWebviewView(
+    webviewView: vscode.WebviewView,
+    context: vscode.WebviewViewResolveContext,
+    _token: vscode.CancellationToken
+  ): void {
+    // Configure Webview options
+    webviewView.webview.options = {
+      enableScripts: true,
+    };
+    const state = (context.state as Data) || this.data;
+    // Set the Webview content
+    bindWebviewEvents(webviewView, this.template, this.context, state);
+  }
 }

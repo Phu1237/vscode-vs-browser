@@ -6,6 +6,7 @@ import * as webviewHelper from "./helpers/webview";
 
 import browserWebview from "./webviews/browser";
 import changesWeview from "./webviews/changes";
+import CONST_WEBVIEW from "./constants/webview";
 
 // Create output channel
 const outputConsole = vscode.window.createOutputChannel("VS Browser");
@@ -59,10 +60,11 @@ export function activate(context: vscode.ExtensionContext) {
   // vs-browser.start
   let start = vscode.commands.registerCommand("vs-browser.start", () => {
     // Create and show a new webview
-    webviewHelper.createWebviewPanel(browserWebview, context, {
-      viewType: "browser",
-      title: "VS Browser",
-    });
+    webviewHelper.createWebviewPanel(
+      browserWebview,
+      context,
+      CONST_WEBVIEW.CONFIG.BASE.BROWSER
+    );
   });
   context.subscriptions.push(start);
 
@@ -71,11 +73,11 @@ export function activate(context: vscode.ExtensionContext) {
     "vs-browser.startWithProxy",
     () => {
       // Create and show a new webview
-      webviewHelper.createWebviewPanel(browserWebview, context, {
-        viewType: "proxy",
-        title: "VS Browser - Proxy",
-        proxyMode: true,
-      });
+      webviewHelper.createWebviewPanel(
+        browserWebview,
+        context,
+        CONST_WEBVIEW.CONFIG.BASE.PROXY
+      );
     }
   );
   context.subscriptions.push(startWithProxy);
@@ -85,14 +87,58 @@ export function activate(context: vscode.ExtensionContext) {
     "vs-browser.startWithoutProxy",
     () => {
       // Create and show a new webview
-      webviewHelper.createWebviewPanel(browserWebview, context, {
-        viewType: "withoutproxy",
-        title: "VS Browser - Without proxy",
-        proxyMode: false,
-      });
+      webviewHelper.createWebviewPanel(
+        browserWebview,
+        context,
+        CONST_WEBVIEW.CONFIG.BASE.WITHOUT_PROXY
+      );
     }
   );
   context.subscriptions.push(startWithoutProxy);
+  // vs-browser.resetViewLocations
+  let resetViewLocation = vscode.commands.registerCommand(
+    "vs-browser.resetViewLocations",
+    () => {
+      vscode.commands.executeCommand("vs-browser-browser.resetViewLocation");
+      vscode.commands.executeCommand("vs-browser-proxy.resetViewLocation");
+      vscode.commands.executeCommand(
+        "vs-browser-without-proxy.resetViewLocation"
+      );
+    }
+  );
+  context.subscriptions.push(resetViewLocation);
+
+  // Views
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      "vs-browser-browser",
+      new webviewHelper.WebviewViewProvider(
+        browserWebview,
+        context,
+        CONST_WEBVIEW.CONFIG.BASE.BROWSER
+      )
+    )
+  );
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      "vs-browser-proxy",
+      new webviewHelper.WebviewViewProvider(
+        browserWebview,
+        context,
+        CONST_WEBVIEW.CONFIG.BASE.PROXY
+      )
+    )
+  );
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      "vs-browser-without-proxy",
+      new webviewHelper.WebviewViewProvider(
+        browserWebview,
+        context,
+        CONST_WEBVIEW.CONFIG.BASE.WITHOUT_PROXY
+      )
+    )
+  );
 }
 
 // this method is called when your extension is deactivated

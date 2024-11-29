@@ -49,8 +49,46 @@
             {
                 "command": "vs-browser.startWithoutProxy",
                 "title": "VS Browser: Start Browser without Proxy"
+            },
+            {
+                "command": "vs-browser.resetViewLocations",
+                "title": "VS Browser: Reset View Locations"
             }
         ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "vs-browser",
+                    "title": "VS Browser",
+                    "icon": "$(globe)"
+                }
+            ]
+        },
+        "views": {
+            "vs-browser": [
+                {
+                    "type": "webview",
+                    "id": "vs-browser-browser",
+                    "icon": "$(globe)",
+                    "name": "VS Browser",
+                    "contextualTitle": "VS Browser"
+                },
+                {
+                    "type": "webview",
+                    "id": "vs-browser-proxy",
+                    "icon": "$(globe)",
+                    "name": "VS Browser with Proxy",
+                    "contextualTitle": "VS Browser with Proxy"
+                },
+                {
+                    "type": "webview",
+                    "id": "vs-browser-without-proxy",
+                    "icon": "$(globe)",
+                    "name": "VS Browser without Proxy",
+                    "contextualTitle": "VS Browser without Proxy"
+                }
+            ]
+        },
         "configuration": {
             "title": "VS Browser",
             "properties": {

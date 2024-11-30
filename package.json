@@ -109,9 +109,7 @@
                 },
                 "vs-browser.favourites.list": {
                     "type": "object",
-                    "default": {
-                        "http://localhost": "localhost"
-                    },
+                    "default": {},
                     "description": "Favourite websites",
                     "additionalProperties": {
                         "type": "string",

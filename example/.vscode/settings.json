@@ -1,6 +1,8 @@
 {
     "vs-browser.proxyMode": false,
     "vs-browser.url": "http://localhost",
+    "vs-browser.favourites.list": {},
+    "vs-browser.favourites.savingProfile": "global",
     "vs-browser.autoCompleteUrl": "http://",
     "vs-browser.localProxyServer.enabled": false,
     "vs-browser.localProxyServer.port": 9999,

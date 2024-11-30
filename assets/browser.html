@@ -119,9 +119,7 @@
                 // url
                 goToUrl(config.url);
                 // favourites
-                if (Object.keys(config.favourites).length > 0) {
-                    initFavourites();
-                }
+                initFavourites();
                 // autoReloadDurationEnabled
                 btn_reload.toggleClass("active", config.autoReloadDurationEnabled);
             }

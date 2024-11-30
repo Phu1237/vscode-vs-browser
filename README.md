@@ -29,7 +29,9 @@ This product is free but if you like my work and you want to support me, buy me 
 - [Buymeacoffee](https://www.buymeacoffee.com/Phu1237)
 - [Momo](https://me.momo.vn/Phu1237)
 
-## Release Notes
+## Changelog for the Latest 5 Versions
+
+### See the list of changes [here](CHANGELOG.md)
 
 ### [2.1.0] BREAKING CHANGES VERSION
 
@@ -58,72 +60,6 @@ This product is free but if you like my work and you want to support me, buy me 
 
 - `Local Proxy server`: Update `location` depends on header location not just status code
 - `Local Proxy server`: Add `Cookie domain rewrite`
-
-### [2.0.1]
-
-- Fix `proxy mode` not working
-
-### [2.0.0]
-
-- Refactor code for better performance
-- Add `Local Proxy server` (Beta) (many bugs)
-- Add `Local Proxy server settings`
-- Add the `Auto-complete URL` setting
-- Change settings name
-  - `proxy` => `proxyMode`
-  - `reload.enableAutoReload` => `reload.autoReloadEnabled`
-  - `reload.time` => `reload.reloadAutoReloadDurationTime`
-- Fix the `Start without Proxy` command not working properly
-- Fix `Auto reload` not reload the current page
-- Fix `Address bar value` not showing the current page URL
-
-### [1.2.1]
-
-- Fix the `Updated changes window` that always shows after opening another workspace
-
-### [1.2.0]
-
-- Fix `proxy` not working
-- Add the `Start with Proxy` command
-- Add the `Start without Proxy` command
-- Add `Updated changes window` when the extension is updated
-
-### [1.1.1]
-
-- Add an option to disable the status bar item
-
-### [1.1.0]
-
-- Add `reload on save` config
-- Add status bar item
-
-### [1.0.6]
-
-- Improve UX
-
-### [1.0.5]
-
-- Fix the missing page bottom
-
-### [1.0.4]
-
-- Enable `find` in browser
-- Add `inspect`
-- Refactor source code
-
-### [1.0.3]
-
-- Add instructions
-- Add column settings to show in
-- Restore to the previous page when re-open VS Code
-- Add the title for the button for easier use
-- Disable all settings by default
-- Fix button hover color
-- Fix the error when the URL don't have HTTP or HTTPS
-
-### [1.0.0]
-
-- First release of VS Browser
 
 ## Known Issues
 

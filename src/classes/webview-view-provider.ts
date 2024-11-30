@@ -25,7 +25,13 @@ class WebviewViewProvider {
     webviewView.webview.options = {
       enableScripts: true,
     };
-    const state = (context.state as Data) || this.data;
+    const { title, viewType, url } = context.state as Data;
+    const state = {
+      ...this.data,
+      title,
+      viewType,
+      url,
+    };
     // Set the Webview content
     bindWebviewEvents(webviewView, this.template, this.context, state);
   }

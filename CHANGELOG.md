@@ -2,6 +2,17 @@
 
 ## CHANGELOG
 
+### [2.2.0]
+
+- Add: Favorite pages function
+- Add: Use by View (If you want to use in sidebar you need to move it to the place where you want to)
+- Add: Example settings for vs code ([example/.vscode](example/.vscode))
+- Add: Develop documentation ([DEVELOP.md](DEVELOP.md))
+- Add: Changelog documentation ([CHANGELOG.md](CHANGELOG.md))
+- Refactor: Replace Bootstrap icons with Codicons
+- Refactor: Code and structure
+- Fix: Error dialog is not showing
+
 ### [2.1.0] BREAKING CHANGES VERSION
 
 - `Add`: Add show update change setting to Show "New version changes" after the updated

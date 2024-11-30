@@ -8,9 +8,10 @@
     "vs-browser.localProxyServer.forceLocation": false,
     "vs-browser.reload.onSave": false,
     "vs-browser.reload.autoReloadDurationEnabled": false,
-    "vs-browser.reload.autoReloadDurationTime": false,
+    "vs-browser.reload.autoReloadDurationTime": 15000,
     "vs-browser.columnToShowIn": "Two",
     "vs-browser.showMessageDialog": false,
+    "vs-browser.showViewContainer": true,
     "vs-browser.showStatusBarItem": true,
     "vs-browser.showUpdateChanges": true
 }

@@ -80,6 +80,7 @@
                     "icon": "$(globe)",
                     "name": "VS Browser with Proxy",
                     "contextualTitle": "VS Browser with Proxy",
+                    "visibility": "collapsed",
                     "when": "config.vs-browser.showViewContainer == true"
                 },
                 {
@@ -88,6 +89,7 @@
                     "icon": "$(globe)",
                     "name": "VS Browser without Proxy",
                     "contextualTitle": "VS Browser without Proxy",
+                    "visibility": "collapsed",
                     "when": "config.vs-browser.showViewContainer == true"
                 }
             ]

@@ -130,7 +130,6 @@ export default (webviewContext: WebviewContext, data: Data) => {
       convertVarToHTML(replaceObject[key])
     );
   }
-  console.log(favourites);
 
   console.log(html);
 

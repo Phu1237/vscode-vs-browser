@@ -95,7 +95,7 @@
                 "vs-browser.proxyMode": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Use proxy to prevent the some errors (Longer loading time and can not use with localhost except localProxyServer)"
+                    "description": "Use proxy to prevent some errors (Longer loading time and can not use with localhost except localProxyServer)"
                 },
                 "vs-browser.url": {
                     "type": "string",
@@ -161,17 +161,17 @@
                 "vs-browser.localProxyServer.forceLocation": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Some website redirect the user with some weird status code (eg. 400), so you can bypass the status code and keep redirecting the user to the correct URL"
+                    "description": "Some websites redirect the user with some weird status code (eg. 400), so you can bypass the status code and keep redirecting the user to the correct URL"
                 },
                 "vs-browser.reload.onSave": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Auto reload the browser when file is saved"
+                    "description": "Auto reload the browser when a file is saved"
                 },
                 "vs-browser.reload.autoReloadDurationEnabled": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Auto reload the browser after a setted time"
+                    "description": "Auto reload the browser after a set time"
                 },
                 "vs-browser.reload.autoReloadDurationTime": {
                     "type": "number",

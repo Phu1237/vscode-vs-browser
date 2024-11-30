@@ -172,18 +172,7 @@
             }
             function bindFavouriteEvents() {
                 btn_fav.off('click', btnFavouriteClick).on("click", btnFavouriteClick);
-                $("#show-all-favourites").on("click", () => {
-                    showAllFavourites = !showAllFavourites;
-                    $("#show-all-favourites--icon").toggleClass(
-                        "codicon-folder",
-                        !showAllFavourites
-                    );
-                    $("#show-all-favourites--icon").toggleClass(
-                        "codicon-folder-opened",
-                        showAllFavourites
-                    );
-                    $("#favourite-item-all--dropdown").toggle(showAllFavourites);
-                });
+                $("#show-all-favourites").off('click', btnShowAllFavouritesClick).on("click", btnShowAllFavouritesClick);
             }
             function btnFavouriteClick() {
                 let url = addressbar.val();
@@ -199,6 +188,18 @@
                     value: url,
                 });
                 renderFavourites();
+            }
+            function btnShowAllFavouritesClick() {
+                showAllFavourites = !showAllFavourites;
+                $("#show-all-favourites--icon").toggleClass(
+                    "codicon-folder",
+                    !showAllFavourites
+                );
+                $("#show-all-favourites--icon").toggleClass(
+                    "codicon-folder-opened",
+                    showAllFavourites
+                );
+                $("#favourite-item-all--dropdown").toggle(showAllFavourites);
             }
 
             // ----------------------------------------------------------------

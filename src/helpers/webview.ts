@@ -266,7 +266,14 @@ export function bindWebviewEvents(
       ? data["reloadOnSave"]
       : configs.get<boolean>("reload.onSave") || false;
   if (reloadOnSave) {
-    vscode.workspace.onDidSaveTextDocument(() => {
+    vscode.workspace.onDidSaveTextDocument((document) => {
+      if (document.fileName.endsWith("settings.json")) {
+        console.log(
+          "Edited settings file. Skip this reload.",
+          document.fileName
+        );
+        return;
+      }
       panel.webview.postMessage({
         type: CONST_WEBVIEW.POST_MESSAGE.TYPE.RELOAD,
       });

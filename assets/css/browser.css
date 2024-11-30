@@ -27,21 +27,29 @@ body.vscode-dark {
   background-color: black;
 }
 
-body.vscode-light #navbar {
+body.vscode-light #navbar,
+body.vscode-light #favbar,
+body.vscode-light #favbar .favourite-item-all,
+body.vscode-light #favbar .favourite-item-all--dropdown {
   background-color: #f7f7f7;
   border-top: 1px solid #ebebeb;
 }
 
-body.vscode-dark #navbar {
+body.vscode-dark #navbar,
+body.vscode-dark #favbar,
+body.vscode-dark #favbar .favourite-item-all,
+body.vscode-dark #favbar .favourite-item-all--dropdown {
   background-color: #3b3b3b;
 }
 
-body.vscode-light #navbar #addressbar {
+body.vscode-light #navbar #addressbar,
+body.vscode-light #navbar #btn-fav {
   background-color: #fff;
   color: black;
 }
 
-body.vscode-dark #navbar #addressbar {
+body.vscode-dark #navbar #addressbar,
+body.vscode-dark #navbar #btn-fav {
   background-color: #2b2b2b;
   color: white;
 }
@@ -54,7 +62,15 @@ body.vscode-dark #navbar #addressbar {
   z-index: 100;
 }
 
-#navbar #addressbar {
+#navbar .addressbar {
+  position: relative;
+  display: flex;
+  width: -webkit-fill-available;
+  align-items: center;
+}
+
+#navbar .addressbar #addressbar {
+  height: -webkit-fill-available;
   padding: 0.25rem 1rem;
   width: 100%;
   border: none;
@@ -62,8 +78,14 @@ body.vscode-dark #navbar #addressbar {
   font-size: 15px;
 }
 
-#navbar #addressbar:focus {
+#navbar .addressbar #addressbar:focus {
   outline: 2px solid #466c88;
+}
+
+#navbar .addressbar #btn-fav {
+  position: absolute;
+  right: 2px;
+  padding: 0.4rem;
 }
 
 #navbar button {
@@ -75,24 +97,30 @@ body.vscode-dark #navbar #addressbar {
   text-align: center;
 }
 
-body.vscode-light #navbar button:hover {
-  background-color: #dcdcdc;
+#navbar button {
+  cursor: pointer;
 }
 
-body.vscode-dark #navbar button:hover {
-  background-color: #515151;
+body.vscode-light #navbar button:hover,
+body.vscode-light #favbar .favourite-item:hover {
+  background-color: #dcdcdc !important;
+}
+
+body.vscode-dark #navbar button:hover,
+body.vscode-dark #favbar .favourite-item:hover {
+  background-color: #515151 !important;
 }
 
 #navbar button.active {
   color: green;
 }
 
-#navbar button span,
-#navbar button svg {
+#navbar button i {
   margin: auto;
+  font-size: 25px;
 }
 
-#navbar button#btn-reload.loading svg {
+#navbar button#btn-reload.loading i {
   animation: animation-spin 3s infinite linear;
 }
 
@@ -106,6 +134,47 @@ body.vscode-dark #navbar button:hover {
 
 #navbar button#btn-go-to-settings {
   margin-left: 0.25rem;
+}
+
+#favbar {
+  position: relative;
+  display: flex;
+  font-size: medium;
+}
+
+#favbar .favourite-items {
+  display: flex;
+  padding: 5px;
+  max-width: 80%;
+}
+
+#favbar .favourite-item {
+  display: flex;
+  padding: 2px 3px;
+  cursor: pointer;
+  user-select: none;
+}
+
+#favbar .favourite-item .favourite-item--icon {
+  display: flex;
+  margin-right: 3px;
+  justify-content: center;
+  align-items: center;
+}
+
+#favbar .favourite-item-all {
+  position: relative;
+  display: flex;
+  margin-left: auto;
+  padding: 5px;
+}
+
+#favbar .favourite-item-all--dropdown {
+  position: absolute;
+  display: none;
+  top: 35px;
+  right: 0px;
+  width: fit-content;
 }
 
 .webview-container {
@@ -153,7 +222,7 @@ body.vscode-dark #navbar button:hover {
 }
 
 .hidden {
-    display: none !important;;
+  display: none !important;
 }
 
 @keyframes animation-spin {

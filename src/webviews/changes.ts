@@ -36,13 +36,28 @@ export default (webviewContext: WebviewContext, data: Data) => {
 <body>
     <div>
         <h1>Changes (version ${extensionVersion})</h1>
-        <b>THIS VERSION IS A BREAKING CHANGES VERSION SO PLEASE TAKE A LOOK AT YOUR SETTINGS.<br/>I have change some setting name so it may not get your old setting.<br/>Thanks!</b>
         <ul>
-          <li><b>Add</b>: Add show update change setting to Show "New version changes" after the updated</li>
-          <li><b>Refactor</b>: Refactor source code. Change some setting name so it may not get your old setting</li>
-          <li><b>Fix</b>: Not start with old URL after reopening VS Code</li>
-          <li><b>Fix</b>: Auto reload after duration time not working correctly</li>
+          <li>
+            <b>Add</b>: Favorite pages function
+            <ul>
+              <li><b>Add</b>: New setting <b>vs-browser.favourites.list</b></li>
+              <li><b>Add</b>: New setting <b>vs-browser.favourites.savingProfile</b></li>
+            </ul>
+          </li>
+          <li>
+            <b>Add</b>: Use by View (If you want to use in sidebar you need to move it to the place where you want to)
+            <ul>
+              <li><b>Add</b>: New command <b>VS Browser: Reset View Locations</b></li>
+              <li><b>Add</b>: New setting <b>vs-browser.showViewContainer</b></li>
+            </ul>
+          </li>
+          <li><b>Add</b>: Develop documentation <a href="https://github.com/Phu1237/vscode-vs-browser/tree/master/example/.vscode">here</a></li>
+          <li><b>Add</b>: Example settings for vs code <a href="https://github.com/Phu1237/vscode-vs-browser/blob/master/CHANGELOG.md">here</a></li>
+          <li><b>Refactor</b>: Replace Bootstrap icons with Codicons</li>
+          <li><b>Refactor</b>: Code and structure</li>
+          <li><b>Fix</b>: Error dialog is not showing</li>
         </ul>
+        <b>VERSION 2.1.0 IS A BREAKING CHANGES VERSION SO PLEASE TAKE A LOOK AT YOUR SETTINGS.<br/>I have change some setting name so it may not get your old setting.<br/>Thanks!</b>
     </div>
     <div>
         <h2>Usage</h2>
@@ -129,7 +144,7 @@ export default (webviewContext: WebviewContext, data: Data) => {
 
         btn_go_to_settings.onclick = function () {
             vscode.postMessage({
-                command: 'go-to-settings'
+                type: 'go-to-settings'
             })
         }
     </script>

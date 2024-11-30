@@ -1,17 +1,22 @@
 import * as vscode from "vscode";
 // types
-import Data from "../types/data";
+import Data, { FavouriteData } from "../types/data";
 // helpers
-import { showMessage } from ".";
-import * as statusBarItem from "./statusBarItem";
+import { showMessage } from "./common";
 import * as server from "./server";
+import CONST_CONFIGS from "../constants/configs";
 import CONST_WEBVIEW from "../constants/webview";
-import path = require("path");
+import { startStatusBarItem } from "../helpers/extension";
+
+let activePanels: Array<vscode.WebviewPanel> = [];
 
 /**
  * Inject event and context to panel
+ *
+ * @param template Template of the webview
  * @param context Extension context
  * @param data Data to inject
+ * @param webviewPanel Panel to show (ex: From restored state)
  * @returns
  */
 export function createWebviewPanel(
@@ -34,7 +39,7 @@ export function createWebviewPanel(
     server.start(function () {
       const configs = vscode.workspace.getConfiguration("vs-browser");
       const port = configs.get<number>("localProxyServer.port") || 9999;
-      statusBarItem.startStatusBarItem.text = "$(cloud) VS Browser: " + port;
+      startStatusBarItem.text = "$(cloud) VS Browser: " + port;
     });
   }
 
@@ -78,15 +83,18 @@ export function createWebviewPanel(
     );
   }
 
-  panel = bindWebviewEvents(panel, template, context, data);
+  bindWebviewEvents(panel, template, context, data);
 
+  activePanels.push(panel);
   return panel;
 }
 
 /**
  * Get webview context
+ *
  * @param webview
  * @param extensionUri
+ * @param extensionPath
  * @param data
  * @returns
  */
@@ -111,12 +119,26 @@ export function getWebViewContent(
   );
 }
 
-function bindWebviewEvents(
+export function sendMessageToActivePanels(message: WebviewMessage) {
+  console.log("Sending message to active panels: ", activePanels, message);
+  activePanels.forEach((activePanel) => {
+    sendMessageToWebview(activePanel, message);
+  });
+}
+
+export function sendMessageToWebview(
+  panel: vscode.WebviewPanel,
+  message: WebviewMessage
+) {
+  panel.webview.postMessage(message);
+}
+
+export function bindWebviewEvents(
   panel: any,
   template: Function,
   context: vscode.ExtensionContext,
   data: Data
-): vscode.WebviewPanel {
+): void {
   let configs = vscode.workspace.getConfiguration("vs-browser");
   panel.webview.html = getWebViewContent(
     template,
@@ -127,27 +149,67 @@ function bindWebviewEvents(
   );
   // Handle messages from the webview
   panel.webview.onDidReceiveMessage(
-    (message: any) => {
-      console.log("Received message:", message);
-      switch (message.command) {
-        case "open-inspector":
+    (message: WebviewMessage) => {
+      switch (message.type) {
+        case CONST_WEBVIEW.POST_MESSAGE.TYPE.FAVOURITE_ADD:
+        case CONST_WEBVIEW.POST_MESSAGE.TYPE.FAVOURITE_REMOVE: {
+          const configs = vscode.workspace.getConfiguration(
+            "vs-browser.favourites"
+          );
+          const configsFavouritesSavingProfile =
+            configs.get("savingProfile") ||
+            CONST_CONFIGS.FAVOURITES_SAVING_PROFILE.DEFAULT;
+
+          let favouritesSavingProfile;
+          if (
+            configsFavouritesSavingProfile ===
+            CONST_CONFIGS.FAVOURITES_SAVING_PROFILE.NAME.GLOBAL
+          ) {
+            favouritesSavingProfile = vscode.ConfigurationTarget.Global;
+          } else if (
+            configsFavouritesSavingProfile ===
+            CONST_CONFIGS.FAVOURITES_SAVING_PROFILE.NAME.WORKSPACE
+          ) {
+            favouritesSavingProfile = vscode.ConfigurationTarget.Workspace;
+          }
+
+          let favourites = configs.get<FavouriteData>("list") || {};
+          favourites = {
+            ...favourites,
+          };
+          if (message.type === CONST_WEBVIEW.POST_MESSAGE.TYPE.FAVOURITE_ADD) {
+            console.log("Click on Add to Favourites button");
+            favourites[message.value] = message.value;
+          } else {
+            console.log("Click on Remove from Favourites button");
+            delete favourites[message.value];
+          }
+          configs.update("list", favourites, favouritesSavingProfile);
+          console.log("Saved favorites: ", favourites);
+
+          sendMessageToActivePanels({
+            type: CONST_WEBVIEW.POST_MESSAGE.TYPE.REFRESH_FAVOURITES,
+            value: favourites,
+          });
+          return;
+        }
+        case CONST_WEBVIEW.POST_MESSAGE.TYPE.OPEN_INSPECTOR:
           console.log("Click on Open Inspector button");
           vscode.commands.executeCommand(
             "workbench.action.webview.openDeveloperTools"
           );
           return;
-        case "go-to-settings":
-          console.log("Click on Go to Settings button");
+        case CONST_WEBVIEW.POST_MESSAGE.TYPE.GO_TO_SETTINGS:
           vscode.commands.executeCommand(
             "workbench.action.openSettings",
             "vs-browser"
           );
           return;
-        case "show-message-box":
-          let type = message.type;
-          let text = message.text;
-          let detail = message.detail;
-          console.log(message.detail);
+        case CONST_WEBVIEW.POST_MESSAGE.TYPE.SHOW_MESSAGE_BOX:
+          let type = message.value.type;
+          let text = message.value.text;
+          let detail = message.value.detail;
+          console.log(message.value.detail);
           showMessage(type, text, {
             detail: detail,
           });
@@ -158,27 +220,27 @@ function bindWebviewEvents(
     context.subscriptions
   );
   // Handle panel state change event
-  panel.onDidChangeViewState(
-    (e: any) => {
-      let panel = e.webviewPanel;
+  // panel.onDidChangeViewState(
+  //   (e: any) => {
+  //     let panel = e.webviewPanel;
 
-      switch (panel.viewColumn) {
-        case vscode.ViewColumn.One:
-          console.log("ViewColumn.One");
-          return;
+  //     switch (panel.viewColumn) {
+  //       case vscode.ViewColumn.One:
+  //         console.log("ViewColumn.One");
+  //         return;
 
-        case vscode.ViewColumn.Two:
-          console.log("ViewColumn.Two");
-          return;
+  //       case vscode.ViewColumn.Two:
+  //         console.log("ViewColumn.Two");
+  //         return;
 
-        case vscode.ViewColumn.Three:
-          console.log("ViewColumn.Three");
-          return;
-      }
-    },
-    null,
-    context.subscriptions
-  );
+  //       case vscode.ViewColumn.Three:
+  //         console.log("ViewColumn.Three");
+  //         return;
+  //     }
+  //   },
+  //   null,
+  //   context.subscriptions
+  // );
   // Handle when panel is closed
   panel.onDidDispose(
     () => {
@@ -189,9 +251,10 @@ function bindWebviewEvents(
       );
       if (localProxyServerEnabled) {
         server.stop(function () {
-          statusBarItem.startStatusBarItem.text = "$(globe) VS Browser";
+          startStatusBarItem.text = "$(globe) VS Browser";
         });
       }
+      activePanels = activePanels.filter((p) => p !== panel);
     },
     null,
     context.subscriptions
@@ -203,12 +266,17 @@ function bindWebviewEvents(
       ? data["reloadOnSave"]
       : configs.get<boolean>("reload.onSave") || false;
   if (reloadOnSave) {
-    vscode.workspace.onDidSaveTextDocument(() => {
+    vscode.workspace.onDidSaveTextDocument((document) => {
+      if (document.fileName.endsWith("settings.json")) {
+        console.log(
+          "Edited settings file. Skip this reload.",
+          document.fileName
+        );
+        return;
+      }
       panel.webview.postMessage({
-        command: CONST_WEBVIEW.POST_MESSAGE.COMMAND.RELOAD,
+        type: CONST_WEBVIEW.POST_MESSAGE.TYPE.RELOAD,
       });
     });
   }
-
-  return panel;
 }

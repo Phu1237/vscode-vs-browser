@@ -7,7 +7,7 @@
         "name": "Phu1237",
         "url": "https://github.com/Phu1237"
     },
-    "version": "2.1.0",
+    "version": "2.2.0",
     "license": "SEE LICENSE IN LICENSE.md",
     "bugs": {
         "url": "https://github.com/Phu1237/vscode-vs-browser/issues",
@@ -49,20 +49,87 @@
             {
                 "command": "vs-browser.startWithoutProxy",
                 "title": "VS Browser: Start Browser without Proxy"
+            },
+            {
+                "command": "vs-browser.resetViewLocations",
+                "title": "VS Browser: Reset View Locations"
             }
         ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "vs-browser",
+                    "title": "VS Browser",
+                    "icon": "$(globe)"
+                }
+            ]
+        },
+        "views": {
+            "vs-browser": [
+                {
+                    "type": "webview",
+                    "id": "vs-browser-browser",
+                    "icon": "$(globe)",
+                    "name": "VS Browser",
+                    "contextualTitle": "VS Browser",
+                    "when": "config.vs-browser.showViewContainer == true"
+                },
+                {
+                    "type": "webview",
+                    "id": "vs-browser-proxy",
+                    "icon": "$(globe)",
+                    "name": "VS Browser with Proxy",
+                    "contextualTitle": "VS Browser with Proxy",
+                    "visibility": "collapsed",
+                    "when": "config.vs-browser.showViewContainer == true"
+                },
+                {
+                    "type": "webview",
+                    "id": "vs-browser-without-proxy",
+                    "icon": "$(globe)",
+                    "name": "VS Browser without Proxy",
+                    "contextualTitle": "VS Browser without Proxy",
+                    "visibility": "collapsed",
+                    "when": "config.vs-browser.showViewContainer == true"
+                }
+            ]
+        },
         "configuration": {
             "title": "VS Browser",
             "properties": {
                 "vs-browser.proxyMode": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Use proxy to prevent the some errors (Longer loading time and can not use with localhost except localProxyServer)"
+                    "description": "Use proxy to prevent some errors (Longer loading time and can not use with localhost except localProxyServer)"
                 },
                 "vs-browser.url": {
                     "type": "string",
                     "default": "http://localhost",
                     "description": "Default URL open when starting the browser"
+                },
+                "vs-browser.favourites.list": {
+                    "type": "object",
+                    "default": {},
+                    "description": "Favourite websites",
+                    "additionalProperties": {
+                        "type": "string",
+                        "default": ""
+                    }
+                },
+                "vs-browser.favourites.savingProfile": {
+                    "type": "string",
+                    "default": "global",
+                    "enum": [
+                        "auto",
+                        "global",
+                        "workspace"
+                    ],
+                    "enumDescriptions": [
+                        "Let VS Code decide",
+                        "Use User profile for saving profile",
+                        "Use Workspace profile for saving profile"
+                    ],
+                    "description": "Favourite websites saving profile"
                 },
                 "vs-browser.autoCompleteUrl": {
                     "type": "string",
@@ -97,17 +164,17 @@
                 "vs-browser.localProxyServer.forceLocation": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Some website redirect the user with some weird status code (eg. 400), so you can bypass the status code and keep redirecting the user to the correct URL"
+                    "description": "Some websites redirect the user with some weird status code (eg. 400), so you can bypass the status code and keep redirecting the user to the correct URL"
                 },
                 "vs-browser.reload.onSave": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Auto reload the browser when file is saved"
+                    "description": "Auto reload the browser when a file is saved"
                 },
                 "vs-browser.reload.autoReloadDurationEnabled": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Auto reload the browser after a setted time"
+                    "description": "Auto reload the browser after a set time"
                 },
                 "vs-browser.reload.autoReloadDurationTime": {
                     "type": "number",
@@ -137,6 +204,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Show message dialog (sometimes the dialog still displays even if nothing goes wrong)"
+                },
+                "vs-browser.showViewContainer": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show view container that has items you can move to the sidebar to use"
                 },
                 "vs-browser.showStatusBarItem": {
                     "type": "boolean",
@@ -174,6 +246,7 @@
         "typescript": "^4.4.4"
     },
     "dependencies": {
+        "@vscode/codicons": "^0.0.36",
         "connect": "^3.7.0",
         "http-proxy": "^1.18.1",
         "morgan": "^1.10.0",

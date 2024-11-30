@@ -1,8 +1,13 @@
+export interface FavouriteData {
+  [domain: string]: string;
+}
+
 type Data = {
   viewType: string;
   title: string;
   proxyMode?: boolean;
   url?: string;
+  favourites?: FavouriteData;
   autoCompleteUrl?: string;
   localProxyServerEnabled?: boolean;
   localProxyServerPort?: number;

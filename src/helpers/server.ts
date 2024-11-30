@@ -1,4 +1,4 @@
-import * as vscode from "vscode";
+import { workspace as VscodeWorkspace } from "vscode";
 
 const http = require("http");
 const connect = require("connect");
@@ -11,7 +11,7 @@ let app = connect();
 var httpProxy = require("http-proxy");
 
 // Configuration
-const configs = vscode.workspace.getConfiguration("vs-browser");
+const configs = VscodeWorkspace.getConfiguration("vs-browser");
 const HOST = "localhost";
 const PORT = configs.get<number>("localProxyServer.port") || 9999;
 const cookieDomainRewrite =

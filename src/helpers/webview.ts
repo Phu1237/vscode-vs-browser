@@ -2,21 +2,23 @@ import * as vscode from "vscode";
 // types
 import Data, { FavouriteData } from "../types/data";
 // helpers
-import { showMessage } from ".";
-import * as statusBarItem from "./statusBarItem";
+import { showMessage } from "./common";
 import * as server from "./server";
 import CONST_CONFIGS from "../constants/configs";
 import CONST_WEBVIEW from "../constants/webview";
-
-/**
- * Inject event and context to panel
- * @param context Extension context
- * @param data Data to inject
- * @returns
- */
+import { startStatusBarItem } from "../helpers/extension";
 
 let activePanels: Array<vscode.WebviewPanel> = [];
 
+/**
+ * Inject event and context to panel
+ *
+ * @param template Template of the webview
+ * @param context Extension context
+ * @param data Data to inject
+ * @param webviewPanel Panel to show (ex: From restored state)
+ * @returns
+ */
 export function createWebviewPanel(
   template: Function,
   context: vscode.ExtensionContext,
@@ -37,7 +39,7 @@ export function createWebviewPanel(
     server.start(function () {
       const configs = vscode.workspace.getConfiguration("vs-browser");
       const port = configs.get<number>("localProxyServer.port") || 9999;
-      statusBarItem.startStatusBarItem.text = "$(cloud) VS Browser: " + port;
+      startStatusBarItem.text = "$(cloud) VS Browser: " + port;
     });
   }
 
@@ -89,8 +91,10 @@ export function createWebviewPanel(
 
 /**
  * Get webview context
+ *
  * @param webview
  * @param extensionUri
+ * @param extensionPath
  * @param data
  * @returns
  */
@@ -129,7 +133,7 @@ export function sendMessageToWebview(
   panel.webview.postMessage(message);
 }
 
-function bindWebviewEvents(
+export function bindWebviewEvents(
   panel: any,
   template: Function,
   context: vscode.ExtensionContext,
@@ -247,7 +251,7 @@ function bindWebviewEvents(
       );
       if (localProxyServerEnabled) {
         server.stop(function () {
-          statusBarItem.startStatusBarItem.text = "$(globe) VS Browser";
+          startStatusBarItem.text = "$(globe) VS Browser";
         });
       }
       activePanels = activePanels.filter((p) => p !== panel);
@@ -267,28 +271,5 @@ function bindWebviewEvents(
         type: CONST_WEBVIEW.POST_MESSAGE.TYPE.RELOAD,
       });
     });
-  }
-}
-
-export class WebviewViewProvider {
-  constructor(
-    private readonly template: Function,
-    private readonly context: vscode.ExtensionContext,
-    private readonly data: Data
-  ) {}
-
-  // Resolves and sets up the Webview
-  resolveWebviewView(
-    webviewView: vscode.WebviewView,
-    context: vscode.WebviewViewResolveContext,
-    _token: vscode.CancellationToken
-  ): void {
-    // Configure Webview options
-    webviewView.webview.options = {
-      enableScripts: true,
-    };
-    const state = (context.state as Data) || this.data;
-    // Set the Webview content
-    bindWebviewEvents(webviewView, this.template, this.context, state);
   }
 }

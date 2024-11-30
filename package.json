@@ -71,21 +71,24 @@
                     "id": "vs-browser-browser",
                     "icon": "$(globe)",
                     "name": "VS Browser",
-                    "contextualTitle": "VS Browser"
+                    "contextualTitle": "VS Browser",
+                    "when": "config.vs-browser.showViewContainer == true"
                 },
                 {
                     "type": "webview",
                     "id": "vs-browser-proxy",
                     "icon": "$(globe)",
                     "name": "VS Browser with Proxy",
-                    "contextualTitle": "VS Browser with Proxy"
+                    "contextualTitle": "VS Browser with Proxy",
+                    "when": "config.vs-browser.showViewContainer == true"
                 },
                 {
                     "type": "webview",
                     "id": "vs-browser-without-proxy",
                     "icon": "$(globe)",
                     "name": "VS Browser without Proxy",
-                    "contextualTitle": "VS Browser without Proxy"
+                    "contextualTitle": "VS Browser without Proxy",
+                    "when": "config.vs-browser.showViewContainer == true"
                 }
             ]
         },
@@ -201,6 +204,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Show message dialog (sometimes the dialog still displays even if nothing goes wrong)"
+                },
+                "vs-browser.showViewContainer": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show view container that has items you can move to the sidebar to use"
                 },
                 "vs-browser.showStatusBarItem": {
                     "type": "boolean",

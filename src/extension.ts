@@ -1,12 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import * as statusBarItemHelper from "./helpers/statusBarItem";
-import * as webviewHelper from "./helpers/webview";
-
-import browserWebview from "./webviews/browser";
-import changesWeview from "./webviews/changes";
-import CONST_WEBVIEW from "./constants/webview";
+import * as extensionHelper from "./helpers/extension";
 
 // Create output channel
 const outputConsole = vscode.window.createOutputChannel("VS Browser");
@@ -19,150 +14,27 @@ export function activate(context: vscode.ExtensionContext) {
   outputConsole.appendLine("Activated!");
 
   // Check if the extension is updated
-  let oldVersion = context.globalState.get<string>("version");
-  let extensionVersion = context.extension.packageJSON.version;
-  let forceShowChanges = false;
-  let showUpdateChanges = vscode.workspace
-    .getConfiguration("vs-browser")
-    .get("showUpdateChanges");
-  if (
-    (oldVersion !== extensionVersion && showUpdateChanges) ||
-    forceShowChanges
-  ) {
-    context.globalState.update("version", extensionVersion);
-    outputConsole.appendLine("> Extension is updated to " + extensionVersion);
-    webviewHelper.createWebviewPanel(changesWeview, context, {
-      viewType: "changes",
-      title: "VS Browser - New version changes",
-      localProxyServerEnabled: false,
-      columnToShowIn: "Active",
-    });
-  }
+  extensionHelper.onVersionChanged(context, outputConsole);
 
-  // Create a start status bar item
-  statusBarItemHelper.createStartStatusBarItem(context);
+  // Register Serializers for webviews type
+  extensionHelper.registerWebviewPanelSerializers(context);
 
-  // And make sure we register a serializer for our webview type
-  vscode.window.registerWebviewPanelSerializer(
-    "vs-browser.browser",
-    new VSBrowserSerializer(context)
-  );
-  vscode.window.registerWebviewPanelSerializer(
-    "vs-browser.proxy",
-    new VSBrowserSerializer(context)
-  );
-  vscode.window.registerWebviewPanelSerializer(
-    "vs-browser.withoutproxy",
-    new VSBrowserSerializer(context)
-  );
-  // The command has been defined in the package.json file
+  // Register Status bar items
+  extensionHelper.registerStatusBarItems(context);
 
-  // vs-browser.start
-  let start = vscode.commands.registerCommand("vs-browser.start", () => {
-    // Create and show a new webview
-    webviewHelper.createWebviewPanel(
-      browserWebview,
-      context,
-      CONST_WEBVIEW.CONFIG.BASE.BROWSER
-    );
-  });
-  context.subscriptions.push(start);
+  // Register Commands
+  extensionHelper.registerCommands(context);
 
-  // vs-browser.startWithProxy
-  let startWithProxy = vscode.commands.registerCommand(
-    "vs-browser.startWithProxy",
-    () => {
-      // Create and show a new webview
-      webviewHelper.createWebviewPanel(
-        browserWebview,
-        context,
-        CONST_WEBVIEW.CONFIG.BASE.PROXY
-      );
-    }
-  );
-  context.subscriptions.push(startWithProxy);
+  // Register Views
+  extensionHelper.registerViewContainer(context);
 
-  // vs-browser.startWithoutProxy
-  let startWithoutProxy = vscode.commands.registerCommand(
-    "vs-browser.startWithoutProxy",
-    () => {
-      // Create and show a new webview
-      webviewHelper.createWebviewPanel(
-        browserWebview,
-        context,
-        CONST_WEBVIEW.CONFIG.BASE.WITHOUT_PROXY
-      );
-    }
+  // Watch configuration changes
+  vscode.workspace.onDidChangeConfiguration(
+    extensionHelper.handleConfigurationChange
   );
-  context.subscriptions.push(startWithoutProxy);
-  // vs-browser.resetViewLocations
-  let resetViewLocation = vscode.commands.registerCommand(
-    "vs-browser.resetViewLocations",
-    () => {
-      vscode.commands.executeCommand("vs-browser-browser.resetViewLocation");
-      vscode.commands.executeCommand("vs-browser-proxy.resetViewLocation");
-      vscode.commands.executeCommand(
-        "vs-browser-without-proxy.resetViewLocation"
-      );
-    }
-  );
-  context.subscriptions.push(resetViewLocation);
 
-  // Views
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(
-      "vs-browser-browser",
-      new webviewHelper.WebviewViewProvider(
-        browserWebview,
-        context,
-        CONST_WEBVIEW.CONFIG.BASE.BROWSER
-      )
-    )
-  );
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(
-      "vs-browser-proxy",
-      new webviewHelper.WebviewViewProvider(
-        browserWebview,
-        context,
-        CONST_WEBVIEW.CONFIG.BASE.PROXY
-      )
-    )
-  );
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(
-      "vs-browser-without-proxy",
-      new webviewHelper.WebviewViewProvider(
-        browserWebview,
-        context,
-        CONST_WEBVIEW.CONFIG.BASE.WITHOUT_PROXY
-      )
-    )
-  );
+  extensionHelper.updateContextKey();
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
-
-class VSBrowserSerializer implements vscode.WebviewPanelSerializer {
-  private context: vscode.ExtensionContext;
-
-  constructor(context: vscode.ExtensionContext) {
-    this.context = context;
-  }
-  async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
-    // `state` is the state persisted using `setState` inside the webview
-    console.log("Got state: " + JSON.stringify(state));
-
-    // Restore the content of our webview.
-    //
-    // Make sure we hold on to the `webviewPanel` passed in here and
-    // also restore any event listeners we need on it.
-    webviewPanel = webviewHelper.createWebviewPanel(
-      browserWebview,
-      this.context,
-      state,
-      webviewPanel
-    );
-  }
-}

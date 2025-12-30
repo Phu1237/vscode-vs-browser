@@ -249,7 +249,6 @@
         "@vscode/codicons": "^0.0.36",
         "connect": "^3.7.0",
         "http-proxy": "^1.18.1",
-        "morgan": "^1.10.0",
-        "zlib": "^1.0.5"
+        "morgan": "^1.10.0"
     }
 }

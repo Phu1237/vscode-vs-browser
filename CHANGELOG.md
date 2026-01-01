@@ -2,6 +2,17 @@
 
 ## CHANGELOG
 
+### [2.3.0]
+
+- `Add`: Open link in VS Browser function (#33)
+  - `Add`: New setting `vs-browser.link.enabled` - Enable open link in VS Browser function
+  - `Add`: New setting `vs-browser.link.openIn` - Where to support opening links
+  - `Add`: New setting `vs-browser.link.openWith` - Browser to open the link when clicking the link in `vs-browser.link.openIn`
+- `Update`: Updated "New version changes" UI
+- `Fix`: Removes `zlib` dependency that was causing npm install failures (#34)
+- `Fix`: Fixes a runtime error in the WebviewViewProvider when context.state is undefined (#34)
+  - context.state can be undefined in PanelSerializer
+
 ### [2.2.0]
 
 - Add: Favorite pages function

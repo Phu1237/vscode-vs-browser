@@ -22,7 +22,7 @@ class WebviewPanelSerializer implements VscodeWebviewPanelSerializer {
     //
     // Make sure we hold on to the `webviewPanel` passed in here and
     // also restore any event listeners we need on it.
-    webviewPanel = webviewHelper.createWebviewPanel(
+    webviewHelper.createWebviewPanel(
       browserWebview,
       this.context,
       state,

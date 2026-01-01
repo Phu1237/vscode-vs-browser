@@ -26,3 +26,17 @@ export function showMessage(
     }
   }
 }
+
+/**
+ * Extract URLs from text
+ * @param text Text to extract URLs from
+ * @returns Array of URLs
+ */
+export function extractURLs(text: string): RegExpExecArray[] {
+  return [...text.matchAll(/https?:\/\/[^\s]*[-a-zA-Z0-9+&@#\/%=~_|]/g)];
+}
+
+export function isOpenLinkEnabled(): boolean {
+  const configs = vscode.workspace.getConfiguration("vs-browser.link");
+  return configs.get<boolean>("enabled") || false;
+}

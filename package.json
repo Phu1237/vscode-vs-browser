@@ -7,7 +7,7 @@
         "name": "Phu1237",
         "url": "https://github.com/Phu1237"
     },
-    "version": "2.2.0",
+    "version": "2.3.0",
     "license": "SEE LICENSE IN LICENSE.md",
     "bugs": {
         "url": "https://github.com/Phu1237/vscode-vs-browser/issues",
@@ -131,6 +131,54 @@
                     ],
                     "description": "Favourite websites saving profile"
                 },
+                "vs-browser.link.enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable open link in VS Browser function"
+                },
+                "vs-browser.link.openIn": {
+                    "type": "string",
+                    "default": "default",
+                    "description": "Where to support opening links",
+                    "enum": [
+                        "default",
+                        "document",
+                        "terminal"
+                    ],
+                    "enumItemLabels": [
+                        "Default",
+                        "Document",
+                        "Terminal"
+                    ],
+                    "enumDescriptions": [
+                        "Document + Terminal",
+                        "Only in Document",
+                        "Only in Terminal"
+                    ]
+                },
+                "vs-browser.link.openWith": {
+                    "type": "string",
+                    "default": "vs-browser-browser",
+                    "markdownDescription": "Browser to open the link when clicking the link in `#vs-browser.link.openIn#`",
+                    "enum": [
+                        "ask",
+                        "vs-browser-browser",
+                        "vs-browser-proxy",
+                        "vs-browser-without-proxy"
+                    ],
+                    "enumItemLabels": [
+                        "Ask",
+                        "VS Browser",
+                        "VS Browser - Proxy",
+                        "VS Browser - Without Proxy"
+                    ],
+                    "enumDescriptions": [
+                        "Ask the user every time a link is clicked",
+                        "VS Browser",
+                        "VS Browser with Proxy",
+                        "VS Browser without Proxy"
+                    ]
+                },
                 "vs-browser.autoCompleteUrl": {
                     "type": "string",
                     "default": "http://",
@@ -249,7 +297,6 @@
         "@vscode/codicons": "^0.0.36",
         "connect": "^3.7.0",
         "http-proxy": "^1.18.1",
-        "morgan": "^1.10.0",
-        "zlib": "^1.0.5"
+        "morgan": "^1.10.0"
     }
 }

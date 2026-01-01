@@ -193,6 +193,7 @@ export default (webviewContext: WebviewContext, data: Data) => {
                     <li>Added <code>vs-browser.link.openWith</code> to choose the browser mode.</li>
                 </ul>
             </li>
+            <li><strong>Update:</strong> Updated "New version changes" UI.</li>
             <li><strong>Fix:</strong> Removed <code>zlib</code> dependency to resolve installation failures.</li>
             <li><strong>Fix:</strong> Resolved runtime errors in WebviewViewProvider.</li>
         </ul>

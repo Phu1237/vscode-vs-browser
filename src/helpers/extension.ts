@@ -235,8 +235,8 @@ export function registerDocumentLinkProviders(
             const args = { url: match[0] };
             return {
               range: new vscode.Range(
-                document.positionAt(match.index),
-                document.positionAt(match.index + match[0].length)
+                document.positionAt(match.index ?? 0),
+                document.positionAt((match.index ?? 0) + match[0].length)
               ),
               tooltip: "Open Link in VS Browser",
               target: vscode.Uri.parse(
@@ -299,8 +299,8 @@ export function registerTerminalLinkProviders(
               startIndex: match.index,
               tooltip: "Open Link in VS Browser",
               length: match[0].length,
-            };
-          });
+            } as vscode.TerminalLink;
+          }) as vscode.ProviderResult<CustomTerminalLink[]>;
         }
         async handleTerminalLink(link: CustomTerminalLink) {
           await handleLink(context, link);

@@ -32,7 +32,7 @@ export function showMessage(
  * @param text Text to extract URLs from
  * @returns Array of URLs
  */
-export function extractURLs(text: string): RegExpExecArray[] {
+export function extractURLs(text: string): RegExpMatchArray[] {
   return [...text.matchAll(/https?:\/\/[^\s]*[-a-zA-Z0-9+&@#\/%=~_|]/g)];
 }
 

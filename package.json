@@ -298,5 +298,8 @@
         "connect": "^3.7.0",
         "http-proxy": "^1.18.1",
         "morgan": "^1.10.0"
+    },
+    "resolutions": {
+        "@types/minimatch": "5.1.2"
     }
 }

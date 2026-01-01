@@ -226,7 +226,7 @@ export function registerDocumentLinkProviders(
   );
   registeredDocumentLinkProviders.push(
     vscode.languages.registerDocumentLinkProvider(
-      { pattern: "*" },
+      { pattern: "**/*" },
       {
         provideDocumentLinks(document) {
           const matches = extractURLs(document.getText());

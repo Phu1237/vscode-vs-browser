@@ -25,12 +25,15 @@ class WebviewViewProvider {
     webviewView.webview.options = {
       enableScripts: true,
     };
-    const { title, viewType, url } = context.state as Data;
-    const state = {
-      ...this.data,
+    const { title, viewType, url } = (context.state as Data) || {};
+    const persistedState: Partial<Data> = {
       title,
       viewType,
       url,
+    };
+    const state = {
+      ...this.data,
+      ...persistedState,
     };
     // Set the Webview content
     bindWebviewEvents(webviewView, this.template, this.context, state);

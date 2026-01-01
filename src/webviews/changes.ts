@@ -38,26 +38,16 @@ export default (webviewContext: WebviewContext, data: Data) => {
         <h1>Changes (version ${extensionVersion})</h1>
         <ul>
           <li>
-            <b>Add</b>: Favorite pages function
+            <b>Add</b>: Open link in VS Browser function
             <ul>
-              <li><b>Add</b>: New setting <b>vs-browser.favourites.list</b></li>
-              <li><b>Add</b>: New setting <b>vs-browser.favourites.savingProfile</b></li>
+              <li><b>Add</b>: New setting <b>vs-browser.link.enabled</b></li>
+              <li><b>Add</b>: New setting <b>vs-browser.link.openIn</b></li>
+              <li><b>Add</b>: New setting <b>vs-browser.link.openWith</b></li>
             </ul>
           </li>
-          <li>
-            <b>Add</b>: Use by View (If you want to use in sidebar you need to move it to the place where you want to)
-            <ul>
-              <li><b>Add</b>: New command <b>VS Browser: Reset View Locations</b></li>
-              <li><b>Add</b>: New setting <b>vs-browser.showViewContainer</b></li>
-            </ul>
-          </li>
-          <li><b>Add</b>: Develop documentation <a href="https://github.com/Phu1237/vscode-vs-browser/tree/master/example/.vscode">here</a></li>
-          <li><b>Add</b>: Example settings for vs code <a href="https://github.com/Phu1237/vscode-vs-browser/blob/master/CHANGELOG.md">here</a></li>
-          <li><b>Refactor</b>: Replace Bootstrap icons with Codicons</li>
-          <li><b>Refactor</b>: Code and structure</li>
-          <li><b>Fix</b>: Error dialog is not showing</li>
+          <li><b>Fix</b>: Removes <b>zlib</b> dependency that was causing npm install failures</li>
+          <li><b>Fix</b>: Fixes a runtime error in the WebviewViewProvider when context.state is undefined</li>
         </ul>
-        <b>VERSION 2.1.0 IS A BREAKING CHANGES VERSION SO PLEASE TAKE A LOOK AT YOUR SETTINGS.<br/>I have change some setting name so it may not get your old setting.<br/>Thanks!</b>
     </div>
     <div>
         <h2>Usage</h2>
@@ -120,7 +110,7 @@ export default (webviewContext: WebviewContext, data: Data) => {
                 Sometimes, the dialog still displays even if nothing goes wrong<br />
                 <i>Solves:</i>
                 <ul>
-                    <li>Turn off <b>showMessageDialogg</b> setting</li>
+                    <li>Turn off <b>showMessageDialog</b> setting</li>
                     <li><b>Using Local Proxy Server</b></li>
                 </ul>
             </li>

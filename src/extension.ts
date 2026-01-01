@@ -28,10 +28,16 @@ export function activate(context: vscode.ExtensionContext) {
   // Register Views
   extensionHelper.registerViewContainer(context);
 
+  // Register Document Link Providers
+  extensionHelper.registerDocumentLinkProviders(context);
+
+  // Register Terminal Link Providers
+  extensionHelper.registerTerminalLinkProviders(context, outputConsole);
+
   // Watch configuration changes
-  vscode.workspace.onDidChangeConfiguration(
-    extensionHelper.handleConfigurationChange
-  );
+  vscode.workspace.onDidChangeConfiguration((event) => {
+    extensionHelper.handleConfigurationChange(context, outputConsole, event);
+  });
 
   extensionHelper.updateContextKey();
 }
